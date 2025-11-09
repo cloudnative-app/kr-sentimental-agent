@@ -1,0 +1,35 @@
+seed: 42
+model_name: llm:gemini  # LLM 기반 감성분석
+output_dir: runs/exp1
+
+data:
+  # CSV 대신 내부 JSON을 직접 읽는 옵션을 추가했습니다.
+  input_format: json_internal  # [csv|json_internal]
+  json_dir_train: examples/labeling/internal
+  json_dir_valid: examples/labeling/internal
+  json_dir_test: examples/labeling/internal
+  text_column: text
+  label_column: label
+  max_length: 192
+
+label_mapping:
+  # 예시 매핑 (매뉴얼 확인 후 수정)
+  긍정: 2
+  중립: 1
+  부정: 0
+
+train:
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 64
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  num_train_epochs: 3
+  warmup_ratio: 0.06
+  gradient_accumulation_steps: 1
+  fp16: true
+  logging_steps: 50
+  eval_strategy: steps
+  eval_steps: 200
+  save_steps: 200
+
+

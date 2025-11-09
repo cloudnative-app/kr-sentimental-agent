@@ -1,0 +1,4 @@
+file,text,label,text_no,speaker_no,start_time,end_time,verify_target,speaker_target,verify_level,speaker_level
+1_A581G2A1_A582G2A1_T1_1D09T0382C000226_046893,네가 좋아하는 해외여행 가져왔어,중립,1,Speaker2,5.13,7.79,없음,없음,보통,보통
+1_A581G2A1_A582G2A1_T1_1D09T0382C000226_046893,크,중립,2,Speaker2,9.20,10.14,없음,없음,보통,보통
+1_A581G2A1_A582G2A1_T1_1D09T0382C000226_046893,고마워,긍정,3,Speaker1,10.09,11.42,기쁨,기쁨,강함,강함
