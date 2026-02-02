@@ -75,4 +75,5 @@ venv/
 
 .claude/
 .run_pipeline_temp/
+results/.run_pipeline_temp/
 
