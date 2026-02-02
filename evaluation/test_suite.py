@@ -1,6 +1,7 @@
-from typing import List, Dict, Any
-import pandas as pd
+from typing import Any, Dict, List
 from pathlib import Path
+
+from data.datasets.loader import load_csv_examples
 
 
 class TestSuite:
@@ -19,12 +20,12 @@ class TestSuite:
     
     def load_from_csv(self, csv_path: str, text_column: str = "text", label_column: str = "label"):
         """Load test cases from a CSV file."""
-        df = pd.read_csv(csv_path)
-        for _, row in df.iterrows():
+        examples = load_csv_examples(csv_path, text_column=text_column, label_column=label_column)
+        for ex in examples:
             self.add_test_case(
-                text=row[text_column],
-                expected_label=row[label_column],
-                description=f"CSV row {row.name}"
+                text=ex.text,
+                expected_label=ex.label or "",
+                description=f"{Path(csv_path).name}:{ex.uid}",
             )
     
     def run_tests(self, predictor_func) -> Dict[str, Any]:

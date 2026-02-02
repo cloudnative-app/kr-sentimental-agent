@@ -1,0 +1,6 @@
+text,language_code,domain_id,case_type,split
+"배달 빠르고 음식 맛있어요",ko,food,non_contrast,train
+"앱 디자인 좋은데 버그 많음",ko,apps,contrast,train
+"Good quality but expensive",en,retail,contrast,train
+"서비스 친절해요",ko,service,non_contrast,train
+"Fast shipping loved it",en,logistics,non_contrast,train

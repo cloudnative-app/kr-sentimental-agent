@@ -1,0 +1,11 @@
+data:
+  allowed_roots: ["experiments/results/proposed"]
+  input_format: csv
+  train_file: experiments/results/proposed/conflict_c_mixed_20.csv
+  text_column: text
+  label_column: null
+
+run_id: conflict_c_20
+backbone:
+  provider: mock
+aspect_allowlist: experiments/configs/aspect_allowlists/conflict_allowlist.json

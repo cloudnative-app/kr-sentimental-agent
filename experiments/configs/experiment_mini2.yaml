@@ -1,0 +1,51 @@
+# experiment_mini2 — EXPERIMENT_MINI 테스트용 소규모 데이터 (valid N=60).
+# 데이터: experiments/configs/datasets/mini2/ (make_mini_dataset.py --valid_size 60으로 생성)
+#
+# 용어: "n회 반복" = 서로 다른 시드 n개(seeds 리스트)로 각 1회만 시행. 동일 시드를 여러 번 돌리는 것이 아님.
+# mini2: 시드 2개(42, 123)에 대한 1런만 수행. run_pipeline 1회 실행 시 시드 42 → 시드 123 순차 실행, 타임아웃 없이 1회만 시행.
+run_purpose: paper
+run_id: experiment_mini2
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini2/train.csv
+  valid_file: mini2/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini2/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123]   # 시드 2개만. 각 시드 1회 시행.
+    concurrency: 2     # 2면 seed42·seed123 동시 실행(벽시계 시간 단축). 1이면 순차. CLI --seed_concurrency 로 덮어쓸 수 있음.

@@ -1,0 +1,14 @@
+text,case_id,case_type
+"해외여행은 좋은데 비행은 싫어",C01,conflict
+"서비스는 친절했지만 음식은 별로였어",C02,conflict
+"가격은 싸지만 품질은 최악이야",C03,conflict
+"디자인은 예쁜데 배터리는 금방 닳아",C04,conflict
+"호텔 위치는 좋은데 방음이 안 돼",C05,conflict
+"배송은 빠른데 포장은 허술해",C06,conflict
+"화면은 선명한데 발열이 심해",C07,conflict
+"직원은 친절했지만 대기시간이 길었어",C08,conflict
+"연기는 좋았는데 스토리가 별로야",C09,conflict
+"가격은 마음에 드는데 AS는 실망스러워",C10,conflict
+
+
+

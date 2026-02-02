@@ -4,9 +4,10 @@ from pathlib import Path
 
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from tools.data_tools import load_internal_json_dir
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+from data.datasets.loader import examples_to_dataframe, load_split_examples
 
 
 def read_config(path: str):
@@ -22,10 +23,8 @@ def main():
     args = parser.parse_args()
 
     cfg = read_config(args.config)
-    key = f"json_dir_{args.split}"
-    json_dir = cfg["data"][key]
-
-    df = load_internal_json_dir(json_dir)
+    examples = load_split_examples(cfg["data"], args.split)
+    df = examples_to_dataframe(examples, include_metadata=True)
     out = args.out or f"data/{args.split}.csv"
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False)

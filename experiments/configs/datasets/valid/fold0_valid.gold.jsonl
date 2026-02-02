@@ -1,0 +1,30 @@
+{"uid": "nikluge-sa-2022-train-00860", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02516", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02232", "gold_triplets": [{"aspect_ref": "제품 전체#품질", "opinion_term": {"term": "플랫폼고데기"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02522", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "브릴로즈 시카로즈팩"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01713", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "뷰티챌린지 베스트템"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01817", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "핑크터치 +세럼 믹스"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00117", "gold_triplets": [{"aspect_ref": "제품 전체#디자인", "opinion_term": {"term": ""}, "polarity": "positive"}, {"aspect_ref": "제품 전체#편의성", "opinion_term": {"term": ""}, "polarity": "positive"}, {"aspect_ref": "본품#품질", "opinion_term": {"term": "높낮이 조절"}, "polarity": "positive"}, {"aspect_ref": "제품 전체#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01213", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "피부 미백, 주름개선, 자외선차단"}, "polarity": "positive"}, {"aspect_ref": "본품#일반", "opinion_term": {"term": "제형"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02669", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "쉬드엘아티스트웨어스킨핏듀얼컨실러"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00494", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02515", "gold_triplets": [{"aspect_ref": "제품 전체#품질", "opinion_term": {"term": "세이지폴 멀티바운서"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00022", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "negative"}]}
+{"uid": "nikluge-sa-2022-train-02555", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "헤이톰 바디스프레이"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02191", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00297", "gold_triplets": [{"aspect_ref": "패키지/구성품#디자인", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00946", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02986", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "레몬밤과 녹차 추출물"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00762", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02292", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "아토팜 콩순이 팩트"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01876", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02328", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "롱 귀걸이"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01840", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "AC클리어크림"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00466", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02881", "gold_triplets": [{"aspect_ref": "제품 전체#가격", "opinion_term": {"term": "인벨로"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00445", "gold_triplets": [{"aspect_ref": "본품#편의성", "opinion_term": {"term": "g9xmark2"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00619", "gold_triplets": [{"aspect_ref": "본품#다양성", "opinion_term": {"term": "지디일레븐 셀 팩토리 주사기 앰플"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02891", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "천연재료"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00960", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "향"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01452", "gold_triplets": [{"aspect_ref": "패키지/구성품#편의성", "opinion_term": {"term": "사이즈"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00288", "gold_triplets": [{"aspect_ref": "패키지/구성품#디자인", "opinion_term": {"term": "슈렉팩"}, "polarity": "positive"}]}

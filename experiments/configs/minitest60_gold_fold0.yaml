@@ -1,0 +1,42 @@
+# Minitest 60 — 2-fold fold0. Eval gold 포함, demo k=0. Test = blind CSV, eval = gold JSONL.
+run_purpose: paper
+run_id: minitest60_fold0
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: valid/fold0_train.csv
+  test_file: valid/fold0_valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_test_jsonl: valid/fold0_valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: ["test"]
+  report_sources: ["test_file"]
+  blind_sources: ["test_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true

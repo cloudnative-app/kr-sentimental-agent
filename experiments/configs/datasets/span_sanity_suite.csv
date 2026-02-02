@@ -1,0 +1,6 @@
+text,language_code,domain_id,case_type
+"서비스👍 정말 별로였어 😡",ko,apps,contrast
+"Battery died after 2hrs 😞",en,devices,non_contrast
+"맛있지만 양은 적다 🙃",ko,food,contrast
+"UI is clean but navigation is slow",en,apps,contrast
+"배송 느림 😤",ko,logistics,non_contrast

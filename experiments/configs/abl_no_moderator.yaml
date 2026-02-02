@@ -1,0 +1,17 @@
+run_mode: abl_no_moderator
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  enable_moderator: false
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini2/train.csv
+  valid_file: mini2/valid.csv
+  text_column: text
+  label_column: null
+  max_length: 192
+backbone:
+  provider: mock
+  model: mock-model

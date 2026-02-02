@@ -1,0 +1,108 @@
+version: 1
+
+profiles:
+  ops:
+    description: "Gold 없이도 가능한 운영 스냅샷 기반 게이트"
+    required_artifacts:
+      - "ops_outputs/run_snapshot.json"
+      - "ops_outputs/ops_table.csv"
+      - "ops_outputs/top_issues.csv"
+    gates:
+      - parse_failed_rate
+      - generate_failed_rate
+      - fallback_used_rate
+      - empty_output_rate
+      - latency_ms_p95
+      - retries_mean
+      - tokens_out_mean
+      - cost_usd_sum
+
+overall_policy:
+  fail_if_any_gate_is: ["FAIL"]
+  warn_if_any_gate_is: ["WARN"]
+  pass_if_all_gates_in: ["PASS", "N/A"]
+
+rules:
+  parse_failed_rate:
+    metric_path: "ops.parse_failed_rate"
+    meaning: "출력 파싱 실패 비율"
+    criterion: "스키마/포맷 붕괴 여부의 1차 스모크 지표"
+    thresholds:
+      pass: { lte: 0.005 }
+      warn: { lte: 0.020 }
+      fail: { gt: 0.020 }
+
+  generate_failed_rate:
+    metric_path: "ops.generate_failed_rate"
+    meaning: "LLM 호출/생성 실패 비율"
+    criterion: "런 안정성(레이트리밋/네트워크/모델 오류) 지표"
+    thresholds:
+      pass: { lte: 0.003 }
+      warn: { lte: 0.010 }
+      fail: { gt: 0.010 }
+
+  fallback_used_rate:
+    metric_path: "ops.fallback_used_rate"
+    meaning: "fallback 사용 비율"
+    criterion: "정상 경로 실패를 우회한 정도(품질 리스크)"
+    thresholds:
+      pass: { lte: 0.010 }
+      warn: { lte: 0.050 }
+      fail: { gt: 0.050 }
+
+  latency_ms_p95:
+    metric_path: "ops.latency_ms_p95"
+    meaning: "지연시간 p95 (ms)"
+    criterion: "운영 응답성/타임아웃 리스크 (smoke/regression: 완화)"
+    thresholds:
+      pass: { lte: 20000 }
+      warn: { lte: 30000 }
+      fail: { gt: 30000 }
+
+  retries_mean:
+    metric_path: "ops.retries_mean"
+    meaning: "평균 재시도 횟수"
+    criterion: "불안정한 호출/재시도 누적 여부"
+    thresholds:
+      pass: { lte: 0.20 }
+      warn: { lte: 0.80 }
+      fail: { gt: 0.80 }
+
+  tokens_out_mean:
+    metric_path: "ops.tokens_out_mean"
+    meaning: "출력 토큰 평균"
+    criterion: "출력 폭주/불필요 장문(비용/지연) 이상징후"
+    thresholds:
+      pass: { lte: 700 }
+      warn: { lte: 1200 }
+      fail: { gt: 1200 }
+
+  cost_usd_sum:
+    metric_path: "ops.cost_usd_sum"
+    meaning: "총 비용(USD)"
+    criterion: "런 단위 비용 상한선(운영 안전장치)"
+    thresholds:
+      pass: { lte: 5.0 }
+      warn: { lte: 15.0 }
+      fail: { gt: 15.0 }
+
+  empty_output_rate:
+    metric_path: "derived.empty_output_rate"
+    meaning: "빈 출력 비율(aspect 0개 등)"
+    criterion: "실질적 무응답/측정불능 비율"
+    thresholds:
+      pass: { lte: 0.010 }
+      warn: { lte: 0.030 }
+      fail: { gt: 0.030 }
+
+ui:
+  verdict_badges:
+    PASS: "✅ PASS"
+    WARN: "⚠️ WARN"
+    FAIL: "🛑 FAIL"
+    N_A: "— N/A"
+  notes:
+    - "임계값(thresholds)은 초기 보수적 기본값이며 프로젝트/데이터에 맞춰 조정."
+    - "ops 프로파일은 smoke/regression 용도로 latency gate가 완화됨."
+
+

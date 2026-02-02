@@ -1,0 +1,30 @@
+# Latency gate: profile-based policy (WARN only; no FAIL for pipeline operability).
+# Pipeline correctness is primary; strict response-time FAIL is optional and disabled here.
+version: 1
+
+profiles:
+  smoke:
+    description: "Smoke / quick sanity; latency never fails run."
+    latency_policy: "warn_only"   # WARN only, do not fail
+    record_latency: true
+
+  regression:
+    description: "Regression / dev; latency WARN + record for monitoring."
+    latency_policy: "warn_only"
+    record_latency: true
+
+  paper_main:
+    description: "Paper / main evaluation; latency WARN + record for tables."
+    latency_policy: "warn_only"
+    record_latency: true
+
+# Per-profile threshold (ms): above this -> gate_status WARN (never FAIL)
+latency_thresholds_ms:
+  smoke: 60000
+  regression: 30000
+  paper_main: 15000
+
+# Overall: latency gate never contributes to run FAIL
+overall_policy:
+  latency_never_fail: true
+  latency_warn_above_threshold: true

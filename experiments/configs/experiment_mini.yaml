@@ -1,0 +1,50 @@
+# experiment_mini — 리허설: 본실험과 동일 절차, 단일 고정 데이터 + seed 반복 (폴드 없음).
+# 목적: 누수 방지·seed 반복 시 결과 구조 동일성 점검.
+# 데이터: experiments/configs/datasets/mini/ (make_mini_dataset.py로 생성)
+run_purpose: paper
+run_id: experiment_mini
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini/train.csv
+  valid_file: mini/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+# 용어: "n회 반복" = 서로 다른 시드 n개(seeds 리스트)로 각 1회만 시행. 동일 시드를 여러 번 돌리는 것이 아님.
+# 반복 단위 = 추론 시드(seed). fold 아님. run_pipeline 1회 실행 시 seeds 순서대로 각 시드 1회씩 실행.
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456, 789, 101]   # 5회 반복 = 서로 다른 시드 5개, 각 1회 시행. run_id__seed42, __seed123, ... 로 저장.

@@ -1,6 +1,5 @@
 # Python
 .venv/
-venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -14,6 +13,9 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+nul
+con
+prn
 
 # Logs
 *.log
@@ -68,4 +70,11 @@ tmp/
 temp/
 *.tmp
 
+# Execution outputs and cache (do not commit)
+venv/
+results/
+reports/
+.claude/
+.run_pipeline_temp/
+results/.run_pipeline_temp/
 

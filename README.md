@@ -61,21 +61,18 @@ print(f"최종 결과: {results['final'].label}")
 
 ```bash
 python experiments/scripts/agent_run.py \
-    --mode two_stage \
-    --text "참 잘하는 짓이다... 정말 대단해!" \
-    --llm-provider openai \
-    --model-name gpt-3.5-turbo
+    --config experiments/configs/default.yaml \
+    --mode proposed \  # or bl1|bl2|bl3 (CLI > RUN_MODE env > config run_mode)
+    --text "참 잘하는 짓이다... 정말 대단해!"
 ```
 
 ### 배치 실험
 
 ```bash
 python experiments/scripts/run_experiments.py \
-    --input data/test.csv \
     --config experiments/configs/default.yaml \
-    --llm-provider openai \
-    --model-name gpt-3.5-turbo \
-    --outdir experiments/results
+    --mode proposed \  # optional override; defaults to config run_mode or env RUN_MODE
+    --run-id demo_run
 ```
 
 ## 🔧 실험 조건
@@ -196,7 +193,7 @@ kr-sentiment-agent/
 ├── tools/                          # 도구들
 │   ├── classifier_wrapper.py       # HuggingFace 모델 래퍼
 │   └── data_tools/                 # 데이터 처리 도구들
-├── experiments/                    # 실험 관련
+├── experiments/                    # 실험 관련 (config run_mode 기본값, CLI --mode, env RUN_MODE로 override)
 │   ├── configs/
 │   ├── results/
 │   └── scripts/                    # 실험 스크립트들
@@ -222,3 +219,13 @@ kr-sentiment-agent/
 
 - 프로젝트 링크: [https://github.com/your-repo/kr-sentiment-agent](https://github.com/your-repo/kr-sentiment-agent)
 - 이슈 리포트: [https://github.com/your-repo/kr-sentiment-agent/issues](https://github.com/your-repo/kr-sentiment-agent/issues)
+## Provider dry-run (real backbone quick check)
+
+```bash
+python scripts/provider_dry_run.py --text "서비스는 친절했지만 음식은 별로였어" --mode proposed
+```
+
+Required env vars (names only):
+- OpenAI: OPENAI_API_KEY (OPENAI_BASE_URL optional)
+- Anthropic: ANTHROPIC_API_KEY (ANTHROPIC_BASE_URL optional)
+- Google Gemini: GOOGLE_API_KEY, GENAI_API_KEY

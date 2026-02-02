@@ -1,0 +1,5 @@
+text,language_code,domain_id,case_type,split
+"가격 비싸지만 품질 좋음",ko,retail,contrast,valid
+"UI clean but slow loading",en,apps,contrast,valid
+"음식 맛없어요",ko,food,non_contrast,valid
+"Great customer support",en,service,non_contrast,valid

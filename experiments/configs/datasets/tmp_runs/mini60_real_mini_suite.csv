@@ -1,0 +1,61 @@
+text,case_id,case_type
+"해외여행은 좋은데 비행은 싫어",C01,conflict
+"서비스는 친절했지만 음식은 별로였어",C02,conflict
+"가격은 싸지만 품질은 최악이야",C03,conflict
+"디자인은 예쁜데 배터리는 금방 닳아",C04,conflict
+"호텔 위치는 좋은데 방음이 안 돼",C05,conflict
+"배송은 빠른데 포장은 허술해",C06,conflict
+"화면은 선명한데 발열이 심해",C07,conflict
+"직원은 친절했지만 대기시간이 길었어",C08,conflict
+"연기는 좋았는데 스토리가 별로야",C09,conflict
+"가격은 마음에 드는데 AS는 실망스러워",C10,conflict
+"인터페이스는 깔끔한데 속도가 느려",C11,conflict
+"경치는 멋진데 음식값이 비싸",C12,conflict
+"차체는 튼튼한데 연비가 나빠",C13,conflict
+"앱 기능은 많은데 안정성이 떨어져",C14,conflict
+"뷰는 최고인데 청소 상태가 아쉬워",C15,conflict
+"소리는 맑은데 착용감이 불편해",C16,conflict
+"커피는 맛있지만 좌석이 불편해",C17,conflict
+"강의는 유익했지만 자료가 부실했어",C18,conflict
+"화질은 좋은데 리모컨이 불편해",C19,conflict
+"디저트는 훌륭하지만 메인은 평범해",C20,conflict
+"커튼은 예쁜데 햇빛 차단이 약해",C21,conflict
+"주차는 편한데 출구 안내가 헷갈려",C22,conflict
+"냉방은 시원한데 난방이 안 돼",C23,conflict
+"소프트웨어는 안정적인데 업데이트가 느려",C24,conflict
+"카메라는 좋은데 저장공간이 부족해",C25,conflict
+"식당은 넓은데 테이블이 불편해",C26,conflict
+"전망은 좋지만 엘리베이터가 느려",C27,conflict
+"가격은 합리적인데 포인트 적립이 안 돼",C28,conflict
+"설명서는 친절한데 그림이 부족해",C29,conflict
+"음향은 훌륭한데 마이크 감도가 낮아",C30,conflict
+"방송 품질이 매우 좋아요",M01,non_contrast
+"배터리가 하루 만에 방전돼서 실망이야",M02,non_contrast
+"직원 응대가 친절하다",M03,non_contrast
+"음식이 짜고 기름져",M04,non_contrast
+"배송이 예상보다 빨랐어",M05,non_contrast
+"앱이 자꾸 멈춰서 불편하다",M06,non_contrast
+"포장이 깔끔했다",M07,non_contrast
+"서비스 속도가 느리다",M08,non_contrast
+"커피 향이 진하고 좋다",M09,non_contrast
+"리모컨 버튼이 잘 눌리지 않아",M10,non_contrast
+"좌석 쿠션이 푹신하다",M11,non_contrast
+"매장 음악 소리가 너무 크다",M12,non_contrast
+"메뉴 구성이 다양해서 만족",M13,non_contrast
+"화면 밝기가 어두워",M14,non_contrast
+"연기가 뛰어나서 만족",M15,non_contrast
+"맛이 나쁘진 않은데 또 먹고 싶진 않아",H01,hard_negation
+"서비스가 특별히 좋지도 나쁘지도 않았다",H02,hard_negation
+"배터리가 오래가진 않지만 못 쓸 정도는 아니야",H03,hard_negation
+"가격이 싸다고는 못 하겠지만 그런대로 괜찮다",H04,hard_negation
+"앱이 완전히 망가진 건 아니지만 자주 끊겨",H05,hard_negation
+"포장이 나쁘진 않은데 고급스러워 보이진 않아",H06,hard_negation
+"방음이 완벽하진 않지만 수긍할 만한 수준",H07,hard_negation
+"화질이 뛰어나진 않지만 볼 만하다",H08,hard_negation
+"좌석이 편하다고 할 순 없지만 견딜 수 있어",H09,hard_negation
+"설명이 친절하진 않지만 필요한 정보는 있다",H10,hard_negation
+"업데이트가 빠른 건 아니지만 아주 느리진 않아",H11,hard_negation
+"주차가 편하진 않지만 불가능하진 않다",H12,hard_negation
+"커피 맛이 특별히 좋진 않지만 나쁘지도 않아",H13,hard_negation
+"카메라가 완벽하지 않지만 가격 대비 훌륭하다",H14,hard_negation
+"인터페이스가 직관적이지 않지만 쓰다 보면 익숙해진다",H15,hard_negation

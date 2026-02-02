@@ -7,18 +7,18 @@ import torch
 import yaml
 from datasets import Dataset
 from transformers import (
-    AutoTokenizer,
     AutoModelForSequenceClassification,
+    AutoTokenizer,
     Trainer,
     TrainingArguments,
 )
 
 import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from tools.data_tools import load_csv_dataset, apply_label_mapping, load_internal_json_dir
-from tools.data_tools import build_label2id, build_id2label
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+from data.datasets.loader import examples_to_dataframe, load_datasets
+from tools.data_tools import build_id2label, build_label2id
 
 
 @dataclass
@@ -48,33 +48,27 @@ def main():
     label2id = build_label2id(cfg.label_mapping)
     id2label = build_id2label(label2id)
 
-    if cfg.data.get("input_format", "csv") == "csv":
-        train_df, valid_df, _ = load_csv_dataset(
-            cfg.data["train_file"],
-            cfg.data["valid_file"],
-            cfg.data["test_file"],
-            cfg.data["text_column"],
-            cfg.data["label_column"],
-        )
-    else:
-        train_df = load_internal_json_dir(cfg.data["json_dir_train"]) 
-        valid_df = load_internal_json_dir(cfg.data["json_dir_valid"]) 
-    train_df = apply_label_mapping(train_df, cfg.data["label_column"], label2id)
-    valid_df = apply_label_mapping(valid_df, cfg.data["label_column"], label2id)
+    train_examples, valid_examples, _ = load_datasets(cfg.data)
+    if not train_examples:
+        raise ValueError("Training split is empty after loading; check data configuration.")
+    if not valid_examples:
+        raise ValueError("Validation split is empty after loading; check data configuration.")
+
+    train_df = examples_to_dataframe(train_examples, label2id=label2id)
+    valid_df = examples_to_dataframe(valid_examples, label2id=label2id)
 
     tokenizer = AutoTokenizer.from_pretrained(cfg.model_name)
 
     def tokenize_fn(examples):
         return tokenizer(
-            examples[cfg.data["text_column"]],
+            examples["text"],
             max_length=cfg.data["max_length"],
             padding="max_length",
             truncation=True,
         )
 
-    # DataFrame 컬럼 표준화
-    train_df = train_df[[cfg.data["text_column"], cfg.data["label_column"]]].rename(columns={cfg.data["text_column"]: "text", cfg.data["label_column"]: "label"})
-    valid_df = valid_df[[cfg.data["text_column"], cfg.data["label_column"]]].rename(columns={cfg.data["text_column"]: "text", cfg.data["label_column"]: "label"})
+    train_df = train_df[["text", "label"]]
+    valid_df = valid_df[["text", "label"]]
 
     train_ds = Dataset.from_pandas(train_df, preserve_index=False)
     valid_ds = Dataset.from_pandas(valid_df, preserve_index=False)
@@ -106,6 +100,7 @@ def main():
     )
 
     from evaluate import load as load_metric
+
     f1_metric = load_metric("f1")
     acc_metric = load_metric("accuracy")
 
@@ -132,5 +127,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

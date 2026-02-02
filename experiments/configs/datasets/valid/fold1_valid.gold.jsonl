@@ -1,0 +1,30 @@
+{"uid": "nikluge-sa-2022-train-00480", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "고함유 줄기세포 배양액"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00907", "gold_triplets": [{"aspect_ref": "제품 전체#디자인", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02395", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "스타일 프리미엄"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01766", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "마스크팩"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01356", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "로지사틴크림"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01293", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02850", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "냄새"}, "polarity": "neutral"}]}
+{"uid": "nikluge-sa-2022-train-01551", "gold_triplets": [{"aspect_ref": "제품 전체#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00929", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01252", "gold_triplets": [{"aspect_ref": "제품 전체#품질", "opinion_term": {"term": "원단"}, "polarity": "positive"}, {"aspect_ref": "제품 전체#품질", "opinion_term": {"term": "항곰팡이 및 방취가공"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02010", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "향"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01305", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "냉장고가 갖고 있어야 할 기본적인 기능"}, "polarity": "positive"}, {"aspect_ref": "본품#일반", "opinion_term": {"term": "24시간 자동정온, 도어쿨링, 신선야채실, 멀티수납함, 냉동실Full 드로어 기능"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02971", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "똑딱핀 타입"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01336", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "100퍼센트식품첨가물"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01459", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "거울"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01573", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "상하좌우 회전"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01262", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "피부의 수분감"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01968", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02653", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00197", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "천연 아로마오일"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02200", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02012", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00662", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01220", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02342", "gold_triplets": [{"aspect_ref": "본품#일반", "opinion_term": {"term": "텍스쳐"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-01435", "gold_triplets": [{"aspect_ref": "제품 전체#일반", "opinion_term": {"term": "데이크림"}, "polarity": "neutral"}]}
+{"uid": "nikluge-sa-2022-train-01160", "gold_triplets": [{"aspect_ref": "제품 전체#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02843", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-00906", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": "히터의 기술"}, "polarity": "positive"}]}
+{"uid": "nikluge-sa-2022-train-02775", "gold_triplets": [{"aspect_ref": "본품#품질", "opinion_term": {"term": ""}, "polarity": "positive"}]}

@@ -1,0 +1,39 @@
+# Paper test config with properly separated splits
+run_purpose: paper
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: paper_train.csv
+  valid_file: paper_valid.csv
+  test_file: paper_test.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+backbone:
+  provider: mock
+  model: mock-model
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: ["test"]
+  report_sources: ["valid_file"]
+  blind_sources: ["test_file"]
+
+demo:
+  k: 2
+  seed: 42
+  enabled_for: ["proposed"]
+  force_for_proposed: true
+  hash_filter: true

@@ -1,15 +1,16 @@
 seed: 42
 model_name: llm:gemini  # LLM 기반 감성분석
 output_dir: runs/exp1
+run_mode: proposed
 
 data:
-  # CSV 대신 내부 JSON을 직접 읽는 옵션을 추가했습니다.
-  input_format: json_internal  # [csv|json_internal]
-  json_dir_train: examples/labeling/internal
-  json_dir_valid: examples/labeling/internal
-  json_dir_test: examples/labeling/internal
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini2/train.csv
+  valid_file: mini2/valid.csv
   text_column: text
-  label_column: label
+  label_column: null
   max_length: 192
 
 label_mapping:
@@ -31,5 +32,17 @@ train:
   eval_strategy: steps
   eval_steps: 200
   save_steps: 200
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: ["test"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
 
 

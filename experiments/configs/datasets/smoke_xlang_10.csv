@@ -1,0 +1,11 @@
+text,language_code,domain_id,case_type
+"서비스는 괜찮지만 가격이 너무 비싸요",ko,retail,contrast
+"배송 속도가 느려서 답답했지만 포장 상태는 최고였어요",ko,logistics,contrast
+"카페 분위기는 좋은데 커피 맛이 밍밍해요",ko,food,contrast
+"앱이 자꾸 튕기지만 디자인은 예뻐요",ko,apps,contrast
+"배터리 오래가고 카메라도 좋아요",ko,devices,non_contrast
+"The phone is fast but the camera is mediocre",en,devices,contrast
+"Service was friendly yet the wait time was long",en,hospitality,contrast
+"Great taste, tiny portions 😅",en,food,non_contrast
+"Packaging looked premium but the product was scratched",en,retail,contrast
+"Delivery was on time and the price was fair",en,logistics,non_contrast

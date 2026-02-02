@@ -1,0 +1,49 @@
+# experiment_real — 본실험(paper): 보고용. 단일 고정 데이터 + seed 반복 (폴드 없음).
+# 데이터: experiments/configs/datasets/real/ 에 배치 후 사용.
+# 생성·위치 안내: experiments/configs/datasets/real/README.md 참고.
+# 용어: n회 반복 = 서로 다른 시드 n개로 각 1회 시행. run_id__seed42, __seed123, ... 로 저장.
+run_purpose: paper
+run_id: experiment_real
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real/train.csv
+  valid_file: real/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false   # zero-shot에서는 의미 없으므로 off 권장
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456, 789, 101]   # 5회 반복 = 서로 다른 시드 5개, 각 1회 시행.

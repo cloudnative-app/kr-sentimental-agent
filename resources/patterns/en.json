@@ -1,0 +1,8 @@
+{
+  "contrast_markers": ["but", "however", "yet", "whereas", "while"],
+  "topic_particles": [],
+  "negation_triggers": ["not", "no", "never", "n't"],
+  "aspect_token_regex": "[A-Za-z]{3,}",
+  "positive_keywords": ["great", "good", "love", "excellent", "amazing"],
+  "negative_keywords": ["bad", "poor", "terrible", "awful", "disappointing"]
+}

@@ -1,0 +1,4 @@
+text,language_code,domain_id,case_type,split
+"배송 늦었지만 포장 완벽",ko,logistics,contrast,test
+"App crashes frequently",en,apps,non_contrast,test
+"맛은 좋은데 서비스 별로",ko,food,contrast,test

@@ -1,0 +1,15 @@
+backbone:
+  model: mock-model
+  provider: mock
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  label_column: null
+  target_column: null
+  text_column: text
+  train_file: tmp_runs/mini60_real_mini_suite.csv
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+run_mode: proposed

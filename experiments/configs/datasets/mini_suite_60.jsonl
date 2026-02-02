@@ -1,0 +1,60 @@
+{"case_id":"C01","case_type":"conflict","text":"해외여행은 좋은데 비행은 싫어"}
+{"case_id":"C02","case_type":"conflict","text":"서비스는 친절했지만 음식은 별로였어"}
+{"case_id":"C03","case_type":"conflict","text":"가격은 싸지만 품질은 최악이야"}
+{"case_id":"C04","case_type":"conflict","text":"디자인은 예쁜데 배터리는 금방 닳아"}
+{"case_id":"C05","case_type":"conflict","text":"호텔 위치는 좋은데 방음이 안 돼"}
+{"case_id":"C06","case_type":"conflict","text":"배송은 빠른데 포장은 허술해"}
+{"case_id":"C07","case_type":"conflict","text":"화면은 선명한데 발열이 심해"}
+{"case_id":"C08","case_type":"conflict","text":"직원은 친절했지만 대기시간이 길었어"}
+{"case_id":"C09","case_type":"conflict","text":"연기는 좋았는데 스토리가 별로야"}
+{"case_id":"C10","case_type":"conflict","text":"가격은 마음에 드는데 AS는 실망스러워"}
+{"case_id":"C11","case_type":"conflict","text":"인터페이스는 깔끔한데 속도가 느려"}
+{"case_id":"C12","case_type":"conflict","text":"경치는 멋진데 음식값이 비싸"}
+{"case_id":"C13","case_type":"conflict","text":"차체는 튼튼한데 연비가 나빠"}
+{"case_id":"C14","case_type":"conflict","text":"앱 기능은 많은데 안정성이 떨어져"}
+{"case_id":"C15","case_type":"conflict","text":"뷰는 최고인데 청소 상태가 아쉬워"}
+{"case_id":"C16","case_type":"conflict","text":"소리는 맑은데 착용감이 불편해"}
+{"case_id":"C17","case_type":"conflict","text":"커피는 맛있지만 좌석이 불편해"}
+{"case_id":"C18","case_type":"conflict","text":"강의는 유익했지만 자료가 부실했어"}
+{"case_id":"C19","case_type":"conflict","text":"화질은 좋은데 리모컨이 불편해"}
+{"case_id":"C20","case_type":"conflict","text":"디저트는 훌륭하지만 메인은 평범해"}
+{"case_id":"C21","case_type":"conflict","text":"커튼은 예쁜데 햇빛 차단이 약해"}
+{"case_id":"C22","case_type":"conflict","text":"주차는 편한데 출구 안내가 헷갈려"}
+{"case_id":"C23","case_type":"conflict","text":"냉방은 시원한데 난방이 안 돼"}
+{"case_id":"C24","case_type":"conflict","text":"소프트웨어는 안정적인데 업데이트가 느려"}
+{"case_id":"C25","case_type":"conflict","text":"카메라는 좋은데 저장공간이 부족해"}
+{"case_id":"C26","case_type":"conflict","text":"식당은 넓은데 테이블이 불편해"}
+{"case_id":"C27","case_type":"conflict","text":"전망은 좋지만 엘리베이터가 느려"}
+{"case_id":"C28","case_type":"conflict","text":"가격은 합리적인데 포인트 적립이 안 돼"}
+{"case_id":"C29","case_type":"conflict","text":"설명서는 친절한데 그림이 부족해"}
+{"case_id":"C30","case_type":"conflict","text":"음향은 훌륭한데 마이크 감도가 낮아"}
+{"case_id":"M01","case_type":"non_contrast","text":"방송 품질이 매우 좋아요"}
+{"case_id":"M02","case_type":"non_contrast","text":"배터리가 하루 만에 방전돼서 실망이야"}
+{"case_id":"M03","case_type":"non_contrast","text":"직원 응대가 친절하다"}
+{"case_id":"M04","case_type":"non_contrast","text":"음식이 짜고 기름져"}
+{"case_id":"M05","case_type":"non_contrast","text":"배송이 예상보다 빨랐어"}
+{"case_id":"M06","case_type":"non_contrast","text":"앱이 자꾸 멈춰서 불편하다"}
+{"case_id":"M07","case_type":"non_contrast","text":"포장이 깔끔했다"}
+{"case_id":"M08","case_type":"non_contrast","text":"서비스 속도가 느리다"}
+{"case_id":"M09","case_type":"non_contrast","text":"커피 향이 진하고 좋다"}
+{"case_id":"M10","case_type":"non_contrast","text":"리모컨 버튼이 잘 눌리지 않아"}
+{"case_id":"M11","case_type":"non_contrast","text":"좌석 쿠션이 푹신하다"}
+{"case_id":"M12","case_type":"non_contrast","text":"매장 음악 소리가 너무 크다"}
+{"case_id":"M13","case_type":"non_contrast","text":"메뉴 구성이 다양해서 만족"}
+{"case_id":"M14","case_type":"non_contrast","text":"화면 밝기가 어두워"}
+{"case_id":"M15","case_type":"non_contrast","text":"연기가 뛰어나서 만족"}
+{"case_id":"H01","case_type":"hard_negation","text":"맛이 나쁘진 않은데 또 먹고 싶진 않아"}
+{"case_id":"H02","case_type":"hard_negation","text":"서비스가 특별히 좋지도 나쁘지도 않았다"}
+{"case_id":"H03","case_type":"hard_negation","text":"배터리가 오래가진 않지만 못 쓸 정도는 아니야"}
+{"case_id":"H04","case_type":"hard_negation","text":"가격이 싸다고는 못 하겠지만 그런대로 괜찮다"}
+{"case_id":"H05","case_type":"hard_negation","text":"앱이 완전히 망가진 건 아니지만 자주 끊겨"}
+{"case_id":"H06","case_type":"hard_negation","text":"포장이 나쁘진 않은데 고급스러워 보이진 않아"}
+{"case_id":"H07","case_type":"hard_negation","text":"방음이 완벽하진 않지만 수긍할 만한 수준"}
+{"case_id":"H08","case_type":"hard_negation","text":"화질이 뛰어나진 않지만 볼 만하다"}
+{"case_id":"H09","case_type":"hard_negation","text":"좌석이 편하다고 할 순 없지만 견딜 수 있어"}
+{"case_id":"H10","case_type":"hard_negation","text":"설명이 친절하진 않지만 필요한 정보는 있다"}
+{"case_id":"H11","case_type":"hard_negation","text":"업데이트가 빠른 건 아니지만 아주 느리진 않아"}
+{"case_id":"H12","case_type":"hard_negation","text":"주차가 편하진 않지만 불가능하진 않다"}
+{"case_id":"H13","case_type":"hard_negation","text":"커피 맛이 특별히 좋진 않지만 나쁘지도 않아"}
+{"case_id":"H14","case_type":"hard_negation","text":"카메라가 완벽하지 않지만 가격 대비 훌륭하다"}
+{"case_id":"H15","case_type":"hard_negation","text":"인터페이스가 직관적이지 않지만 쓰다 보면 익숙해진다"}

@@ -1,0 +1,36 @@
+run_purpose: paper
+run_mode: proposed
+
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: tmp_runs/mini60_real_mini_suite.csv
+  language_code: ko
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+backbone:
+  # Real provider config: override these to match your infra
+  provider: openai          # e.g., openai / anthropic / azure / google
+  model: gpt-4.1-mini       # adjust to your production model
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: ["test"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+
+
