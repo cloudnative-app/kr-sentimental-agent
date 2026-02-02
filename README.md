@@ -1,26 +1,36 @@
 # KR Sentiment Agent
 
-한국어 감성분석을 위한 **2단계 멀티 에이전트 시스템**입니다. 전문적인 페르소나를 가진 3개의 에이전트가 독립적 의견수렴과 토론단계를 거쳐 정확한 감성분석을 수행합니다.
+한국어 **ABSA(Aspect-Based Sentiment Analysis)** 파이프라인입니다.  
+Stage1(ATE/ATSA/Validator) → **토론(Debate)** → Stage2 리뷰 → Moderator 규칙 결정 흐름으로 동작합니다.
 
 ## ✨ 주요 특징
 
-- 🎭 **전문 페르소나 기반 에이전트**: 분석가, 공감가, 비평가
-- 🔄 **2단계 프로세스**: 독립적 의견수렴 → 토론단계
-- 🤖 **LLM 기반**: OpenAI, Anthropic, Google 지원
-- 📊 **LangGraph 워크플로우**: 구조화된 에이전트 협업
-- 🎯 **이미지 구조 일치**: 제공된 이미지와 정확히 일치하는 아키텍처
+- 🎭 **토론 레이어**: 분석가/공감가/비평가 토론 + 심판 요약
+- 🔁 **Stage1 → Debate → Stage2 리뷰** 구조
+- 🧭 **Moderator 규칙**: Rule A–D + Rule E(토론 합의 힌트)
+- 📊 **토론 매핑 품질 지표**: mapping coverage/실패 원인 집계
+- 🧪 **Ablation 지원**: debate override on/off 비교
 
 ## 🚀 설치
 
 ```bash
-git clone https://github.com/your-repo/kr-sentiment-agent.git
+git clone https://github.com/cloudnative-app/kr-sentimental-agent.git
 cd kr-sentiment-agent
 pip install -r requirements.txt
 ```
 
 ## 🔑 환경 설정
 
-`.env` 파일을 생성하고 API 키를 설정하세요:
+### 1) Backbone 설정
+
+기본값은 mock입니다. 실제 모델 사용 시 아래 환경 변수를 설정하세요.
+
+```bash
+# 예: OpenAI
+BACKBONE_PROVIDER=openai
+BACKBONE_MODEL=gpt-4o-mini
+OPENAI_API_KEY=your_openai_api_key
+```
 
 ```bash
 OPENAI_API_KEY=your_openai_api_key
@@ -30,43 +40,15 @@ GOOGLE_API_KEY=your_google_api_key
 
 ## 📊 사용법
 
-### 2단계 멀티 에이전트 시스템 (권장)
+### 통합 파이프라인 실행 (권장)
 
-```python
-from agents.supervisor_agent import SupervisorAgent
-
-# 2단계 조정자 생성 (기본값)
-supervisor = SupervisorAgent(llm_provider="openai", model_name="gpt-3.5-turbo")
-
-# 2단계 멀티 에이전트 감성분석
-results = supervisor.run("참 잘하는 짓이다... 정말 대단해!")
-
-# 1단계: 독립적 의견수렴 (각 에이전트가 독립적으로 분석)
-print(f"독립적 분석가: {results['independent_analyst'].label}")
-print(f"독립적 공감가: {results['independent_empath'].label}")
-print(f"독립적 비평가: {results['independent_critic'].label}")
-
-# 2단계: 토론단계 (기존 에이전트들이 서로 토론하며 의견 교환)
-print(f"토론 후 분석가: {results['deliberation_analyst'].label}")
-print(f"토론 후 공감가: {results['deliberation_empath'].label}")
-print(f"토론 후 비평가: {results['deliberation_critic'].label}")
-
-# 최종 결과 (토론 결과를 종합한 최종 판단)
-print(f"최종 결과: {results['final'].label}")
+```bash
+python scripts/run_pipeline.py --config experiments/configs/experiment_mini.yaml --run-id experiment_mini --mode proposed --profile smoke --with_metrics
 ```
 
 ## 🧪 실험 실행
 
-### 단일 텍스트 분석
-
-```bash
-python experiments/scripts/agent_run.py \
-    --config experiments/configs/default.yaml \
-    --mode proposed \  # or bl1|bl2|bl3 (CLI > RUN_MODE env > config run_mode)
-    --text "참 잘하는 짓이다... 정말 대단해!"
-```
-
-### 배치 실험
+### 실험 실행 (run_experiments)
 
 ```bash
 python experiments/scripts/run_experiments.py \
@@ -75,10 +57,19 @@ python experiments/scripts/run_experiments.py \
     --run-id demo_run
 ```
 
+### 스모크 테스트 (test_small.csv)
+
+```bash
+python experiments/scripts/run_experiments.py \
+    --config experiments/configs/test_small.yaml \
+    --run-id test_small \
+    --mode proposed
+```
+
 ## 🔧 실험 조건
 
-### LLM 기반 페르소나 방식 (권장)
-1. **Two-Stage**: 2단계 구조 (이미지와 일치, 기본값)
+### 토론 및 Stage2 리뷰
+자세한 구조는 `docs/pipeline_structure_and_rules.md`를 참고하세요.
 
 ## 🎭 에이전트 페르소나
 
@@ -100,107 +91,26 @@ python experiments/scripts/run_experiments.py \
 - **전문성**: 반어법, 풍자, 중의적 표현, 논리적 오류
 - **말투**: "분석가의 '긍정' 판단에 대해 의문을 제기합니다..."
 
-## 🛡️ 안전장치
-
-### 입력 검증
-```python
-from guardrails.input_validation import InputValidator
-
-validator = InputValidator()
-result = validator.validate("분석할 텍스트")
-if result["valid"]:
-    # 안전한 텍스트 처리
-    pass
-```
-
-### 출력 필터링
-```python
-from guardrails.output_filtering import OutputFilter
-
-filter = OutputFilter()
-filtered_output = filter.filter_output(agent_output)
-```
-
-### 안전 검사
-```python
-from guardrails.safety_checks import SafetyChecker
-
-checker = SafetyChecker()
-safety_result = checker.check_safety("텍스트")
-if not safety_result["blocked"]:
-    # 안전한 텍스트 처리
-    pass
-```
-
-## 📈 관찰 가능성
-
-### 로깅
-```python
-from observability.logging import SentimentLogger
-
-logger = SentimentLogger()
-logger.log_prediction("텍스트", "긍정", 0.85, "분석가")
-```
-
-### 메트릭 수집
-```python
-from observability.metrics import MetricsCollector
-
-collector = MetricsCollector()
-collector.record_prediction("텍스트", "긍정", 0.85, "분석가", 0.5)
-```
-
-### 분산 추적
-```python
-from observability.tracing import TraceCollector
-
-tracer = TraceCollector()
-trace_id = tracer.start_trace("sentiment_analysis")
-# ... 분석 수행 ...
-tracer.finish_trace(trace_id)
-```
-
-## 🐳 배포
-
-### Docker
-```bash
-docker build -f deployment/Dockerfile -t kr-sentiment-agent .
-docker run -p 8000:8000 kr-sentiment-agent
-```
-
-### Docker Compose
-```bash
-docker-compose -f deployment/docker-compose.yml up
-```
-
-### Kubernetes
-```bash
-kubectl apply -f deployment/k8s/
-```
+## 📈 관찰/지표
+리포트 및 지표는 `scripts/scorecard_from_smoke.py`, `scripts/structural_error_aggregator.py`, `scripts/build_metric_report.py`로 생성됩니다.
 
 ## 📁 프로젝트 구조
 
 ```
 kr-sentiment-agent/
 ├── agents/                          # 에이전트 시스템
-│   ├── base_agent.py               # 기본 인터페이스
-│   ├── supervisor_agent.py         # 통합 조정자
-│   ├── two_stage_supervisor.py     # 2단계 조정자
-│   └── specialized_agents/         # 전문 페르소나 기반 에이전트들
-│       ├── analyst_agent.py        # 📊 데이터 중심 분석가
-│       ├── empath_agent.py         # 💝 감정 공감가
-│       └── critic_agent.py         # 🔍 비판적 검토자
+│   ├── supervisor_agent.py         # 통합 오케스트레이터
+│   ├── debate_orchestrator.py      # 토론 레이어
+│   └── specialized_agents/         # ATE/ATSA/Validator/Moderator
 ├── tools/                          # 도구들
 │   ├── classifier_wrapper.py       # HuggingFace 모델 래퍼
 │   └── data_tools/                 # 데이터 처리 도구들
-├── experiments/                    # 실험 관련 (config run_mode 기본값, CLI --mode, env RUN_MODE로 override)
+├── experiments/                    # 실험 관련
 │   ├── configs/
 │   ├── results/
 │   └── scripts/                    # 실험 스크립트들
 ├── evaluation/                     # 평가 도구들
-├── guardrails/                     # 안전장치
-├── observability/                  # 관찰 가능성
-└── deployment/                     # 배포 관련
+└── scripts/                        # 리포트/메트릭/유틸
 ```
 
 ## 🤝 기여하기
@@ -217,8 +127,8 @@ kr-sentiment-agent/
 
 ## 📞 연락처
 
-- 프로젝트 링크: [https://github.com/your-repo/kr-sentiment-agent](https://github.com/your-repo/kr-sentiment-agent)
-- 이슈 리포트: [https://github.com/your-repo/kr-sentiment-agent/issues](https://github.com/your-repo/kr-sentiment-agent/issues)
+- 프로젝트 링크: [https://github.com/cloudnative-app/kr-sentimental-agent](https://github.com/cloudnative-app/kr-sentimental-agent)
+- 이슈 리포트: [https://github.com/cloudnative-app/kr-sentimental-agent/issues](https://github.com/cloudnative-app/kr-sentimental-agent/issues)
 ## Provider dry-run (real backbone quick check)
 
 ```bash
