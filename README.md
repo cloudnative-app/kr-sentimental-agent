@@ -1,7 +1,19 @@
 # KR Sentiment Agent
 
 한국어 **ABSA(Aspect-Based Sentiment Analysis)** 파이프라인입니다.  
-Stage1(ATE/ATSA/Validator) → **토론(Debate)** → Stage2 리뷰 → Moderator 규칙 결정 흐름으로 동작합니다.
+비전공자도 따라 할 수 있도록, 실행 순서와 결과 확인 방법을 단계별로 정리했습니다.  
+기본 흐름은 Stage1(ATE/ATSA/Validator) → **토론(Debate)** → Stage2 리뷰 → Moderator 규칙 결정입니다.
+
+## 👀 이 프로젝트가 하는 일 (한눈에 보기)
+
+1) **문장에서 "무엇(Aspect)"을 찾아냅니다**  
+   예: "서비스는 친절했지만 음식은 별로였어" → Aspect = 서비스, 음식  
+2) **각 Aspect의 감정을 판단합니다**  
+   예: 서비스=긍정, 음식=부정  
+3) **에이전트들이 토론합니다**  
+   분석가/공감가/비평가가 서로 반박·합의하고, 심판이 요약합니다.  
+4) **토론 내용을 반영해 다시 리뷰합니다**  
+   Stage2에서 보정/검증하고, Moderator가 최종 결론을 냅니다.
 
 ## ✨ 주요 특징
 
@@ -11,7 +23,7 @@ Stage1(ATE/ATSA/Validator) → **토론(Debate)** → Stage2 리뷰 → Moderato
 - 📊 **토론 매핑 품질 지표**: mapping coverage/실패 원인 집계
 - 🧪 **Ablation 지원**: debate override on/off 비교
 
-## 🚀 설치
+## 🚀 설치 (처음 1회)
 
 ```bash
 git clone https://github.com/cloudnative-app/kr-sentimental-agent.git
@@ -19,11 +31,12 @@ cd kr-sentiment-agent
 pip install -r requirements.txt
 ```
 
-## 🔑 환경 설정
+## 🔑 환경 설정 (처음 1회)
 
 ### 1) Backbone 설정
 
-기본값은 mock입니다. 실제 모델 사용 시 아래 환경 변수를 설정하세요.
+기본값은 **mock(가짜 모델)** 입니다.  
+실제 LLM을 쓰려면 아래 환경 변수를 설정하세요.
 
 ```bash
 # 예: OpenAI
@@ -32,23 +45,32 @@ BACKBONE_MODEL=gpt-4o-mini
 OPENAI_API_KEY=your_openai_api_key
 ```
 
+다른 Provider를 쓰고 싶다면:
 ```bash
-OPENAI_API_KEY=your_openai_api_key
+# Anthropic
+BACKBONE_PROVIDER=anthropic
 ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Google Gemini
+BACKBONE_PROVIDER=google
 GOOGLE_API_KEY=your_google_api_key
+GENAI_API_KEY=your_genai_api_key
 ```
 
-## 📊 사용법
-
-### 통합 파이프라인 실행 (권장)
+## ✅ 가장 쉬운 실행 방법 (권장)
 
 ```bash
 python scripts/run_pipeline.py --config experiments/configs/experiment_mini.yaml --run-id experiment_mini --mode proposed --profile smoke --with_metrics
 ```
 
-## 🧪 실험 실행
+실행 후 확인할 것:
+- 결과 파일: `results/experiment_mini/outputs.jsonl`
+- 점수카드: `results/experiment_mini/scorecards.jsonl`
+- 리포트 HTML: `reports/experiment_mini/metric_report.html`
 
-### 실험 실행 (run_experiments)
+## 🧪 실험 실행 (조금 더 자세히)
+
+### 1) 기본 실험 실행 (run_experiments)
 
 ```bash
 python experiments/scripts/run_experiments.py \
@@ -57,7 +79,7 @@ python experiments/scripts/run_experiments.py \
     --run-id demo_run
 ```
 
-### 스모크 테스트 (test_small.csv)
+### 2) 스모크 테스트 (test_small.csv)
 
 ```bash
 python experiments/scripts/run_experiments.py \
@@ -66,11 +88,39 @@ python experiments/scripts/run_experiments.py \
     --mode proposed
 ```
 
-### Debate override ablation (on/off 비교)
+### 3) Debate override ablation (on/off 비교)
 
 ```bash
 python scripts/run_debate_override_ablation.py --run-id debate_override_ablation --profile smoke
 ```
+
+실행 후 확인할 것:
+- 결과 폴더: `results/debate_override_ablation_*`
+- 리포트 폴더: `reports/debate_override_ablation_*`
+
+## 📂 결과를 읽는 방법 (비전공자용)
+
+### 1) `outputs.jsonl`
+각 문장에 대해 **최종 감정 결과**가 들어있습니다.  
+`debate` 항목에는 토론 요약이 포함됩니다.
+
+### 2) `scorecards.jsonl`
+각 샘플의 **상세 점수/매핑 품질**이 들어있습니다.  
+`debate.mapping_coverage`가 높을수록 토론-리뷰 연결이 잘 된 것입니다.
+
+### 3) `metric_report.html`
+브라우저로 열어 **전체 지표와 경고**를 확인합니다.  
+KPI 카드에 경고(LOW/HIGH)가 뜨면 개선이 필요합니다.
+
+## 🧭 용어 간단 설명
+
+- **ABSA**: Aspect(대상)별 감성 분석  
+- **ATE**: Aspect Extraction (대상을 찾는 단계)  
+- **ATSA**: Aspect-Target Sentiment Analysis (대상별 감정 판단)  
+- **Validator**: 구조 검증  
+- **Debate**: 에이전트 토론/합의 단계  
+- **Stage2 리뷰**: 토론 결과를 반영한 재검토  
+- **Moderator**: 최종 규칙 결정
 
 ## 🔧 실험 조건
 
@@ -99,6 +149,18 @@ python scripts/run_debate_override_ablation.py --run-id debate_override_ablation
 
 ## 📈 관찰/지표
 리포트 및 지표는 `scripts/scorecard_from_smoke.py`, `scripts/structural_error_aggregator.py`, `scripts/build_metric_report.py`로 생성됩니다.
+
+## 🆘 자주 겪는 문제
+
+1) **실행이 너무 빠르게 끝나요**
+- mock 모델일 수 있습니다. 실제 모델을 쓰려면 환경 변수를 설정하세요.
+
+2) **에러: leakage_guard**
+- `test_small.csv`처럼 라벨이 있는 데이터는 기본적으로 막힙니다.  
+  `experiments/configs/test_small.yaml`을 사용하세요.
+
+3) **HTML 리포트가 안 열려요**
+- 브라우저에서 `reports/.../metric_report.html`을 직접 열어보세요.
 
 ## 📁 프로젝트 구조
 
