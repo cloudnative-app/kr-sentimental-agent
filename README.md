@@ -66,6 +66,12 @@ python experiments/scripts/run_experiments.py \
     --mode proposed
 ```
 
+### Debate override ablation (on/off 비교)
+
+```bash
+python scripts/run_debate_override_ablation.py --run-id debate_override_ablation --profile smoke
+```
+
 ## 🔧 실험 조건
 
 ### 토론 및 Stage2 리뷰
