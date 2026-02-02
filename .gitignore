@@ -72,9 +72,7 @@ temp/
 
 # Execution outputs and cache (do not commit)
 venv/
-results/
-reports/
+
 .claude/
 .run_pipeline_temp/
-results/.run_pipeline_temp/
 
