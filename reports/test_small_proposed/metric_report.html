@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metric Report — test_small_proposed</title>
+<style>
+:root { --bg: #0f1419; --card: #1a2332; --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --green: #3fb950; --orange: #d29922; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1rem 2rem; line-height: 1.5; }
+h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.header-meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.header-meta span { margin-right: 1rem; }
+.section { margin-bottom: 2rem; }
+.section h2 { font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid var(--card); padding-bottom: 0.25rem; margin-bottom: 0.75rem; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.kpi-card { background: var(--card); padding: 0.75rem; border-radius: 6px; border-left: 3px solid transparent; }
+.kpi-card.kpi-ok { border-left-color: var(--green); }
+.kpi-card.kpi-warn { border-left-color: var(--orange); }
+.kpi-card.kpi-neutral { border-left-color: var(--muted); }
+.kpi-title { font-size: 0.75rem; color: var(--muted); }
+.kpi-value { font-size: 1.25rem; font-weight: 600; color: var(--green); }
+.kpi-card.kpi-warn .kpi-value { color: var(--orange); }
+.kpi-card.kpi-neutral .kpi-value { color: var(--muted); }
+.kpi-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+.legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend-swatch.ok { background: var(--green); }
+.legend-swatch.warn { background: var(--orange); }
+.legend-swatch.neutral { background: var(--muted); }
+.warn-box { border-left: 3px solid var(--orange); background: #1f1a12; padding: 0.5rem 0.75rem; border-radius: 6px; }
+.warn-box .header-meta { margin: 0.25rem 0; }
+.warn-box ul { margin: 0.25rem 0 0.25rem 1rem; padding: 0; }
+.conclusion { background: var(--card); padding: 1rem; border-radius: 6px; margin-top: 0.5rem; }
+.conclusion p { margin: 0.25rem 0; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.data-table th, .data-table td { text-align: left; padding: 0.4rem 0.6rem; border: 1px solid var(--card); }
+.data-table th { background: var(--card); color: var(--muted); }
+.bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+.bar-label { min-width: 180px; font-size: 0.9rem; }
+.bar-track { flex: 1; height: 12px; background: var(--card); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.bar-value { min-width: 4rem; font-size: 0.9rem; color: var(--muted); }
+.details-summary { cursor: pointer; padding: 0.5rem; background: var(--card); border-radius: 4px; margin-bottom: 0.5rem; }
+.details-content { padding: 0.5rem 0; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: var(--card); padding: 1rem; border-radius: 8px; min-width: 280px; max-width: 520px; }
+.modal-title { font-weight: 600; margin-bottom: 0.5rem; }
+.modal-close { margin-top: 0.75rem; }
+</style>
+</head>
+<body>
+<header>
+<h1>Metric Report</h1>
+<div class="header-meta">
+  <span><strong>Run ID</strong> test_small_proposed</span>
+  <span><strong>Date</strong> 2026-02-02T19:13:09.325449 UTC</span>
+  <span><strong>Profile</strong> smoke</span>
+  <span><strong>Provider/Model</strong> mock / mock-model</span>
+  <span><strong>Dataset</strong> test_small.csv</span>
+  <span><strong>N</strong> 6</span>
+  <span><strong>Schema</strong> scorecard_v2</span>
+</div>
+</header>
+
+<section class="section" id="executive">
+<h2>Executive Summary</h2>
+<div class="kpi-grid">
+<div class="kpi-card kpi-warn" title="낮을수록 구조 품질 실패가 많음. 0.80 미만이면 개선 권장." data-kpi-title="Structural PASS rate" data-kpi-tip="낮을수록 구조 품질 실패가 많음. 0.80 미만이면 개선 권장."><div class="kpi-title">Structural PASS rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="극성 충돌이 낮음" data-kpi-title="Polarity Conflict Rate" data-kpi-tip="극성 충돌이 낮음"><div class="kpi-title">Polarity Conflict Rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-warn" title="낮을수록 위험 해소가 부족. 0.30 미만이면 개선 권장." data-kpi-title="Risk Resolution Rate" data-kpi-tip="낮을수록 위험 해소가 부족. 0.30 미만이면 개선 권장."><div class="kpi-title">Risk Resolution Rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="정상 범위" data-kpi-title="Risk-Flagged Rate" data-kpi-tip="정상 범위"><div class="kpi-title">Risk-Flagged Rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-warn" title="낮을수록 제안 기반 변경이 적음. 0.25 미만이면 개선 권장." data-kpi-title="Guided Change Rate" data-kpi-tip="낮을수록 제안 기반 변경이 적음. 0.25 미만이면 개선 권장."><div class="kpi-title">Guided Change Rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="비가이드 드리프트가 낮음" data-kpi-title="Unguided Drift Rate" data-kpi-tip="비가이드 드리프트가 낮음"><div class="kpi-title">Unguided Drift Rate</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="coverage가 충분히 높음" data-kpi-title="Debate Mapping Coverage" data-kpi-tip="coverage가 충분히 높음"><div class="kpi-title">Debate Mapping Coverage</div><div class="kpi-value">100.0%</div></div><div class="kpi-card kpi-ok" title="실패 비율이 낮음" data-kpi-title="Debate Fail (no_match)" data-kpi-tip="실패 비율이 낮음"><div class="kpi-title">Debate Fail (no_match)</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="실패 비율이 낮음" data-kpi-title="Debate Fail (neutral)" data-kpi-tip="실패 비율이 낮음"><div class="kpi-title">Debate Fail (neutral)</div><div class="kpi-value">0.0%</div></div>
+</div>
+<div class="kpi-legend">
+  <span class="legend-item"><span class="legend-swatch ok"></span> 정상</span>
+  <span class="legend-item"><span class="legend-swatch warn"></span> 경고</span>
+  <span class="legend-item"><span class="legend-swatch neutral"></span> N/A</span>
+</div>
+<div class="conclusion">
+  <p><strong>이 Run의 결론</strong></p>
+  <p>본 Run은 샘플 수 N=6 기준, 구조 품질 통과율(Structural PASS) 0.0%, 극성 충돌률 0.0%, 위험 해소율 0.0%로 집계되었습니다.</p>
+  <p>Stage2 채택률 100.0%, 가이드 변경률 0.0%, 비가이드 드리프트 0.0%입니다.</p>
+  <p>추가 검증이 필요하면 Appendix의 샘플별 상세를 참고하세요.</p>
+</div>
+<p class="header-meta">HF-based polarity agreement is used as an external reference signal, not as a correctness criterion.</p>
+
+</section>
+
+<section class="section" id="rq1">
+<h2>RQ1: Structural Quality</h2>
+<h3>risk_id 빈도 (Top)</h3>
+<table class="data-table"><thead><tr><th>risk_id</th><th>count</th></tr></thead><tbody></tbody></table>
+<h3>Hard subset / Unsupported polarity · Hallucinated aspect</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Aspect Hallucination Rate</td><td>66.7%</td></tr><tr><td>Unsupported Polarity Rate</td><td>33.3%</td></tr></tbody></table>
+</section>
+
+<section class="section" id="rq3">
+<h2>RQ3: CBL Effectiveness</h2>
+<h3>Risk decomposition</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk-Flagged Rate</td><td>0.0%</td></tr><tr><td>Risk-Affected Change Rate</td><td>0.0%</td></tr><tr><td>Risk-Resolved-with-Change (rate)</td><td>0.0%</td></tr><tr><td>Risk-Resolved-without-Change (rate)</td><td>0.0%</td></tr><tr><td>Ignored Proposal Rate</td><td>0.0%</td></tr></tbody></table>
+<h3>Stage1 vs Stage2 요약</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk Resolution Rate</td><td>0.0%</td></tr><tr><td>Guided Change Rate</td><td>0.0%</td></tr><tr><td>Unguided Drift Rate</td><td>0.0%</td></tr><tr><td>Stage2 Adoption Rate</td><td>100.0%</td></tr></tbody></table>
+<h3>Debate mapping metrics</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Debate Mapping Coverage</td><td>100.0%</td></tr><tr><td>Debate Mapping Direct Rate</td><td>0.0%</td></tr><tr><td>Debate Mapping Fallback Rate</td><td>100.0%</td></tr><tr><td>Debate Mapping None Rate</td><td>0.0%</td></tr><tr><td>Debate Fail (no_aspects)</td><td>0.0%</td></tr><tr><td>Debate Fail (no_match)</td><td>0.0%</td></tr><tr><td>Debate Fail (neutral_stance)</td><td>0.0%</td></tr><tr><td>Debate Fail (fallback_used)</td><td>100.0%</td></tr></tbody></table>
+<p class="header-meta">Thresholds: coverage_warn=0.4, no_match_warn=0.4, neutral_warn=0.4.</p>
+<h3>Table 2: Triplet F1, ΔF1, Fix Rate, Break Rate, Net Gain (gold required)</h3>
+<p class="header-meta">Gold triplets not present; Table 2 (ΔF1, Fix Rate, Break Rate, Net Gain) requires labeled data.</p>
+<h3>Transition table (correctness snapshot)</h3>
+<p class="header-meta">Correctness snapshot not present in scorecards; transition table requires label experiment (correctness or triplet_correctness).</p>
+
+<h3>Adoption/Reject breakdown (Rule A~D)</h3>
+<table class="data-table"><thead><tr><th>Rule</th><th>Count</th></tr></thead><tbody><tr><td>RuleA</td><td>0</td></tr><tr><td>RuleB</td><td>6</td></tr><tr><td>RuleM</td><td>0</td></tr><tr><td>RuleD</td><td>0</td></tr></tbody></table>
+</section>
+
+<section class="section" id="rq2">
+<h2>RQ2: Reliability & Stability</h2>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Self-consistency (exact)</td><td>100.0%</td></tr><tr><td>Risk-set consistency</td><td>100.0%</td></tr></tbody></table>
+
+</section>
+
+<section class="section" id="efficiency">
+<h2>Efficiency / QA</h2>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Latency p50 (ms)</td><td>52</td></tr><tr><td>Latency p95 (ms)</td><td>160</td></tr><tr><td>Gate status</td><td>PASS: 6</td></tr><tr><td>Parse failure rate</td><td>0.0%</td></tr><tr><td>Generate failure rate</td><td>0.0%</td></tr><tr><td>Fallback used rate</td><td>0.0%</td></tr></tbody></table>
+</section>
+
+<section class="section" id="appendix">
+<h2>Appendix</h2>
+<h3>HF metrics (from structural_metrics.csv)</h3>
+<p class="header-meta">HF-based polarity agreement is used as an external reference signal, not as a correctness criterion.</p>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>HF Polarity Disagreement Rate</td><td>N/A</td></tr><tr><td>HF Disagreement Coverage of Structural Risks</td><td>N/A</td></tr><tr><td>Conditional Improvement Gain (HF-disagree)</td><td>N/A</td></tr><tr><td>Conditional Improvement Gain (HF-agree)</td><td>N/A</td></tr></tbody></table>
+<p class="header-meta">Above: values from structural_metrics.csv (structural_error_aggregator). HF is an external reference signal, not a correctness criterion.</p>
+<h3>Error analysis: HF facet (Overall / HF-agree / HF-disagree)</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Overall</th><th>HF-agree</th><th>HF-disagree</th></tr></thead><tbody><tr><td>Risk Resolution Rate</td><td>0.0%</td><td>N/A</td><td>N/A</td></tr><tr><td>Stage2 Adoption Rate</td><td>100.0%</td><td>N/A</td><td>N/A</td></tr><tr><td>Polarity Conflict Rate</td><td>0.0%</td><td>N/A</td><td>N/A</td></tr></tbody></table>
+<p class="header-meta">HF-agree / HF-disagree: N/A (aux_signals.hf not present in this run). Overall uses structural_metrics.csv when available. To populate HF columns, enable pipeline aux_hf and provide HF checkpoint.</p>
+<details class="details-summary">
+<summary>Top cases (6개) — 접기/펼치기</summary>
+<div class="details-content"><table class="data-table"><thead><tr><th>text_id</th><th>input (preview)</th><th>final_label</th><th>selected_stage</th><th>latency</th></tr></thead><tbody><tr><td>test_small:0</td><td>네가 좋아하는 해외여행 가져왔어</td><td>positive</td><td>stage2</td><td>113 ms</td></tr><tr><td>test_small:1</td><td>크</td><td>neutral</td><td>stage2</td><td>40 ms</td></tr><tr><td>test_small:2</td><td>고마워</td><td>neutral</td><td>stage2</td><td>32 ms</td></tr><tr><td>test_small:0</td><td>네가 좋아하는 해외여행 가져왔어</td><td>positive</td><td>stage2</td><td>52 ms</td></tr><tr><td>test_small:1</td><td>크</td><td>neutral</td><td>stage2</td><td>40 ms</td></tr><tr><td>test_small:2</td><td>고마워</td><td>neutral</td><td>stage2</td><td>160 ms</td></tr></tbody></table></div>
+</details>
+<p class="header-meta">config_hash (short): 65c27eafdf439955, prompt_hash (short): 40e7c5fb679d, schema: scorecard_v2</p>
+</section>
+<div id="kpi-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <div class="modal-title" id="kpi-modal-title">KPI</div>
+    <div id="kpi-modal-body">설명</div>
+    <button class="modal-close" id="kpi-modal-close">닫기</button>
+  </div>
+</div>
+<script>
+  const modal = document.getElementById("kpi-modal");
+  const modalTitle = document.getElementById("kpi-modal-title");
+  const modalBody = document.getElementById("kpi-modal-body");
+  const closeBtn = document.getElementById("kpi-modal-close");
+  document.querySelectorAll(".kpi-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      modalTitle.textContent = card.dataset.kpiTitle || "KPI";
+      modalBody.textContent = card.dataset.kpiTip || "설명 없음";
+      modal.classList.add("active");
+    });
+  });
+  closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.remove("active");
+  });
+</script>
+</body>
+</html>

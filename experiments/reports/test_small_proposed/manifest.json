@@ -1,0 +1,103 @@
+{
+  "manifest_version": 2,
+  "run_id": "test_small_proposed",
+  "timestamp_utc": "2026-02-02T19:13:09.325449Z",
+  "git_commit": "56f1b779b2eea94f7b8b31605017924ea02db04e",
+  "config_path": "experiments/configs/test_small.yaml",
+  "cfg_hash": "65c27eafdf4399552c1c71e6cbe7f500180eb4a0fcc2ea3ec13e4e6ef28298fb",
+  "cfg_canonical": "{\"backbone\": {\"model\": \"mock-model\", \"provider\": \"mock\"}, \"data\": {\"allowed_roots\": [\"data\", \"experiments/data\", \"experiments/configs/datasets\"], \"dataset_root\": \".\", \"input_format\": \"csv\", \"label_column\": \"label\", \"language_code\": \"ko\", \"max_length\": 192, \"target_column\": null, \"test_file\": \"data/test_small.csv\", \"text_column\": \"text\", \"train_file\": \"data/test_small.csv\", \"valid_file\": \"data/test_small.csv\"}, \"data_roles\": {\"blind_set\": [\"test\"], \"demo_pool\": [\"train\"], \"report_set\": [\"valid\"], \"tuning_pool\": []}, \"demo\": {\"enabled_for\": [], \"force_for_proposed\": false, \"k\": 0, \"seed\": 42}, \"pipeline\": {\"enable_debate\": true, \"enable_moderator\": true, \"enable_stage2\": true, \"enable_validator\": true, \"leakage_guard\": false}, \"run_mode\": \"proposed\", \"run_purpose\": \"smoke\"}",
+  "purpose": "smoke",
+  "backbone": {
+    "provider": "mock",
+    "model": "mock-model",
+    "temperature": null,
+    "max_tokens": null,
+    "seed": null
+  },
+  "prompt_versions": {
+    "ate_stage1": "40e7c5fb679d5a8246ab64bbaeb0a85446c7d02bdd466ce4db37e6445e9db1ce",
+    "ate_stage2": "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "atsa_stage1": "987e9bbe344d8c1bc7026a555e361198aa22bd779ef359cc4bd4625a42ae75f6",
+    "atsa_stage2": "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "bl1": "c92dc655c021be2d6bac0b8af077de64ed8a504604a53afb2bfcbfa84fd0cd1b",
+    "bl2": "c40ba93927585df1ef0084cc274dbb514bf23f558ea64a5956a157e485aa3284",
+    "debate_judge": "3d89485913f21b66c73ee42dd740cfe0d9d5df55a5c19b2695229230e5944abe",
+    "debate_speaker": "4c9a60d16c5305df88c4a687cc849fab9a3dba52c5154c5989e502d3a5fbabfb",
+    "moderator": "741c5c29855fa1fac2573ab5f7cf52d4b33e05ef80ac53db9da8adb5a7af1f0a",
+    "validator_stage1": "7cd74e36c329bc4b7119ac3fe4c89969ffc8454e1945b2d944a98cbe8e155ba1",
+    "validator_stage2": "5fc2e4a6f1ffb47ab27459715b2cdf5b2b2864d2a49afbe594ac7b521aa28768"
+  },
+  "patterns": {
+    "ko": {
+      "path": "resources\\patterns\\ko.json",
+      "sha256": "d65d2c46e47231588b9ce176054a96ccf003e201d67b292866f76f99c7f03f0c"
+    }
+  },
+  "languages": [
+    "ko"
+  ],
+  "allowlist": {
+    "path": null,
+    "sha256": null,
+    "version_id": null
+  },
+  "merging_rule": {
+    "path": null,
+    "sha256": null
+  },
+  "dataset": {
+    "input_format": "csv",
+    "paths": {
+      "train_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "valid_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "test_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv"
+    },
+    "split_counts": {
+      "train": 0,
+      "valid": 3,
+      "test": 3
+    },
+    "resolved_paths": {
+      "train_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "valid_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "test_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv"
+    },
+    "allowed_roots": [
+      "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data",
+      "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\experiments\\data",
+      "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\experiments\\configs\\datasets"
+    ],
+    "split_files": {
+      "train": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "valid": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv",
+      "test": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent2\\data\\test_small.csv"
+    },
+    "split_files_all_same": true,
+    "processing_splits": [
+      "test",
+      "valid"
+    ],
+    "processing_count": 6,
+    "splits_loaded": [
+      "valid",
+      "test"
+    ]
+  },
+  "mode": "proposed",
+  "blocked_path_error": null,
+  "integrity": {},
+  "data_roles": {
+    "demo_pool": [
+      "train"
+    ],
+    "tuning_pool": [],
+    "report_set": [
+      "valid"
+    ],
+    "blind_set": [
+      "test"
+    ],
+    "report_sources": null,
+    "blind_sources": null
+  }
+}
