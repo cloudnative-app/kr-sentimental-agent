@@ -63,8 +63,11 @@ class ATEAgent:
         demos: list[str] | None = None,
         language_code: str = "unknown",
         domain_id: str = "unknown",
+        extra_context: str | None = None,
     ) -> StructuredResult[AspectExtractionStage2Schema]:
         system_prompt = load_prompt("ate_stage2") + f"\n\nStage1 JSON:\n{stage1_output.model_dump_json()}\nValidator JSON:\n{getattr(validator_output, 'model_dump_json', lambda: '')()}"
+        if extra_context:
+            system_prompt += f"\n\nDebate Review Context JSON:\n{extra_context}"
         print(f"[ATE DEBUG] stage2 text_id={text_id}, prompt_len={len(system_prompt)}", file=sys.stderr)
         spec = PromptSpec(
             system=[system_prompt],

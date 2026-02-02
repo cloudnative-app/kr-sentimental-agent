@@ -11,7 +11,8 @@ Validator가 제기한 '구조적 위험(부정, 대조, 반어 등)'을 검토�
       "aspect_ref": "속성명",
       "action": "maintain | flip_polarity | reduce_confidence",
       "revised_polarity": "...",
-      "reason": "Validator의 대조 가설 수용하여 부정으로 변경"
+      "reason": "Validator의 대조 가설 수용하여 부정으로 변경",
+      "provenance": "source:<speaker>/<stance> (Debate Review Context가 있으면 사용)"
     }
   ]
 }

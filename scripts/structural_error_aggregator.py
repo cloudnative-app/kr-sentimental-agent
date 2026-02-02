@@ -473,6 +473,36 @@ def aggregate_single_run(rows: List[Dict[str, Any]], profile_filter: Optional[st
     conditional_improvement_gain_hf_disagree = None  # requires gold/triplet F1
     conditional_improvement_gain_hf_agree = None  # requires gold/triplet F1
 
+    debate_coverages: List[float] = []
+    debate_direct_rates: List[float] = []
+    debate_fallback_rates: List[float] = []
+    debate_none_rates: List[float] = []
+    debate_total_rebuttals = 0
+    debate_fail_counts = {"no_aspects": 0, "no_match": 0, "neutral_stance": 0, "fallback_used": 0}
+    debate_override_applied = 0
+    debate_override_skipped_low = 0
+    debate_override_skipped_conflict = 0
+    for r in rows:
+        debate = r.get("debate") or {}
+        mapping_stats = debate.get("mapping_stats") or (r.get("meta") or {}).get("debate_mapping_stats") or {}
+        total = sum(int(v) for v in mapping_stats.values()) if mapping_stats else 0
+        if total > 0:
+            direct = int(mapping_stats.get("direct") or 0)
+            fallback = int(mapping_stats.get("fallback") or 0)
+            none = int(mapping_stats.get("none") or 0)
+            debate_coverages.append((direct + fallback) / total)
+            debate_direct_rates.append(direct / total)
+            debate_fallback_rates.append(fallback / total)
+            debate_none_rates.append(none / total)
+            debate_total_rebuttals += total
+            fail = debate.get("mapping_fail_reasons") or (r.get("meta") or {}).get("debate_mapping_fail_reasons") or {}
+            for key in list(debate_fail_counts.keys()):
+                debate_fail_counts[key] += int(fail.get(key) or 0)
+        override = debate.get("override_stats") or (r.get("meta") or {}).get("debate_override_stats") or {}
+        debate_override_applied += int(override.get("applied") or 0)
+        debate_override_skipped_low += int(override.get("skipped_low_signal") or 0)
+        debate_override_skipped_conflict += int(override.get("skipped_conflict") or 0)
+
     out = {
         "n": N,
         "aspect_hallucination_rate": _rate(hallucinated, N),
@@ -493,6 +523,17 @@ def aggregate_single_run(rows: List[Dict[str, Any]], profile_filter: Optional[st
         "hf_disagreement_coverage_of_structural_risks": hf_disagreement_coverage_of_structural_risks_rate,
         "conditional_improvement_gain_hf_disagree": conditional_improvement_gain_hf_disagree,
         "conditional_improvement_gain_hf_agree": conditional_improvement_gain_hf_agree,
+        "debate_mapping_coverage": sum(debate_coverages) / len(debate_coverages) if debate_coverages else None,
+        "debate_mapping_direct_rate": sum(debate_direct_rates) / len(debate_direct_rates) if debate_direct_rates else None,
+        "debate_mapping_fallback_rate": sum(debate_fallback_rates) / len(debate_fallback_rates) if debate_fallback_rates else None,
+        "debate_mapping_none_rate": sum(debate_none_rates) / len(debate_none_rates) if debate_none_rates else None,
+        "debate_fail_no_aspects_rate": _rate(debate_fail_counts["no_aspects"], debate_total_rebuttals) if debate_total_rebuttals else None,
+        "debate_fail_no_match_rate": _rate(debate_fail_counts["no_match"], debate_total_rebuttals) if debate_total_rebuttals else None,
+        "debate_fail_neutral_stance_rate": _rate(debate_fail_counts["neutral_stance"], debate_total_rebuttals) if debate_total_rebuttals else None,
+        "debate_fail_fallback_used_rate": _rate(debate_fail_counts["fallback_used"], debate_total_rebuttals) if debate_total_rebuttals else None,
+        "debate_override_applied": debate_override_applied,
+        "debate_override_skipped_low_signal": debate_override_skipped_low,
+        "debate_override_skipped_conflict": debate_override_skipped_conflict,
     }
     # Gold-based F1 / correction metrics (for aggregate_seed_metrics mean±std)
     correction = compute_stage2_correction_metrics(rows)

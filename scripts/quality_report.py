@@ -166,6 +166,22 @@ def collect_metrics_from_scorecards(cards_path: Path, bucket_name: str) -> Dict[
         atsa = card.get("atsa_score", {})
         policy = card.get("stage_policy_score", {})
         summary = card.get("summary", {})
+        debate = card.get("debate") or {}
+        mapping_stats = debate.get("mapping_stats") or (card.get("meta") or {}).get("debate_mapping_stats") or {}
+        mapping_fail = debate.get("mapping_fail_reasons") or (card.get("meta") or {}).get("debate_mapping_fail_reasons") or {}
+        total_maps = sum(int(v) for v in mapping_stats.values()) if mapping_stats else 0
+        if total_maps > 0:
+            direct = int(mapping_stats.get("direct") or 0)
+            fallback = int(mapping_stats.get("fallback") or 0)
+            none = int(mapping_stats.get("none") or 0)
+            metric_store["debate_mapping_coverage"].append((direct + fallback) / total_maps)
+            metric_store["debate_mapping_direct_rate"].append(direct / total_maps)
+            metric_store["debate_mapping_fallback_rate"].append(fallback / total_maps)
+            metric_store["debate_mapping_none_rate"].append(none / total_maps)
+            metric_store["debate_fail_no_aspects_rate"].append(int(mapping_fail.get("no_aspects") or 0) / total_maps)
+            metric_store["debate_fail_no_match_rate"].append(int(mapping_fail.get("no_match") or 0) / total_maps)
+            metric_store["debate_fail_neutral_stance_rate"].append(int(mapping_fail.get("neutral_stance") or 0) / total_maps)
+            metric_store["debate_fail_fallback_used_rate"].append(int(mapping_fail.get("fallback_used") or 0) / total_maps)
 
         metric_store["confidence"].append(meta_conf)
         # Skip None (NA) metrics to keep averages meaningful for targetless cases
@@ -226,6 +242,14 @@ def collect_metrics_from_scorecards(cards_path: Path, bucket_name: str) -> Dict[
         "contrast_sentence_rate": (contrast_total / len(bucket_records)) if bucket_records else 0.0,
         "contrast_aspect_coverage_rate": (contrast_with_two_aspects / contrast_total) if contrast_total else 0.0,
         "contrast_polarity_split_rate": (contrast_with_polarity_split / contrast_with_two_aspects) if contrast_with_two_aspects else 0.0,
+        "debate_mapping_coverage": agg_mean_std(metric_store["debate_mapping_coverage"]),
+        "debate_mapping_direct_rate": agg_mean_std(metric_store["debate_mapping_direct_rate"]),
+        "debate_mapping_fallback_rate": agg_mean_std(metric_store["debate_mapping_fallback_rate"]),
+        "debate_mapping_none_rate": agg_mean_std(metric_store["debate_mapping_none_rate"]),
+        "debate_fail_no_aspects_rate": agg_mean_std(metric_store["debate_fail_no_aspects_rate"]),
+        "debate_fail_no_match_rate": agg_mean_std(metric_store["debate_fail_no_match_rate"]),
+        "debate_fail_neutral_stance_rate": agg_mean_std(metric_store["debate_fail_neutral_stance_rate"]),
+        "debate_fail_fallback_used_rate": agg_mean_std(metric_store["debate_fail_fallback_used_rate"]),
     }
     return stats
 
@@ -347,6 +371,110 @@ def write_overall_table(stats: Dict[str, Any], out_path: Path, backup: bool):
                 f"{stats['pass_rate']:.4f}",
                 f"{stats['pass_targeted_rate']:.4f}",
                 f"{stats['pass_targetless_rate']:.4f}",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_mapping_coverage",
+                f"{stats['debate_mapping_coverage'][0]:.4f}",
+                f"{stats['debate_mapping_coverage'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_mapping_direct_rate",
+                f"{stats['debate_mapping_direct_rate'][0]:.4f}",
+                f"{stats['debate_mapping_direct_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_mapping_fallback_rate",
+                f"{stats['debate_mapping_fallback_rate'][0]:.4f}",
+                f"{stats['debate_mapping_fallback_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_mapping_none_rate",
+                f"{stats['debate_mapping_none_rate'][0]:.4f}",
+                f"{stats['debate_mapping_none_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_fail_no_aspects_rate",
+                f"{stats['debate_fail_no_aspects_rate'][0]:.4f}",
+                f"{stats['debate_fail_no_aspects_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_fail_no_match_rate",
+                f"{stats['debate_fail_no_match_rate'][0]:.4f}",
+                f"{stats['debate_fail_no_match_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_fail_neutral_stance_rate",
+                f"{stats['debate_fail_neutral_stance_rate'][0]:.4f}",
+                f"{stats['debate_fail_neutral_stance_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
+                stats["n_targeted"],
+                stats["n_targetless"],
+            ]
+        )
+        writer.writerow(
+            [
+                "debate_fail_fallback_used_rate",
+                f"{stats['debate_fail_fallback_used_rate'][0]:.4f}",
+                f"{stats['debate_fail_fallback_used_rate'][1]:.4f}",
+                stats["n"],
+                f"{stats['pass_rate']:.4f}",
+                "",
+                "",
                 stats["n_targeted"],
                 stats["n_targetless"],
             ]
@@ -480,6 +608,118 @@ def write_bucket_table(by_bucket: Dict[str, Dict[str, Any]], out_path: Path, bac
                     f"{stats['pass_rate']:.4f}",
                     f"{stats['pass_targeted_rate']:.4f}",
                     f"{stats['pass_targetless_rate']:.4f}",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_mapping_coverage",
+                    f"{stats['debate_mapping_coverage'][0]:.4f}",
+                    f"{stats['debate_mapping_coverage'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_mapping_direct_rate",
+                    f"{stats['debate_mapping_direct_rate'][0]:.4f}",
+                    f"{stats['debate_mapping_direct_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_mapping_fallback_rate",
+                    f"{stats['debate_mapping_fallback_rate'][0]:.4f}",
+                    f"{stats['debate_mapping_fallback_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_mapping_none_rate",
+                    f"{stats['debate_mapping_none_rate'][0]:.4f}",
+                    f"{stats['debate_mapping_none_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_fail_no_aspects_rate",
+                    f"{stats['debate_fail_no_aspects_rate'][0]:.4f}",
+                    f"{stats['debate_fail_no_aspects_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_fail_no_match_rate",
+                    f"{stats['debate_fail_no_match_rate'][0]:.4f}",
+                    f"{stats['debate_fail_no_match_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_fail_neutral_stance_rate",
+                    f"{stats['debate_fail_neutral_stance_rate'][0]:.4f}",
+                    f"{stats['debate_fail_neutral_stance_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
+                    stats["n_targeted"],
+                    stats["n_targetless"],
+                ]
+            )
+            writer.writerow(
+                [
+                    bucket,
+                    "debate_fail_fallback_used_rate",
+                    f"{stats['debate_fail_fallback_used_rate'][0]:.4f}",
+                    f"{stats['debate_fail_fallback_used_rate'][1]:.4f}",
+                    stats["n"],
+                    f"{stats['pass_rate']:.4f}",
+                    "",
+                    "",
                     stats["n_targeted"],
                     stats["n_targetless"],
                 ]

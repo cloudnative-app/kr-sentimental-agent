@@ -305,6 +305,15 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
         "demo_k": meta_in.get("demo_k"),
         "demo_seed": meta_in.get("demo_seed"),
     }
+    debate_ctx = meta_in.get("debate_review_context") or {}
+    debate_override_stats = meta_in.get("debate_override_stats") or {}
+    mapping_stats = debate_ctx.get("mapping_stats") or {}
+    mapping_fail_reasons = debate_ctx.get("mapping_fail_reasons") or {}
+    total_maps = sum(int(v) for v in mapping_stats.values()) if mapping_stats else 0
+    direct = int(mapping_stats.get("direct") or 0)
+    fallback = int(mapping_stats.get("fallback") or 0)
+    coverage = (direct + fallback) / total_maps if total_maps > 0 else None
+
     stage1_ate = entry.get("stage1_ate", {}) or {}
     stage1_atsa = entry.get("stage1_atsa", {}) or {}
 
@@ -404,6 +413,16 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
             "manifest_path": manifest_path,
             "cfg_hash": cfg_hash,
             "profile": profile,
+            "debate_mapping_stats": mapping_stats,
+            "debate_mapping_coverage": coverage,
+            "debate_mapping_fail_reasons": mapping_fail_reasons,
+            "debate_override_stats": debate_override_stats,
+        },
+        "debate": {
+            "mapping_stats": mapping_stats,
+            "mapping_coverage": coverage,
+            "mapping_fail_reasons": mapping_fail_reasons,
+            "override_stats": debate_override_stats,
         },
         "ate": ate,
         "atsa": atsa,

@@ -1,0 +1,5 @@
+{
+  "min_total": 1.6,
+  "min_margin": 0.8,
+  "min_target_conf": 0.7
+}

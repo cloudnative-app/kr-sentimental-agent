@@ -1,0 +1,37 @@
+run_mode: proposed
+run_purpose: smoke
+pipeline:
+  enable_stage2: true
+  enable_validator: true
+  enable_moderator: true
+  enable_debate: true
+  leakage_guard: false
+debate_override:
+  min_total: 1.6
+  min_margin: 0.8
+  min_target_conf: 0.7
+data:
+  dataset_root: .
+  allowed_roots: ["data", "experiments/data", "experiments/configs/datasets"]
+  input_format: csv
+  train_file: data/test_small.csv
+  valid_file: data/test_small.csv
+  test_file: data/test_small.csv
+  language_code: ko
+  text_column: text
+  label_column: label
+  target_column: null
+  max_length: 192
+backbone:
+  provider: mock
+  model: mock-model
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: ["test"]
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false

@@ -27,6 +27,7 @@ class AspectExtractionReviewItem(BaseModel):
     action: str = Field(default="keep", description="keep|revise_span|remove")
     revised_span: Optional[Span] = None
     reason: str = Field(default="", description="Validator 지적 반영")
+    provenance: Optional[str] = Field(default=None, description="source:<speaker>/<stance>")
 
 
 class AspectExtractionStage1Schema(BaseModel):
@@ -58,6 +59,7 @@ class SentimentReviewItem(BaseModel):
     action: str = Field(default="maintain")
     revised_polarity: Optional[str] = None
     reason: str = Field(default="")
+    provenance: Optional[str] = Field(default=None, description="source:<speaker>/<stance>")
 
 
 class AspectSentimentStage1Schema(BaseModel):
@@ -173,3 +175,41 @@ class ModeratorOutput(BaseModel):
     applied_rules: List[str] = Field(default_factory=list, description="e.g. ['RuleA', 'RuleC'].")
     decision_reason: str = Field(default="", description="Alias/summary of rationale for aggregation.")
     arbiter_flags: ArbiterFlags = Field(default_factory=ArbiterFlags)
+
+
+# Debate layer (cross-agent argumentation)
+class DebatePersona(BaseModel):
+    name: str = Field(default="")
+    stance: str = Field(default="pro", description="pro|con|neutral")
+    role: str = Field(default="", description="persona role description")
+    style: str = Field(default="", description="tone/style guidance")
+    goal: str = Field(default="", description="debate goal for this persona")
+
+
+class DebateTurn(BaseModel):
+    speaker: str = Field(default="", description="Persona name")
+    stance: str = Field(default="pro", description="pro|con|neutral")
+    planning: str = Field(default="", description="Plan before speaking")
+    reflection: str = Field(default="", description="Self-check for logic/consistency")
+    message: str = Field(default="", description="Final utterance delivered to the debate")
+    key_points: List[str] = Field(default_factory=list, description="Atomic claims or rebuttals")
+
+
+class DebateRound(BaseModel):
+    round_index: int = Field(default=1, ge=1)
+    turns: List[DebateTurn] = Field(default_factory=list)
+
+
+class DebateSummary(BaseModel):
+    winner: Optional[str] = Field(default=None, description="Winner persona name or None")
+    consensus: Optional[str] = Field(default=None, description="Consensus statement if any")
+    key_agreements: List[str] = Field(default_factory=list)
+    key_disagreements: List[str] = Field(default_factory=list)
+    rationale: str = Field(default="", description="Why this summary was chosen")
+
+
+class DebateOutput(BaseModel):
+    topic: str = Field(default="")
+    personas: Dict[str, DebatePersona] = Field(default_factory=dict)
+    rounds: List[DebateRound] = Field(default_factory=list)
+    summary: DebateSummary = Field(default_factory=DebateSummary)

@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DEBATE_THRESHOLDS_PATH = PROJECT_ROOT / "experiments" / "configs" / "debate_thresholds.json"
 
 # Triplet = (aspect, opinion, polarity) normalized strings
 Triplet = Tuple[str, str, str]
@@ -35,6 +36,27 @@ def load_json(path: Path) -> Dict[str, Any]:
         return {}
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_debate_thresholds() -> Dict[str, float]:
+    defaults = {
+        "coverage_warn": 0.4,
+        "coverage_high": 0.25,
+        "no_match_warn": 0.4,
+        "no_match_high": 0.6,
+        "neutral_warn": 0.4,
+        "neutral_high": 0.6,
+    }
+    data = load_json(DEBATE_THRESHOLDS_PATH)
+    if not data:
+        return defaults
+    out = dict(defaults)
+    for k, v in data.items():
+        try:
+            out[k] = float(v)
+        except (TypeError, ValueError):
+            continue
+    return out
 
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -492,6 +514,9 @@ def build_html(
     if triplet_f1_s2_kpi is None and n_gold_kpi:
         triplet_f1_s2_kpi = _to_float(stage2_correction.get("triplet_f1_s2"))
 
+    debate_cov_kpi = _to_float(struct_metrics.get("debate_mapping_coverage"))
+    debate_fail_no_match_kpi = _to_float(struct_metrics.get("debate_fail_no_match_rate"))
+    debate_fail_neutral_kpi = _to_float(struct_metrics.get("debate_fail_neutral_stance_rate"))
     kpi_cards = [
         ("Structural PASS rate", structural_pass, 1.0),
         ("Polarity Conflict Rate", pol_conf if pol_conf is not None else 0, 1.0),
@@ -500,13 +525,76 @@ def build_html(
         ("Guided Change Rate", guided if guided is not None else 0, 1.0),
         ("Unguided Drift Rate", unguided if unguided is not None else 0, 1.0),
     ]
+    if debate_cov_kpi is not None:
+        kpi_cards.append(("Debate Mapping Coverage", debate_cov_kpi, 1.0))
+    if debate_fail_no_match_kpi is not None:
+        kpi_cards.append(("Debate Fail (no_match)", debate_fail_no_match_kpi, 1.0))
+    if debate_fail_neutral_kpi is not None:
+        kpi_cards.append(("Debate Fail (neutral)", debate_fail_neutral_kpi, 1.0))
     if n_gold_kpi and triplet_f1_s2_kpi is not None:
         kpi_cards.append(("Triplet F1 (Stage2+Mod)", triplet_f1_s2_kpi, 1.0))
+
+    thresholds = load_debate_thresholds()
+
+    def _kpi_class_and_tip(label: str, value: Optional[float]) -> Tuple[str, str]:
+        if value is None:
+            return "kpi-neutral", "N/A"
+        if label == "Structural PASS rate":
+            return ("kpi-warn", "낮을수록 구조 품질 실패가 많음. 0.80 미만이면 개선 권장.") if value < 0.8 else ("kpi-ok", "구조 품질 통과율이 양호함")
+        if label == "Polarity Conflict Rate":
+            return ("kpi-warn", "높을수록 Stage1/2 극성 충돌이 잦음. 0.15 초과 시 점검 권장.") if value > 0.15 else ("kpi-ok", "극성 충돌이 낮음")
+        if label == "Risk Resolution Rate":
+            return ("kpi-warn", "낮을수록 위험 해소가 부족. 0.30 미만이면 개선 권장.") if value < 0.3 else ("kpi-ok", "위험 해소가 충분함")
+        if label == "Guided Change Rate":
+            return ("kpi-warn", "낮을수록 제안 기반 변경이 적음. 0.25 미만이면 개선 권장.") if value < 0.25 else ("kpi-ok", "가이드 변경이 활성화됨")
+        if label == "Unguided Drift Rate":
+            return ("kpi-warn", "높을수록 비가이드 변경이 많음. 0.25 초과 시 점검 권장.") if value > 0.25 else ("kpi-ok", "비가이드 드리프트가 낮음")
+        if label == "Debate Mapping Coverage":
+            return ("kpi-warn", "낮을수록 매핑 품질 저하. 0.40 미만이면 개선 권장.") if value < thresholds["coverage_warn"] else ("kpi-ok", "coverage가 충분히 높음")
+        if label.startswith("Debate Fail"):
+            return ("kpi-warn", "값이 높으면 매핑 실패가 잦음. 0.40 초과 시 개선 권장.") if value > thresholds["no_match_warn"] else ("kpi-ok", "실패 비율이 낮음")
+        return "kpi-ok", "정상 범위"
 
     kpi_html = ""
     for label, val, max_v in kpi_cards:
         v = val if val is not None else 0
-        kpi_html += f'<div class="kpi-card"><div class="kpi-title">{label}</div><div class="kpi-value">{_pct(v) if 0 <= v <= 1 else _num(v)}</div></div>'
+        cls, tip = _kpi_class_and_tip(label, val)
+        kpi_html += (
+            f'<div class="kpi-card {cls}" title="{tip}" data-kpi-title="{label}" data-kpi-tip="{tip}">'
+            f'<div class="kpi-title">{label}</div>'
+            f'<div class="kpi-value">{_pct(v) if 0 <= v <= 1 else _num(v)}</div>'
+            f"</div>"
+        )
+
+    def _warn_level(flag: bool) -> str:
+        return "HIGH" if flag else "LOW"
+
+    def _suggestions() -> List[str]:
+        tips: List[str] = []
+        if debate_cov_kpi is not None and debate_cov_kpi < thresholds["coverage_warn"]:
+            tips.append("Coverage↑: 토론 프롬프트에 aspect_terms 명시, synonym_hints 확장, aspect_token_regex 점검")
+        if debate_fail_no_match_kpi is not None and debate_fail_no_match_kpi > thresholds["no_match_warn"]:
+            tips.append("No-match↓: aspect_synonyms 보강, 토론 발언에 aspect_ref 명시 유도")
+        if debate_fail_neutral_kpi is not None and debate_fail_neutral_kpi > thresholds["neutral_warn"]:
+            tips.append("Neutral↓: persona stance 강화, critic/empath 발언 지침 강화")
+        return tips
+
+    debate_warn = ""
+    if debate_cov_kpi is not None and debate_cov_kpi < thresholds["coverage_warn"]:
+        lvl = _warn_level(debate_cov_kpi < thresholds["coverage_high"])
+        debate_warn += f"<p class=\"header-meta\">[WARN/{lvl}] Debate mapping coverage is low; review debate prompts or synonym hints.</p>"
+    if debate_fail_no_match_kpi is not None and debate_fail_no_match_kpi > thresholds["no_match_warn"]:
+        lvl = _warn_level(debate_fail_no_match_kpi > thresholds["no_match_high"])
+        debate_warn += f"<p class=\"header-meta\">[WARN/{lvl}] Debate mapping no_match rate is high; consider expanding aspect synonyms.</p>"
+    if debate_fail_neutral_kpi is not None and debate_fail_neutral_kpi > thresholds["neutral_warn"]:
+        lvl = _warn_level(debate_fail_neutral_kpi > thresholds["neutral_high"])
+        debate_warn += f"<p class=\"header-meta\">[WARN/{lvl}] Debate mapping neutral_stance rate is high; consider sharper persona stance.</p>"
+    if debate_warn:
+        tips = _suggestions()
+        tips_html = ""
+        if tips:
+            tips_html = "<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>"
+        debate_warn = f"<div class=\"warn-box\">{debate_warn}{tips_html}</div>"
 
     # HF: external reference only (not correctness criterion). HF-agree/disagree for Appendix / error analysis only.
     hf_sentence = "HF-based polarity agreement is used as an external reference signal, not as a correctness criterion."
@@ -590,6 +678,35 @@ def build_html(
     stage2_adopt = computed.get("stage2_adoption_rate")
     rq3_table += f"<tr><td>Stage2 Adoption Rate</td><td>{_pct(stage2_adopt) if stage2_adopt is not None else 'N/A'}</td></tr>"
     rq3_table += "</tbody></table>"
+
+    debate_cov = _to_float(struct_metrics.get("debate_mapping_coverage"))
+    debate_direct = _to_float(struct_metrics.get("debate_mapping_direct_rate"))
+    debate_fallback = _to_float(struct_metrics.get("debate_mapping_fallback_rate"))
+    debate_none = _to_float(struct_metrics.get("debate_mapping_none_rate"))
+    debate_fail_no_aspects = _to_float(struct_metrics.get("debate_fail_no_aspects_rate"))
+    debate_fail_no_match = _to_float(struct_metrics.get("debate_fail_no_match_rate"))
+    debate_fail_neutral = _to_float(struct_metrics.get("debate_fail_neutral_stance_rate"))
+    debate_fail_fallback = _to_float(struct_metrics.get("debate_fail_fallback_used_rate"))
+    debate_table = "<table class=\"data-table\"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>"
+    debate_table += f"<tr><td>Debate Mapping Coverage</td><td>{_pct(debate_cov) if debate_cov is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Mapping Direct Rate</td><td>{_pct(debate_direct) if debate_direct is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Mapping Fallback Rate</td><td>{_pct(debate_fallback) if debate_fallback is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Mapping None Rate</td><td>{_pct(debate_none) if debate_none is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Fail (no_aspects)</td><td>{_pct(debate_fail_no_aspects) if debate_fail_no_aspects is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Fail (no_match)</td><td>{_pct(debate_fail_no_match) if debate_fail_no_match is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Fail (neutral_stance)</td><td>{_pct(debate_fail_neutral) if debate_fail_neutral is not None else 'N/A'}</td></tr>"
+    debate_table += f"<tr><td>Debate Fail (fallback_used)</td><td>{_pct(debate_fail_fallback) if debate_fail_fallback is not None else 'N/A'}</td></tr>"
+    debate_override_applied = _num(struct_metrics.get("debate_override_applied"))
+    debate_override_low = _num(struct_metrics.get("debate_override_skipped_low_signal"))
+    debate_override_conflict = _num(struct_metrics.get("debate_override_skipped_conflict"))
+    debate_table += f"<tr><td>Debate Override Applied (count)</td><td>{debate_override_applied}</td></tr>"
+    debate_table += f"<tr><td>Debate Override Skipped Low Signal (count)</td><td>{debate_override_low}</td></tr>"
+    debate_table += f"<tr><td>Debate Override Skipped Conflict (count)</td><td>{debate_override_conflict}</td></tr>"
+    debate_table += "</tbody></table>"
+    debate_thresholds_note = (
+        f"<p class=\"header-meta\">Thresholds: coverage_warn={thresholds['coverage_warn']}, "
+        f"no_match_warn={thresholds['no_match_warn']}, neutral_warn={thresholds['neutral_warn']}.</p>"
+    )
 
     # Table 2 (RQ1+RQ3): Triplet F1, ΔF1, FixRate, BreakRate, NetGain (when gold)
     # Prefer struct_metrics (from structural_metrics.csv / structural_error_aggregator) for F1 so HTML matches CSV (aspect-polarity F1, process_trace/final_aspects).
@@ -701,9 +818,23 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 .section { margin-bottom: 2rem; }
 .section h2 { font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid var(--card); padding-bottom: 0.25rem; margin-bottom: 0.75rem; }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
-.kpi-card { background: var(--card); padding: 0.75rem; border-radius: 6px; }
+.kpi-card { background: var(--card); padding: 0.75rem; border-radius: 6px; border-left: 3px solid transparent; }
+.kpi-card.kpi-ok { border-left-color: var(--green); }
+.kpi-card.kpi-warn { border-left-color: var(--orange); }
+.kpi-card.kpi-neutral { border-left-color: var(--muted); }
 .kpi-title { font-size: 0.75rem; color: var(--muted); }
 .kpi-value { font-size: 1.25rem; font-weight: 600; color: var(--green); }
+.kpi-card.kpi-warn .kpi-value { color: var(--orange); }
+.kpi-card.kpi-neutral .kpi-value { color: var(--muted); }
+.kpi-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+.legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend-swatch.ok { background: var(--green); }
+.legend-swatch.warn { background: var(--orange); }
+.legend-swatch.neutral { background: var(--muted); }
+.warn-box { border-left: 3px solid var(--orange); background: #1f1a12; padding: 0.5rem 0.75rem; border-radius: 6px; }
+.warn-box .header-meta { margin: 0.25rem 0; }
+.warn-box ul { margin: 0.25rem 0 0.25rem 1rem; padding: 0; }
 .conclusion { background: var(--card); padding: 1rem; border-radius: 6px; margin-top: 0.5rem; }
 .conclusion p { margin: 0.25rem 0; }
 .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
@@ -716,6 +847,11 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 .bar-value { min-width: 4rem; font-size: 0.9rem; color: var(--muted); }
 .details-summary { cursor: pointer; padding: 0.5rem; background: var(--card); border-radius: 4px; margin-bottom: 0.5rem; }
 .details-content { padding: 0.5rem 0; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: var(--card); padding: 1rem; border-radius: 8px; min-width: 280px; max-width: 520px; }
+.modal-title { font-weight: 600; margin-bottom: 0.5rem; }
+.modal-close { margin-top: 0.75rem; }
 """
 
     html = f"""<!DOCTYPE html>
@@ -745,6 +881,11 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 <div class="kpi-grid">
 {kpi_html}
 </div>
+<div class="kpi-legend">
+  <span class="legend-item"><span class="legend-swatch ok"></span> 정상</span>
+  <span class="legend-item"><span class="legend-swatch warn"></span> 경고</span>
+  <span class="legend-item"><span class="legend-swatch neutral"></span> N/A</span>
+</div>
 <div class="conclusion">
   <p><strong>이 Run의 결론</strong></p>
   <p>{conclusion_lines[0]}</p>
@@ -752,6 +893,7 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
   <p>{conclusion_lines[2]}</p>
 </div>
 <p class="header-meta">{hf_sentence}</p>
+{debate_warn}
 </section>
 
 <section class="section" id="rq1">
@@ -768,6 +910,9 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 {rq3_risk_decomp}
 <h3>Stage1 vs Stage2 요약</h3>
 {rq3_table}
+<h3>Debate mapping metrics</h3>
+{debate_table}
+{debate_thresholds_note}
 <h3>Table 2: Triplet F1, ΔF1, Fix Rate, Break Rate, Net Gain (gold required)</h3>
 {table2_html}
 <h3>Transition table (correctness snapshot)</h3>
@@ -803,6 +948,30 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 </details>
 <p class="header-meta">{env_note}</p>
 </section>
+<div id="kpi-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <div class="modal-title" id="kpi-modal-title">KPI</div>
+    <div id="kpi-modal-body">설명</div>
+    <button class="modal-close" id="kpi-modal-close">닫기</button>
+  </div>
+</div>
+<script>
+  const modal = document.getElementById("kpi-modal");
+  const modalTitle = document.getElementById("kpi-modal-title");
+  const modalBody = document.getElementById("kpi-modal-body");
+  const closeBtn = document.getElementById("kpi-modal-close");
+  document.querySelectorAll(".kpi-card").forEach((card) => {{
+    card.addEventListener("click", () => {{
+      modalTitle.textContent = card.dataset.kpiTitle || "KPI";
+      modalBody.textContent = card.dataset.kpiTip || "설명 없음";
+      modal.classList.add("active");
+    }});
+  }});
+  closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+  modal.addEventListener("click", (e) => {{
+    if (e.target === modal) modal.classList.remove("active");
+  }});
+</script>
 </body>
 </html>
 """

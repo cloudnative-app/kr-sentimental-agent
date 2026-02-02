@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from .agent_outputs import ATEOutput, ATSAOutput, ModeratorOutput, ValidatorOutput
+from .agent_outputs import ATEOutput, ATSAOutput, ModeratorOutput, ValidatorOutput, DebateOutput
 from .metric_trace import ProcessTrace
 
 
@@ -41,6 +41,7 @@ class FinalOutputSchema(BaseModel):
     stage2_atsa: Optional[ATSAOutput] = None
     stage2_validator: Optional[ValidatorOutput] = None
     moderator: Optional[ModeratorOutput] = None
+    debate: Optional[DebateOutput] = None
     process_trace: List[ProcessTrace] = Field(default_factory=list, description="Stage1/Validator/Stage2/Moderator traces.")
     analysis_flags: AnalysisFlags = Field(default_factory=AnalysisFlags, description="Always populated; empty defaults allowed.")
     final_result: FinalResult = Field(default_factory=FinalResult, description="Always populated; neutral defaults allowed.")

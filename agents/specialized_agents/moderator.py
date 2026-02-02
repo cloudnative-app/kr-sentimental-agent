@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from schemas import ATEOutput, ATSAOutput, ArbiterFlags, ModeratorOutput, ValidatorOutput, AspectSentimentItem
+from schemas import ATEOutput, ATSAOutput, ArbiterFlags, ModeratorOutput, ValidatorOutput, AspectSentimentItem, DebateSummary
 
 
 class Moderator:
@@ -69,6 +69,26 @@ class Moderator:
                     rationale = "RuleD: diff>=0.1 ATE wins."
         return final_label, final_conf, rationale
 
+    def _infer_label_from_debate(self, summary: Optional[DebateSummary]) -> Optional[str]:
+        if summary is None:
+            return None
+        parts = [
+            summary.consensus or "",
+            summary.rationale or "",
+            " ".join(summary.key_agreements or []),
+            " ".join(summary.key_disagreements or []),
+        ]
+        text = " ".join(p for p in parts if p).lower()
+        if any(tok in text for tok in ["혼합", "mixed", "엇갈", "양면"]):
+            return "mixed"
+        if any(tok in text for tok in ["긍정", "호의", "좋다", "positive"]):
+            return "positive"
+        if any(tok in text for tok in ["부정", "비판", "나쁘", "negative"]):
+            return "negative"
+        if any(tok in text for tok in ["중립", "neutral", "모호"]):
+            return "neutral"
+        return None
+
     def decide(
         self,
         stage1_ate: ATEOutput,
@@ -77,6 +97,7 @@ class Moderator:
         stage2_ate: ATEOutput | None = None,
         stage2_atsa: ATSAOutput | None = None,
         final_aspect_sentiments: List[AspectSentimentItem] | None = None,
+        debate_summary: Optional[DebateSummary] = None,
     ) -> ModeratorOutput:
         rationale_parts: List[str] = []
         applied_rules: List[str] = []
@@ -130,6 +151,13 @@ class Moderator:
         if rationale_d:
             rationale_parts.append(rationale_d)
             applied_rules.append("RuleD")
+
+        # Rule E: Debate consensus hint (low-confidence override)
+        inferred = self._infer_label_from_debate(debate_summary)
+        if inferred and inferred != final_label and (confidence < 0.55 or final_label == "mixed"):
+            rationale_parts.append(f"RuleE: debate consensus -> {inferred}.")
+            applied_rules.append("RuleE")
+            final_label = inferred
 
         if not rationale_parts:
             rationale_parts.append("Rule default: no change.")

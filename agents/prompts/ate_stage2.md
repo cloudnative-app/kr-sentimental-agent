@@ -11,7 +11,8 @@
       "term": "속성명",
       "action": "keep | revise_span | remove", 
       "revised_span": {"start": int, "end": int}, 
-      "reason": "Validator의 지적(부정 범위 등) 반영"
+      "reason": "Validator의 지적(부정 범위 등) 반영",
+      "provenance": "source:<speaker>/<stance> (Debate Review Context가 있으면 사용)"
     }
   ]
 }

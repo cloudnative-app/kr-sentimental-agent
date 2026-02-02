@@ -117,8 +117,11 @@ class ValidatorAgent:
         demos: list[str] | None = None,
         language_code: str = "unknown",
         domain_id: str = "unknown",
+        extra_context: str | None = None,
     ) -> StructuredResult[StructuralValidatorStage2Schema]:
         prompt = load_prompt("validator_stage2") + f"\n\nStage1 JSON:\n{stage1_output.model_dump_json()}"
+        if extra_context:
+            prompt += f"\n\nDebate Review Context JSON:\n{extra_context}"
         spec = PromptSpec(
             system=[prompt],
             user=text,

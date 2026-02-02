@@ -58,6 +58,7 @@ class ATSAAgent:
         demos: list[str] | None = None,
         language_code: str = "unknown",
         domain_id: str = "unknown",
+        extra_context: str | None = None,
     ) -> StructuredResult[AspectSentimentStage2Schema]:
         extra_instruction = "\nInstruction: Use only ATE terms verbatim for aspect_ref."
         system_prompt = (
@@ -65,6 +66,8 @@ class ATSAAgent:
             + extra_instruction
             + f"\n\nStage1 JSON:\n{stage1_output.model_dump_json()}\nValidator JSON:\n{getattr(validator_output, 'model_dump_json', lambda: '')()}"
         )
+        if extra_context:
+            system_prompt += f"\n\nDebate Review Context JSON:\n{extra_context}"
         spec = PromptSpec(
             system=[system_prompt],
             user=text,

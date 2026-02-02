@@ -1,0 +1,8 @@
+{
+  "coverage_warn": 0.4,
+  "coverage_high": 0.25,
+  "no_match_warn": 0.4,
+  "no_match_high": 0.6,
+  "neutral_warn": 0.4,
+  "neutral_high": 0.6
+}
