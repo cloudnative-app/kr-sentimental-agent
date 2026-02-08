@@ -1,5 +1,6 @@
 run_mode: abl_no_stage2
 pipeline:
+  temperature: 0
   enable_stage2: false
   enable_validator: true
 data:

@@ -1,0 +1,2 @@
+run_id,timestamp_utc,cfg_hash,backbone_model_id,backbone_provider,prompt_version_count,report_split,split_train,split_valid,split_test,dataset_paths
+experiment_mini3_2__seed42_proposed,2026-02-03T09:29:46.324149Z,b840f247952c14e47feed3872ae79b5a8dd647946ce086ca447023757e9b6f09,gpt-4.1-mini,openai,11,valid,0,30,0,C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\mini3\train.csv;C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\mini3\valid.csv

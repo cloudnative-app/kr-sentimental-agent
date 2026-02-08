@@ -30,3 +30,8 @@ python scripts/run_pipeline.py --config experiments/configs/experiment_mini2.yam
 ```powershell
 python scripts/aggregate_seed_metrics.py --base_run_id experiment_mini2 --mode proposed --seeds 42,123 --outdir results/experiment_mini2_aggregated --with_metric_report --metrics_profile paper_main
 ```
+
+**산출** (덮어쓰기 방지: 실험별 고유 경로):
+
+- `results/experiment_mini2_aggregated/` (merged_scorecards.jsonl, merged_metrics/, merged_run_experiment_mini2/)
+- `reports/merged_run_experiment_mini2/metric_report.html`

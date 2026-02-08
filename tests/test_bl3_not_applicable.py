@@ -27,9 +27,8 @@ def test_bl3_marks_stage2_not_applicable():
             {
                 "aspect_sentiments": [
                     {
-                        "aspect_ref": "service",
+                        "aspect_term": {"term": "great", "span": {"start": 15, "end": 20}},
                         "polarity": "positive",
-                        "opinion_term": {"term": "great", "span": {"start": 15, "end": 20}},
                         "confidence": 0.8,
                         "evidence": "great service",
                         "polarity_distribution": {"pos": 0.8},

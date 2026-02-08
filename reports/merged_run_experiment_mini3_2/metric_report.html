@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metric Report — merged_run_experiment_mini3_2</title>
+<style>
+:root { --bg: #0f1419; --card: #1a2332; --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --green: #3fb950; --orange: #d29922; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1rem 2rem; line-height: 1.5; }
+h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.header-meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.header-meta span { margin-right: 1rem; }
+.section { margin-bottom: 2rem; }
+.section h2 { font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid var(--card); padding-bottom: 0.25rem; margin-bottom: 0.75rem; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.kpi-card { background: var(--card); padding: 0.75rem; border-radius: 6px; border-left: 3px solid transparent; }
+.kpi-card.kpi-ok { border-left-color: var(--green); }
+.kpi-card.kpi-warn { border-left-color: var(--orange); }
+.kpi-card.kpi-neutral { border-left-color: var(--muted); }
+.kpi-title { font-size: 0.75rem; color: var(--muted); }
+.kpi-value { font-size: 1.25rem; font-weight: 600; color: var(--green); }
+.kpi-card.kpi-warn .kpi-value { color: var(--orange); }
+.kpi-card.kpi-neutral .kpi-value { color: var(--muted); }
+.kpi-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+.legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend-swatch.ok { background: var(--green); }
+.legend-swatch.warn { background: var(--orange); }
+.legend-swatch.neutral { background: var(--muted); }
+.warn-box { border-left: 3px solid var(--orange); background: #1f1a12; padding: 0.5rem 0.75rem; border-radius: 6px; }
+.warn-box .header-meta { margin: 0.25rem 0; }
+.warn-box ul { margin: 0.25rem 0 0.25rem 1rem; padding: 0; }
+.conclusion { background: var(--card); padding: 1rem; border-radius: 6px; margin-top: 0.5rem; }
+.conclusion p { margin: 0.25rem 0; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.data-table th, .data-table td { text-align: left; padding: 0.4rem 0.6rem; border: 1px solid var(--card); }
+.data-table th { background: var(--card); color: var(--muted); }
+.bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+.bar-label { min-width: 180px; font-size: 0.9rem; }
+.bar-track { flex: 1; height: 12px; background: var(--card); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.bar-value { min-width: 4rem; font-size: 0.9rem; color: var(--muted); }
+.details-summary { cursor: pointer; padding: 0.5rem; background: var(--card); border-radius: 4px; margin-bottom: 0.5rem; }
+.details-content { padding: 0.5rem 0; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: var(--card); padding: 1rem; border-radius: 8px; min-width: 280px; max-width: 520px; }
+.modal-title { font-weight: 600; margin-bottom: 0.5rem; }
+.modal-close { margin-top: 0.75rem; }
+</style>
+</head>
+<body>
+<header>
+<h1>Metric Report</h1>
+<div class="header-meta">
+  <span><strong>Run ID</strong> merged_run_experiment_mini3_2</span>
+  <span><strong>Date</strong> 2026-02-03T09:29:46.324149 UTC</span>
+  <span><strong>Profile</strong> paper</span>
+  <span><strong>Provider/Model</strong> openai / gpt-4.1-mini</span>
+  <span><strong>Dataset</strong> train.csv</span>
+  <span><strong>N</strong> 60</span>
+  <span><strong>Schema</strong> scorecard_v2</span>
+</div>
+</header>
+
+<section class="section" id="executive">
+<h2>Executive Summary</h2>
+<div class="kpi-grid">
+<div class="kpi-card kpi-warn" title="낮을수록 구조 품질 실패가 많음. 0.80 미만이면 개선 권장." data-kpi-title="Structural PASS rate" data-kpi-tip="낮을수록 구조 품질 실패가 많음. 0.80 미만이면 개선 권장."><div class="kpi-title">Structural PASS rate</div><div class="kpi-value">8.3%</div></div><div class="kpi-card kpi-warn" title="높을수록 Stage1/2 극성 충돌이 잦음. 0.15 초과 시 점검 권장." data-kpi-title="Polarity Conflict Rate" data-kpi-tip="높을수록 Stage1/2 극성 충돌이 잦음. 0.15 초과 시 점검 권장."><div class="kpi-title">Polarity Conflict Rate</div><div class="kpi-value">25.0%</div></div><div class="kpi-card kpi-ok" title="위험 해소가 충분함" data-kpi-title="Risk Resolution Rate" data-kpi-tip="위험 해소가 충분함"><div class="kpi-title">Risk Resolution Rate</div><div class="kpi-value">100.0%</div></div><div class="kpi-card kpi-ok" title="정상 범위" data-kpi-title="Risk-Flagged Rate" data-kpi-tip="정상 범위"><div class="kpi-title">Risk-Flagged Rate</div><div class="kpi-value">6.7%</div></div><div class="kpi-card kpi-ok" title="가이드 변경이 활성화됨" data-kpi-title="Guided Change Rate" data-kpi-tip="가이드 변경이 활성화됨"><div class="kpi-title">Guided Change Rate</div><div class="kpi-value">40.0%</div></div><div class="kpi-card kpi-ok" title="비가이드 드리프트가 낮음" data-kpi-title="Unguided Drift Rate" data-kpi-tip="비가이드 드리프트가 낮음"><div class="kpi-title">Unguided Drift Rate</div><div class="kpi-value">15.0%</div></div><div class="kpi-card kpi-ok" title="coverage가 충분히 높음" data-kpi-title="Debate Mapping Coverage" data-kpi-tip="coverage가 충분히 높음"><div class="kpi-title">Debate Mapping Coverage</div><div class="kpi-value">96.4%</div></div><div class="kpi-card kpi-ok" title="실패 비율이 낮음" data-kpi-title="Debate Fail (no_match)" data-kpi-tip="실패 비율이 낮음"><div class="kpi-title">Debate Fail (no_match)</div><div class="kpi-value">0.0%</div></div><div class="kpi-card kpi-ok" title="실패 비율이 낮음" data-kpi-title="Debate Fail (neutral)" data-kpi-tip="실패 비율이 낮음"><div class="kpi-title">Debate Fail (neutral)</div><div class="kpi-value">0.3%</div></div><div class="kpi-card kpi-neutral" title="min_target_conf(기존 confidence≥0.7 & polarity 일치)로 override 스킵한 케이스 수. 이미 확신 충분해 덮어쓸 필요 없음." data-kpi-title="Debate Override Skipped (Already Confident)" data-kpi-tip="min_target_conf(기존 confidence≥0.7 & polarity 일치)로 override 스킵한 케이스 수. 이미 확신 충분해 덮어쓸 필요 없음."><div class="kpi-title">Debate Override Skipped (Already Confident)</div><div class="kpi-value">8</div></div><div class="kpi-card kpi-ok" title="정상 범위" data-kpi-title="Tuple F1 (Stage2+Mod)" data-kpi-tip="정상 범위"><div class="kpi-title">Tuple F1 (Stage2+Mod)</div><div class="kpi-value">0.0%</div></div>
+</div>
+<div class="kpi-legend">
+  <span class="legend-item"><span class="legend-swatch ok"></span> 정상</span>
+  <span class="legend-item"><span class="legend-swatch warn"></span> 경고</span>
+  <span class="legend-item"><span class="legend-swatch neutral"></span> N/A</span>
+</div>
+<div class="conclusion">
+  <p><strong>이 Run의 결론</strong></p>
+  <p>본 Run은 샘플 수 N=60 기준, 구조 품질 통과율(Structural PASS) 8.3%, 극성 충돌률 25.0%, 위험 해소율 100.0%로 집계되었습니다.</p>
+  <p>Stage2 채택률 78.3%, 가이드 변경률 40.0%, 비가이드 드리프트 15.0%입니다. 골드 N=60 기준 Tuple F1(Stage1) 0.0%, F1(Stage2+Mod) 0.0%, ΔF1 0 (Tuple Aspect,Polarity).</p>
+  <p>추가 검증이 필요하면 Appendix의 샘플별 상세를 참고하세요.</p>
+</div>
+<p class="header-meta">HF-based polarity agreement is used as an external reference signal, not as a correctness criterion.</p>
+
+</section>
+
+<section class="section" id="rq1">
+<h2>RQ1: Structural Quality</h2>
+<h3>risk_id 빈도 (Top)</h3>
+<table class="data-table"><thead><tr><th>risk_id</th><th>count</th></tr></thead><tbody><tr><td>CONTRAST_SCOPE</td><td>4</td></tr></tbody></table>
+<h3>Hard subset / Unsupported polarity · Hallucinated aspect</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Aspect Hallucination Rate</td><td>68.3%</td></tr><tr><td>Unsupported Polarity Rate</td><td>88.3%</td></tr></tbody></table>
+</section>
+
+<section class="section" id="rq3">
+<h2>RQ3: CBL Effectiveness</h2>
+<h3>Risk decomposition</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk-Flagged Rate</td><td>6.7%</td></tr><tr><td>Risk-Affected Change Rate</td><td>0.0%</td></tr><tr><td>Risk-Resolved-with-Change (rate)</td><td>0.0%</td></tr><tr><td>Risk-Resolved-without-Change (rate)</td><td>8.9%</td></tr><tr><td>Ignored Proposal Rate</td><td>100.0%</td></tr></tbody></table>
+<h3>Stage1 vs Stage2 요약</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk Resolution Rate</td><td>100.0%</td></tr><tr><td>Guided Change Rate</td><td>40.0%</td></tr><tr><td>Unguided Drift Rate</td><td>15.0%</td></tr><tr><td>Stage2 Adoption Rate</td><td>78.3%</td></tr></tbody></table>
+<h3>Debate mapping metrics</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Debate Mapping Coverage</td><td>96.4%</td></tr><tr><td>Debate Mapping Direct Rate</td><td>95.8%</td></tr><tr><td>Debate Mapping Fallback Rate</td><td>0.6%</td></tr><tr><td>Debate Mapping None Rate</td><td>3.6%</td></tr><tr><td>Debate Fail (no_aspects)</td><td>3.3%</td></tr><tr><td>Debate Fail (no_match)</td><td>0.0%</td></tr><tr><td>Debate Fail (neutral_stance)</td><td>0.3%</td></tr><tr><td>Debate Fail (fallback_used)</td><td>0.6%</td></tr><tr><td>Debate Override Applied (count)</td><td>17</td></tr><tr><td>Debate Override Skipped Low Signal (count)</td><td>10</td></tr><tr><td>Debate Override Skipped Conflict (count)</td><td>134</td></tr><tr><td>Debate Override Skipped Already Confident (count)</td><td>8</td></tr><tr><td>Debate Override Skipped Already Confident (rate)</td><td>4.7%</td></tr></tbody></table>
+<p class="header-meta">Thresholds: coverage_warn=0.4, no_match_warn=0.4, neutral_warn=0.4.</p>
+<h3>Override Conditional Effects (Applied vs Skipped-Conflict)</h3>
+<table class="data-table"><thead><tr><th>Subset</th><th>n</th><th>ΔF1 (mean)</th><th>Unsupported Polarity</th><th>Negation/Contrast Fail</th></tr></thead><tbody><tr><td>Override Applied</td><td>13</td><td>0</td><td>100.0%</td><td>0.0%</td></tr><tr><td>Skipped (Conflict)</td><td>54</td><td>0</td><td>90.7%</td><td>5.6%</td></tr></tbody></table>
+<p class="header-meta">Applied에서 ΔF1이 플러스이고 오류율이 낮으면: override는 유익. Conflict subset에서 오류율이 높으면: 토론 신호가 갈리는 문장(대조/부정)에선 보수적 스킵이 합리적.</p>
+<h3>Table 2: Tuple F1, ΔF1, Fix Rate, Break Rate, Net Gain (gold required)</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>N (with gold)</td><td>60</td></tr><tr><td>Tuple F1 (Stage1)</td><td>0</td></tr><tr><td>Tuple F1 (Stage2+Moderator)</td><td>0</td></tr><tr><td>ΔF1 (S2−S1)</td><td>0</td></tr><tr><td>Fix Rate ↑</td><td>0.0%</td></tr><tr><td>Break Rate ↓</td><td>N/A</td></tr><tr><td>Net Gain ↑</td><td>0</td></tr><tr><td>Correction Precision</td><td>N/A</td></tr><tr><td>Conservative Improvement Score (λ=2)</td><td>0</td></tr></tbody></table><p class="header-meta">F1 is Tuple (Aspect, Polarity) — match on (aspect_ref, aspect_term, polarity). Values from structural_metrics.csv when available.</p>
+<h3>Transition table (correctness snapshot)</h3>
+<p class="header-meta">Correctness snapshot not present in scorecards; transition table requires label experiment (correctness or tuple_correctness).</p>
+
+<h3>Adoption/Reject breakdown (Rule A~D)</h3>
+<table class="data-table"><thead><tr><th>Rule</th><th>Count</th></tr></thead><tbody><tr><td>RuleA</td><td>0</td></tr><tr><td>RuleB</td><td>58</td></tr><tr><td>RuleM</td><td>15</td></tr><tr><td>RuleD</td><td>15</td></tr></tbody></table>
+</section>
+
+<section class="section" id="rq2">
+<h2>RQ2: Reliability & Stability</h2>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Self-consistency (exact)</td><td>100.0%</td></tr><tr><td>Risk-set consistency</td><td>100.0%</td></tr></tbody></table>
+
+</section>
+
+<section class="section" id="efficiency">
+<h2>Efficiency / QA</h2>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Latency p50 (ms)</td><td>68460</td></tr><tr><td>Latency p95 (ms)</td><td>93374</td></tr><tr><td>Gate status</td><td>WARN: 60</td></tr><tr><td>Parse failure rate</td><td>0.0%</td></tr><tr><td>Generate failure rate</td><td>0.0%</td></tr><tr><td>Fallback used rate</td><td>0.0%</td></tr></tbody></table>
+</section>
+
+<section class="section" id="appendix">
+<h2>Appendix</h2>
+<h3>HF metrics (from structural_metrics.csv)</h3>
+<p class="header-meta">HF-based polarity agreement is used as an external reference signal, not as a correctness criterion.</p>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>HF Polarity Disagreement Rate</td><td>N/A</td></tr><tr><td>HF Disagreement Coverage of Structural Risks</td><td>N/A</td></tr><tr><td>Conditional Improvement Gain (HF-disagree)</td><td>N/A</td></tr><tr><td>Conditional Improvement Gain (HF-agree)</td><td>N/A</td></tr></tbody></table>
+<p class="header-meta">Above: values from structural_metrics.csv (structural_error_aggregator). HF is an external reference signal, not a correctness criterion.</p>
+<h3>Error analysis: HF facet (Overall / HF-agree / HF-disagree)</h3>
+<table class="data-table"><thead><tr><th>Metric</th><th>Overall</th><th>HF-agree</th><th>HF-disagree</th></tr></thead><tbody><tr><td>Risk Resolution Rate</td><td>100.0%</td><td>N/A</td><td>N/A</td></tr><tr><td>Stage2 Adoption Rate</td><td>78.3%</td><td>N/A</td><td>N/A</td></tr><tr><td>Polarity Conflict Rate</td><td>25.0%</td><td>N/A</td><td>N/A</td></tr></tbody></table>
+<p class="header-meta">HF-agree / HF-disagree: N/A (aux_signals.hf not present in this run). Overall uses structural_metrics.csv when available. To populate HF columns, enable pipeline aux_hf and provide HF checkpoint.</p>
+<details class="details-summary">
+<summary>Top cases (15개) — 접기/펼치기</summary>
+<div class="details-content"><table class="data-table"><thead><tr><th>text_id</th><th>input (preview)</th><th>final_label</th><th>selected_stage</th><th>latency</th></tr></thead><tbody><tr><td>nikluge-sa-2022-train-01349</td><td>주머니에 넣으면 온몸이 따뜻해지는데 철가루등 내용물이 떨어지지않아 안심되면서 좋아요~</td><td>positive</td><td>stage2</td><td>81711 ms</td></tr><tr><td>nikluge-sa-2022-train-00466</td><td>새롭게 출시된 루나 스틱 컨실러까지 사용해봤는데 그동안 사용했던 스틱 제형 컨실러들과 다르게 굉장히 부드럽게…</td><td>positive</td><td>stage2</td><td>67515 ms</td></tr><tr><td>nikluge-sa-2022-train-02435</td><td>완전 굿템인정👍</td><td>positive</td><td>stage1</td><td>56528 ms</td></tr><tr><td>nikluge-sa-2022-train-00465</td><td>한번 터치로도 완벽하게 커버되니까 요건 인생컨실러라고 할 수 있죵 ㅎㅎ</td><td>positive</td><td>stage1</td><td>67449 ms</td></tr><tr><td>nikluge-sa-2022-train-00839</td><td>화장실에서 바로 #클렌징 하고 #뿌리는마스크팩 .. 이용해서 10분동안 샤워하면서 뿌려두고 나오면서.. 헹구…</td><td>positive</td><td>stage2</td><td>75254 ms</td></tr><tr><td>nikluge-sa-2022-train-00407</td><td>✔내구성이 우수한 아연합금 재질에 모던한 디자인</td><td>positive</td><td>stage2</td><td>72143 ms</td></tr><tr><td>nikluge-sa-2022-train-01154</td><td>만들고보니 대만족!!!</td><td>positive</td><td>stage1</td><td>50546 ms</td></tr><tr><td>nikluge-sa-2022-train-00038</td><td>한 철 잘 입다가 늘어나면 집에서 반바지랑 입고 땀 뻘뻘 흘리면서 컴퓨터 두드려야겠음.</td><td>positive</td><td>stage1</td><td>65542 ms</td></tr><tr><td>nikluge-sa-2022-train-00589</td><td>판테놀, 프로폴리스 추출물, 마데카소사이드 주요성분 3가지가 민감성피부를 집중케어해주니까 한번 더 땡큐!</td><td>positive</td><td>stage2</td><td>74002 ms</td></tr><tr><td>nikluge-sa-2022-train-01944</td><td>내가좋아하는 휴대가 편리한 컴팩트한 사이즈</td><td>positive</td><td>stage2</td><td>64646 ms</td></tr><tr><td>nikluge-sa-2022-train-01781</td><td>바로 제가 요즘 사용하는 #로하셀데일리선라이트터치스탬프 인데요</td><td>neutral</td><td>stage2</td><td>57952 ms</td></tr><tr><td>nikluge-sa-2022-train-00340</td><td>화학성분없이 순하고 세척뿐만 아니라 살균,탈취, 미세 중금속 중화까지 가능한 해독세제 #밀크프렌즈 ❗</td><td>positive</td><td>stage2</td><td>104887 ms</td></tr><tr><td>nikluge-sa-2022-train-01638</td><td>#모공소멸 됨..</td><td>positive</td><td>stage2</td><td>64815 ms</td></tr><tr><td>nikluge-sa-2022-train-00651</td><td>크림 사용 전에 소량만 짜서 고민 부위에 부드럽게 발라주면 외부스트레스에 지친 피부 진정 끝~~ ღ`ᴗ`ღ</td><td>mixed</td><td>stage2</td><td>80088 ms</td></tr><tr><td>nikluge-sa-2022-train-01833</td><td>보습을 꽉꽉 채워주네요~</td><td>positive</td><td>stage2</td><td>49995 ms</td></tr></tbody></table></div>
+</details>
+<p class="header-meta">config_hash (short): b840f247952c14e4, prompt_hash (short): 375910d96980, schema: scorecard_v2</p>
+</section>
+<div id="kpi-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <div class="modal-title" id="kpi-modal-title">KPI</div>
+    <div id="kpi-modal-body">설명</div>
+    <button class="modal-close" id="kpi-modal-close">닫기</button>
+  </div>
+</div>
+<script>
+  const modal = document.getElementById("kpi-modal");
+  const modalTitle = document.getElementById("kpi-modal-title");
+  const modalBody = document.getElementById("kpi-modal-body");
+  const closeBtn = document.getElementById("kpi-modal-close");
+  document.querySelectorAll(".kpi-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      modalTitle.textContent = card.dataset.kpiTitle || "KPI";
+      modalBody.textContent = card.dataset.kpiTip || "설명 없음";
+      modal.classList.add("active");
+    });
+  });
+  closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.remove("active");
+  });
+</script>
+</body>
+</html>

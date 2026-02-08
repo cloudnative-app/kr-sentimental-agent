@@ -38,16 +38,16 @@ class AspectExtractionStage2Schema(BaseModel):
     aspect_review: List[AspectExtractionReviewItem] = Field(default_factory=list)
 
 
-# ATSA
-class OpinionTerm(BaseModel):
-    term: str
-    span: Span
+# ATSA — 문장 내 관점 표면형(term + span)
+class AspectTerm(BaseModel):
+    """문장 내 관점 표면형: term(텍스트) + span(문자 구간)."""
+    term: str = Field(default="", description="문장 내 관점 표면형 텍스트")
+    span: Span = Field(default_factory=lambda: Span(start=0, end=0), description="문장 내 문자 구간")
 
 
 class AspectSentimentItem(BaseModel):
-    aspect_ref: str
+    aspect_term: Optional[AspectTerm] = Field(default=None, description="문장 내 관점 표면형(term+span). 암시적이면 None.")
     polarity: str = Field(default="neutral")
-    opinion_term: Optional[OpinionTerm] = None
     evidence: str = Field(default="")
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     polarity_distribution: Dict[str, float] = Field(default_factory=dict)
@@ -55,7 +55,7 @@ class AspectSentimentItem(BaseModel):
 
 
 class SentimentReviewItem(BaseModel):
-    aspect_ref: str
+    aspect_term: str = Field(default="", description="대상 감성 항목 식별용 관점 표면형(term 텍스트)")
     action: str = Field(default="maintain")
     revised_polarity: Optional[str] = None
     reason: str = Field(default="")

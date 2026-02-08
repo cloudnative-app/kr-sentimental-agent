@@ -8,9 +8,16 @@ run_id: experiment_mini2
 run_mode: proposed
 
 pipeline:
+  temperature: 0
   enable_stage2: true
   enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
   leakage_guard: true
+  debate_override:
+    min_total: 1.6
+    min_margin: 0.8
+    min_target_conf: 0.7
 
 data:
   dataset_root: experiments/configs/datasets

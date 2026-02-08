@@ -27,25 +27,39 @@ DEFAULT_INPUT = PROJECT_ROOT / "experiments" / "configs" / "datasets" / "train" 
 DEFAULT_OUTDIR = PROJECT_ROOT / "experiments" / "configs" / "datasets" / "mini"
 
 
-def annotation_to_gold_triplets(item: dict) -> list[dict]:
+def annotation_to_gold_tuples(item: dict) -> list[dict]:
+    """Gold as list of {aspect_ref, aspect_term, polarity, span?}. aspect_term = surface form. span optional (start, end)."""
     text = item.get("sentence_form") or ""
-    triplets = []
+    out = []
     for ann in item.get("annotation") or []:
         if len(ann) < 3:
             continue
         aspect_ref, polarity = ann[0], ann[2]
         span_info = ann[1] if len(ann) > 1 else None
+        span_obj: dict | None = None
         if span_info is None or not isinstance(span_info, (list, tuple)):
-            term = ""
+            aspect_term = ""
         elif span_info[0] is not None and span_info[0] != "":
-            term = str(span_info[0]).strip()
+            aspect_term = str(span_info[0]).strip()
+            if len(span_info) >= 3:
+                try:
+                    s, e = int(span_info[1]), int(span_info[2])
+                    if 0 <= s <= e <= len(text):
+                        span_obj = {"start": s, "end": e}
+                except (TypeError, ValueError):
+                    pass
         elif len(span_info) >= 3:
             s, e = int(span_info[1]), int(span_info[2])
-            term = text[s:e] if 0 <= s <= e <= len(text) else ""
+            aspect_term = text[s:e] if 0 <= s <= e <= len(text) else ""
+            if 0 <= s <= e <= len(text):
+                span_obj = {"start": s, "end": e}
         else:
-            term = ""
-        triplets.append({"aspect_ref": aspect_ref, "opinion_term": {"term": term}, "polarity": polarity})
-    return triplets
+            aspect_term = ""
+        rec: dict = {"aspect_ref": aspect_ref, "aspect_term": aspect_term, "polarity": polarity}
+        if span_obj is not None:
+            rec["span"] = span_obj
+        out.append(rec)
+    return out
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -111,7 +125,7 @@ def main() -> None:
 
     with (outdir / "valid.gold.jsonl").open("w", encoding="utf-8", newline="\n") as f:
         for it in valid_data:
-            f.write(json.dumps({"uid": it.get("id", ""), "gold_triplets": annotation_to_gold_triplets(it)}, ensure_ascii=False) + "\n")
+            f.write(json.dumps({"uid": it.get("id", ""), "gold_tuples": annotation_to_gold_tuples(it)}, ensure_ascii=False) + "\n")
 
     print(f"Single split (no fold): {n} samples -> {outdir}")
     print(f"  train={len(train_data)}, valid={len(valid_data)}")

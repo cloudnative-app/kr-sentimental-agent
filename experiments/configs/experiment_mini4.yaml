@@ -1,0 +1,58 @@
+# experiment_mini4 — 소규모 데이터 train 570, valid 10 (총 580). mini3와 동일 규칙.
+# 데이터: experiments/configs/datasets/mini4/ (make_mini4_dataset.py로 생성)
+#
+# 용어: "n회 반복" = 서로 다른 시드 n개(seeds 리스트)로 각 1회만 시행.
+# 아래 seeds를 [42, 123]으로 바꾸면 시드 2개 실행. 시드 42만 1번: seeds: [42].
+run_purpose: paper
+run_id: experiment_mini4
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 1.6
+    min_margin: 0.8
+    min_target_conf: 0.7
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini4/train.csv
+  valid_file: mini4/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini4/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42]        # 시드 42만 1회 시행. 2개 시드 시: [42, 123]
+    concurrency: 1    # 1이면 순차. 2 이상이면 동시 실행(seeds가 2개 이상일 때)

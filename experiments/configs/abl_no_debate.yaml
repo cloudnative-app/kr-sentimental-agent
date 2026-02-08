@@ -1,0 +1,52 @@
+# Ablation: 토론 단계 완전 비활성 (enable_debate: false).
+# experiment_mini2와 동일 데이터·설정, pipeline.enable_debate 만 false.
+# 토론 온/오프 비교: 이 config vs experiment_mini2.yaml 로 각각 실행 후 결과 비교.
+run_purpose: paper
+run_id: abl_no_debate
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: false
+  enable_debate_override: false
+  leakage_guard: true
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini2/train.csv
+  valid_file: mini2/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini2/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123]
+    concurrency: 2

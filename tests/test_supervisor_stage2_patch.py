@@ -7,6 +7,7 @@ from schemas import (
     AspectSentimentItem,
     AspectSentimentStage1Schema,
     AspectSentimentStage2Schema,
+    AspectTerm,
     SentimentReviewItem,
     Span,
 )
@@ -21,7 +22,7 @@ def test_stage2_flip_polarity_applies_and_sets_confidence():
     stage1_atsa = AspectSentimentStage1Schema(
         aspect_sentiments=[
             AspectSentimentItem(
-                aspect_ref="서비스",
+                aspect_term=AspectTerm(term="서비스", span=Span(start=0, end=3)),
                 polarity="positive",
                 confidence=0.4,
                 evidence="매우 좋지",
@@ -34,11 +35,11 @@ def test_stage2_flip_polarity_applies_and_sets_confidence():
     )
     stage2_atsa = AspectSentimentStage2Schema(
         sentiment_review=[
-            SentimentReviewItem(aspect_ref="서비스", action="flip_polarity", revised_polarity="negative", reason="stage2 review")
+            SentimentReviewItem(aspect_term="서비스", action="flip_polarity", revised_polarity="negative", reason="stage2 review")
         ]
     )
 
-    patched_ate, patched_atsa, _ = agent._apply_stage2_reviews(stage1_ate, stage1_atsa, stage2_ate, stage2_atsa)
+    patched_ate, patched_atsa, _, _ = agent._apply_stage2_reviews(stage1_ate, stage1_atsa, stage2_ate, stage2_atsa)
     agg_stage2 = agent._aggregate_label_from_sentiments(patched_atsa)
 
     assert patched_ate.aspects[0].term == "서비스"

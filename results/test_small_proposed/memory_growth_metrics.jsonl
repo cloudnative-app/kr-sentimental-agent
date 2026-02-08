@@ -1,0 +1,1 @@
+{"window_end_sample": 5, "window_size": 6, "memory_mode": "off", "store_size": null, "store_new_entry_rate": 0.0, "advisory_presence_rate": 0.0, "follow_rate": null, "mean_delta_risk_followed": null, "mean_delta_risk_ignored": null, "harm_rate_followed": null, "harm_rate_ignored": null, "retrieval_hit_k": 0.0, "mean_tuple_f1_s2": null, "accuracy_rate": null}

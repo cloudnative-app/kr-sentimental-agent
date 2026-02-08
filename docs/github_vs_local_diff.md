@@ -146,12 +146,29 @@ python experiments/scripts/run_experiments.py --input data/test.csv --config exp
 | **docs/experiment_integrity_and_leakage_management.md** | 데이터 역할, 데모·페이퍼 정책, 실행 전 검사 |
 | **docs/schema_scorecard_trace.md** | 스키마·스코어카드·트레이스 |
 | **docs/seed_repeat_policy.md** | 시드 반복 정책 |
+| **docs/absa_tuple_eval.md** | Tuple 평가(gold_tuples, tuple_f1) 정의 |
 
 ---
 
-## 9. 요약
+## 9. 최근 로컬 변경 (origin 대비 반영 사항)
+
+아래는 origin/main 대비 로컬에서 추가·변경된 기능·경로 요약입니다.
+
+| 영역 | 변경 내용 |
+|------|-----------|
+| **평가 단위** | **Tuple** (aspect_ref, aspect_term, polarity). gold_tuples 포맷, tuple_f1_s1/tuple_f1_s2 메트릭. `docs/absa_tuple_eval.md`, `metrics/eval_tuple.py` 참고. |
+| **Gold 로딩** | `run_experiments.py`: gold_tuples 우선, gold_triplets 하위호환. |
+| **데이터 생성** | `make_mini_dataset.py`, `make_mini2_dataset.py`: valid.gold.jsonl에 gold_tuples 출력. `make_mini3_dataset.py`: train 570 / valid 30 (총 600). |
+| **실험 설정** | `experiment_mini2.yaml`, `experiment_mini3.yaml` (mini3: 570/30, 시드 2개). |
+| **머지 결과 경로** | 머지 디렉터리·리포트를 실험별로 분리: `results/<base_run_id>_aggregated/merged_run_<base_run_id>/`, `reports/merged_run_<base_run_id>/metric_report.html` (매 시행 덮어쓰기 방지). `aggregate_seed_metrics.py`에서 적용. |
+| **채점·리포트** | `structural_error_aggregator.py`, `build_metric_report.py`, `build_paper_tables.py`: Tuple 추출·tuple_f1 표시. |
+
+---
+
+## 10. 요약
 
 - **GitHub**는 “한국어 감성분석용 2단계 멀티 에이전트(분석가/공감가/비평가)” 프로젝트로, LangGraph·guardrails·observability·deployment를 전제로 한 구조입니다.
 - **로컬**은 같은 레포를 베이스로 **ABSA 파이프라인(ATE → ATSA → Validator → Stage2 리뷰 → Moderator)** 으로 전환된 상태이며, 전용 스키마·스크립트·설정·문서(docs/, README0)가 추가되고, 감성 전용 에이전트·guardrails·observability·deployment는 제거되거나 legacy/unused로 표시되어 있습니다.
+- **§9 최근 로컬 변경**: Tuple 평가(gold_tuples, tuple_f1), 머지 결과 경로 고유화(merged_run_<base_run_id>), mini3·make_mini2/make_mini3 등이 반영되어 있습니다.
 
-이 차이를 반영해 GitHub와 로컬을 동기화할 때는 위 디렉터리·실행 경로·설정·문서 매핑을 참고하면 됩니다.
+이 차이를 반영해 GitHub와 로컬을 동기화할 때는 위 디렉터리·실행 경로·설정·문서 매핑 및 §9를 참고하면 됩니다.

@@ -1,0 +1,60 @@
+# C3 (silent-memory): memory retrieval 수행, debate prompt에는 노출하지 않음.
+# memory.enable=true, memory.mode=silent → episodic_memory.condition=C2_silent
+# retrieval 자체 효과 vs advisory exposure 효과 분리용.
+run_purpose: paper
+run_id: experiment_mini4_c3_silent
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 1.6
+    min_margin: 0.8
+    min_target_conf: 0.7
+
+memory:
+  enable: true
+  mode: silent
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini4/train.csv
+  valid_file: mini4/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini4/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42]
+    concurrency: 1

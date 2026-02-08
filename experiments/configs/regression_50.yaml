@@ -3,6 +3,7 @@ run_purpose: paper
 run_mode: proposed
 
 pipeline:
+  temperature: 0
   enable_stage2: true
   enable_validator: true
   aux_hf_enabled: true

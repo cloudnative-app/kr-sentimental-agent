@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Optional, List
+from typing import Any, Dict, List, Optional
 import json
 import re
 
@@ -15,7 +15,7 @@ from schemas import (
     AspectSentimentStage1Schema,
     AspectSentimentStage2Schema,
     AspectSentimentItem,
-    OpinionTerm,
+    AspectTerm,
     Span,
     StructuralValidatorStage1Schema,
     StructuralValidatorStage2Schema,
@@ -30,7 +30,9 @@ from tools.llm_runner import StructuredResult, _log_error, default_errors_path
 from agents.specialized_agents import ATEAgent, ATSAAgent, ValidatorAgent, Moderator
 from agents.debate_orchestrator import DebateOrchestrator
 from tools.pattern_loader import load_patterns
+from memory.episodic_orchestrator import EpisodicOrchestrator
 from pathlib import Path
+from metrics.eval_tuple import tuples_from_list, tuples_to_list_of_dicts
 
 
 class SupervisorAgent:
@@ -66,7 +68,14 @@ class SupervisorAgent:
         self.moderator = moderator or Moderator()
         self.debate = DebateOrchestrator(self.backbone, config=self.config.get("debate"))
         self._pattern_cache: dict[str, dict] = {}
-        self._override_stats: dict[str, int] = {"applied": 0, "skipped_low_signal": 0, "skipped_conflict": 0}
+        self._override_stats: dict[str, int] = {"applied": 0, "skipped_low_signal": 0, "skipped_conflict": 0, "skipped_already_confident": 0}
+        episodic_cfg = self.config.get("episodic_memory")
+        self._episodic_orchestrator: Optional[EpisodicOrchestrator] = EpisodicOrchestrator(episodic_cfg) if episodic_cfg else None
+
+    @staticmethod
+    def _term_str(sent: AspectSentimentItem) -> str:
+        """Return the aspect surface-form term string from an AspectSentimentItem."""
+        return (sent.aspect_term.term if sent.aspect_term else "") or ""
 
     def _patterns(self, language_code: str) -> dict:
         lang = (language_code or "unknown").lower()
@@ -223,7 +232,7 @@ class SupervisorAgent:
         if self.debate_review_context:
             self._inject_review_provenance(
                 reviews=getattr(atsa2_result.model, "sentiment_review", []),
-                key_field="aspect_ref",
+                key_field="aspect_term",
                 debate_review_context=self.debate_review_context,
             )
         self._enforce_stage2_review_only(
@@ -260,6 +269,9 @@ class SupervisorAgent:
     def run(self, example: InternalExample | str) -> FinalOutputSchema:
         if isinstance(example, str):
             example = InternalExample(uid="text", text=example)
+        # Per-sample override stats so each scorecard row has its own counts
+        self._override_stats = {"applied": 0, "skipped_low_signal": 0, "skipped_conflict": 0, "skipped_already_confident": 0}
+        self._last_memory_meta = None
         text = example.text
         text_id = getattr(example, "uid", "text") or "text"
         case_type = getattr(example, "case_type", None) or "unknown"
@@ -291,6 +303,22 @@ class SupervisorAgent:
                 stage1_atsa=stage1["atsa"],
                 stage1_validator=stage1["validator"],
             )
+            if self._episodic_orchestrator:
+                slot_dict, _, memory_meta = self._episodic_orchestrator.get_slot_payload_for_current_sample(
+                    text, stage1["ate"], stage1["atsa"], stage1["validator"], language_code
+                )
+                # C3(silent): retrieval은 수행하되 debate prompt에는 노출하지 않음
+                exposed_to_debate = memory_meta.get("exposed_to_debate", False)
+                if exposed_to_debate and slot_dict:
+                    ctx = json.loads(debate_context)
+                    ctx.update(slot_dict)
+                    debate_context = json.dumps(ctx, ensure_ascii=False)
+                    memory_meta["prompt_injection_chars"] = len(json.dumps(slot_dict, ensure_ascii=False))
+                else:
+                    memory_meta["prompt_injection_chars"] = 0
+                self._last_memory_meta = memory_meta
+            else:
+                self._last_memory_meta = None
             debate_output = self.debate.run(
                 topic=text,
                 context_json=debate_context,
@@ -347,9 +375,9 @@ class SupervisorAgent:
 
         # Get final aspect_sentiments (only from ATE-kept aspects)
         final_aspect_sentiments = getattr(patched_stage2_atsa, "aspect_sentiments", []) or []
-        # Ensure only ATE-kept aspects are included
+        # Ensure only ATE-kept aspects are included (match by aspect_term.term)
         kept_aspect_terms = {a.term for a in getattr(patched_stage2_ate, "aspects", [])}
-        final_aspect_sentiments = [s for s in final_aspect_sentiments if s.aspect_ref in kept_aspect_terms]
+        final_aspect_sentiments = [s for s in final_aspect_sentiments if self._term_str(s) in kept_aspect_terms]
         
         moderator_out = self.moderator.decide(
             agg_stage1_ate,
@@ -370,11 +398,21 @@ class SupervisorAgent:
         # Build final_aspects list from final aspect_sentiments
         final_aspects_list = self.moderator.build_final_aspects(final_aspect_sentiments)
 
+        # Compute tuple lists for F1 evaluation (single source of truth for metrics)
+        stage1_sents = getattr(stage1["atsa"], "aspect_sentiments", []) or []
+        stage2_sents = getattr(patched_stage2_atsa, "aspect_sentiments", []) or []
+        stage1_tuples = tuples_to_list_of_dicts(tuples_from_list([s.model_dump() for s in stage1_sents]))
+        stage2_tuples = tuples_to_list_of_dicts(tuples_from_list([s.model_dump() for s in stage2_sents]))
+        final_tuples = tuples_to_list_of_dicts(tuples_from_list(final_aspects_list))
+
         final_result = FinalResult(
             label=moderator_out.final_label,
             confidence=final_confidence_score,
             rationale=moderator_out.rationale,
             final_aspects=final_aspects_list,
+            stage1_tuples=stage1_tuples,
+            stage2_tuples=stage2_tuples,
+            final_tuples=final_tuples,
         )
 
         flags = AnalysisFlags(
@@ -384,6 +422,13 @@ class SupervisorAgent:
             stage2_executed=True,
         )
 
+        if self._episodic_orchestrator:
+            self._episodic_orchestrator.append_episode_if_needed(
+                text, text_id,
+                stage1["ate"], stage1["atsa"], stage1["validator"],
+                patched_stage2_ate, patched_stage2_atsa, stage2["validator"],
+                moderator_out, language_code=language_code, split=split or "unknown",
+            )
         meta_extra = {
             "input_text": text,
             "run_id": self.run_id,
@@ -401,6 +446,8 @@ class SupervisorAgent:
             meta_extra["debate_summary"] = debate_output.summary.model_dump()
             meta_extra["debate_review_context"] = json.loads(debate_context_json) if debate_context_json else None
             meta_extra["debate_override_stats"] = self._override_stats
+        if getattr(self, "_last_memory_meta", None) is not None:
+            meta_extra["memory"] = self._last_memory_meta
 
         result = FinalOutputSchema(
             meta=meta_extra,
@@ -453,8 +500,8 @@ class SupervisorAgent:
         summary = debate_output.summary if debate_output else None
         rounds = debate_output.rounds if debate_output else []
         aspect_terms = [a.term for a in getattr(stage1_ate, "aspects", []) if a.term]
-        atsa_refs = [s.aspect_ref for s in getattr(stage1_atsa, "aspect_sentiments", []) if s.aspect_ref]
-        aspect_terms = list(dict.fromkeys(aspect_terms + atsa_refs))
+        atsa_terms = [self._term_str(s) for s in getattr(stage1_atsa, "aspect_sentiments", []) if self._term_str(s)]
+        aspect_terms = list(dict.fromkeys(aspect_terms + atsa_terms))
         synonym_hints = {term: self._expand_synonyms(term, language_code=language_code) for term in aspect_terms}
 
         norm_map = {}
@@ -512,7 +559,7 @@ class SupervisorAgent:
                         "stance": t.stance,
                         "key_points": t.key_points,
                         "message": t.message,
-                        "aspect_refs": mapped,
+                        "aspect_terms": mapped,
                         "mapping_confidence": mapping_confidence,
                         "mapping_fail_reason": fail_reason,
                         "weight": stance_weight,
@@ -525,7 +572,7 @@ class SupervisorAgent:
                         "rebuttal_index": idx,
                         "speaker": t.speaker,
                         "stance": t.stance,
-                        "aspect_refs": mapped,
+                        "aspect_terms": mapped,
                         "weight": stance_weight,
                         "polarity_hint": polarity_hint,
                     }
@@ -533,7 +580,7 @@ class SupervisorAgent:
                 idx += 1
         aspect_hints = {}
         for item in aspect_map:
-            for aspect in item.get("aspect_refs") or []:
+            for aspect in item.get("aspect_terms") or []:
                 aspect_hints.setdefault(aspect, []).append(
                     {
                         "speaker": item.get("speaker"),
@@ -545,7 +592,7 @@ class SupervisorAgent:
         payload = {
             "review_guidance": (
                 "Map rebuttal points to aspect_review/sentiment_review actions where applicable. "
-                "Use aspect_refs mapping when available; if empty, infer from context cautiously. "
+                    "Use aspect_terms mapping when available; if empty, infer from context cautiously. "
                 "Include provenance in review reason fields using provenance_hint."
             ),
             "summary": summary.model_dump() if summary else {},
@@ -557,7 +604,7 @@ class SupervisorAgent:
             "mapping_stats": mapping_stats,
             "mapping_fail_reasons": mapping_fail_reasons,
             "provenance_template": "source:{speaker}/{stance}",
-            "fallback_mapping_policy": "If no aspect_refs, map to ATSA aspect with matching polarity_hint; otherwise highest-confidence aspect.",
+            "fallback_mapping_policy": "If no aspect_terms, map to ATSA aspect with matching polarity_hint; otherwise highest-confidence aspect.",
         }
         return json.dumps(payload, ensure_ascii=False)
 
@@ -617,19 +664,21 @@ class SupervisorAgent:
         stage1_atsa: AspectSentimentStage1Schema,
         polarity_hint: str,
     ) -> list[str]:
+        def _t(sent):
+            return (sent.aspect_term.term if sent.aspect_term else "") or ""
         sentiments = getattr(stage1_atsa, "aspect_sentiments", []) or []
         if not sentiments:
             return []
         if polarity_hint == "neutral":
-            refs = [s.aspect_ref for s in sentiments if s.aspect_ref]
+            refs = [_t(s) for s in sentiments if _t(s)]
             return [refs[0]] if len(set(refs)) == 1 else []
-        candidates = [s for s in sentiments if s.polarity == polarity_hint and s.aspect_ref]
+        candidates = [s for s in sentiments if s.polarity == polarity_hint and _t(s)]
         if not candidates:
-            candidates = [s for s in sentiments if s.aspect_ref]
+            candidates = [s for s in sentiments if _t(s)]
         if not candidates:
             return []
         best = max(candidates, key=lambda s: s.confidence)
-        return [best.aspect_ref] if best.aspect_ref else []
+        return [ _t(best)] if _t(best) else []
 
     @staticmethod
     def _stance_weight(stance: str) -> float:
@@ -742,14 +791,13 @@ class SupervisorAgent:
     def _backfill_sentiments(self, text: str, aspects: List[AspectExtractionItem], sentiments: List[AspectSentimentItem]):
         if not aspects:
             return sentiments
-        by_ref = {s.aspect_ref for s in sentiments}
+        by_term = {self._term_str(s) for s in sentiments if self._term_str(s)}
         for a in aspects:
-            if a.term not in by_ref:
+            if a.term not in by_term:
                 sentiments.append(
                     AspectSentimentItem(
-                        aspect_ref=a.term,
+                        aspect_term=AspectTerm(term=a.term, span=a.span),
                         polarity="neutral",
-                        opinion_term=None,
                         evidence=text,
                         confidence=0.5,
                         polarity_distribution={"neutral": 1.0},
@@ -759,12 +807,13 @@ class SupervisorAgent:
         return sentiments
 
     def _find_unanchored_aspects(self, ate: AspectExtractionStage1Schema, atsa: AspectSentimentStage1Schema) -> list[str]:
-        """Detect aspect_sentiments whose aspect_ref is not among ATE terms."""
+        """Detect aspect_sentiments whose aspect_term.term is not among ATE terms."""
         ate_terms = {a.term for a in getattr(ate, "aspects", [])}
         issues: list[str] = []
         for s in getattr(atsa, "aspect_sentiments", []):
-            if s.aspect_ref not in ate_terms:
-                issues.append(f"stage1_aspect_ref_not_in_ate:{s.aspect_ref}")
+            t = self._term_str(s)
+            if t and t not in ate_terms:
+                issues.append(f"stage1_aspect_term_not_in_ate:{t}")
         return issues
 
     def _enforce_stage2_review_only(self, agent: str, text_id: str, errors_path: str, payload: dict, forbid_keys: list[str]) -> None:
@@ -783,10 +832,10 @@ class SupervisorAgent:
                 raise RuntimeError(f"[stage2_structure_error] {agent} emitted forbidden key '{key}' for text_id={text_id}")
 
     @staticmethod
-    def _map_aspect_ref_to_terms(ref: str, aspect_terms: set[str]) -> str | None:
-        """Map aspect_ref to an existing ATE term via simple substring overlap."""
+    def _map_aspect_term_to_ate_terms(term_str: str, aspect_terms: set[str]) -> str | None:
+        """Map aspect_term.term to an existing ATE term via simple substring overlap."""
         for term in aspect_terms:
-            if term in ref or ref in term:
+            if term in term_str or term_str in term:
                 return term
         return None
 
@@ -831,7 +880,7 @@ class SupervisorAgent:
                 if prop_type == "FLIP_POLARITY" and target_aspect:
                     # Find matching sentiment and flip
                     for s in sentiments:
-                        if s.aspect_ref == target_aspect:
+                        if self._term_str(s) == target_aspect:
                             old_pol = s.polarity
                             new_pol = "negative" if old_pol == "positive" else "positive" if old_pol == "negative" else "neutral"
                             s.polarity = new_pol
@@ -846,7 +895,7 @@ class SupervisorAgent:
                 elif prop_type == "DROP_ASPECT" and target_aspect:
                     # Remove aspect and its sentiments
                     aspects = [a for a in aspects if a.term != target_aspect]
-                    sentiments = [s for s in sentiments if s.aspect_ref != target_aspect]
+                    sentiments = [s for s in sentiments if self._term_str(s) != target_aspect]
                     applied = True
                     reason = "dropped aspect and sentiments"
                 
@@ -868,7 +917,7 @@ class SupervisorAgent:
                     "reason": reason,
                 })
 
-        # Build provenance hints: aspect_ref -> "source:.../..."
+        # Build provenance hints: aspect_term (string) -> "source:.../..."
         provenance_map: dict[str, str] = {}
         if self.enable_debate_override and isinstance(debate_review_context, dict):
             for aspect, hints in (debate_review_context.get("aspect_hints") or {}).items():
@@ -878,12 +927,12 @@ class SupervisorAgent:
                     stance = h0.get("stance") or "unknown"
                     provenance_map[aspect] = f"source:{speaker}/{stance}"
 
-        def _append_provenance(reason: str, aspect_ref: str | None, existing_provenance: str | None) -> str:
+        def _append_provenance(reason: str, aspect_term_str: str | None, existing_provenance: str | None) -> str:
             if existing_provenance:
                 return reason
-            if not aspect_ref:
+            if not aspect_term_str:
                 return reason
-            hint = provenance_map.get(aspect_ref)
+            hint = provenance_map.get(aspect_term_str)
             if not hint:
                 return reason
             if hint in (reason or ""):
@@ -903,7 +952,7 @@ class SupervisorAgent:
                     aspects[idx].span = review.revised_span
             elif action in {"drop", "remove"}:
                 aspects = [a for a in aspects if a.term != term]
-                sentiments = [s for s in sentiments if s.aspect_ref != term]
+                sentiments = [s for s in sentiments if self._term_str(s) != term]
             elif action == "add":
                 if review.revised_span:
                     aspects.append(
@@ -918,21 +967,21 @@ class SupervisorAgent:
         # Apply ATSA review actions
         for review in getattr(stage2_atsa_review, "sentiment_review", []):
             action = (review.action or "maintain").lower()
-            aspect_ref = review.aspect_ref
+            target_term = review.aspect_term
             review_present = True
             if action in {"drop", "remove"}:
-                sentiments = [s for s in sentiments if s.aspect_ref != aspect_ref]
+                sentiments = [s for s in sentiments if self._term_str(s) != target_term]
                 continue
 
-            matching = [s for s in sentiments if s.aspect_ref == aspect_ref]
+            matching = [s for s in sentiments if self._term_str(s) == target_term]
 
             # Optionally add a sentiment if none existed but stage2 proposes one
             if not matching and action == "add" and review.revised_polarity:
                 sentiments.append(
                     AspectSentimentItem(
-                        aspect_ref=aspect_ref,
+                        aspect_term=AspectTerm(term=target_term, span=Span(start=0, end=0)),
                         polarity=review.revised_polarity,
-                        evidence=_append_provenance(review.reason or "", aspect_ref, getattr(review, "provenance", None)),
+                        evidence=_append_provenance(review.reason or "", target_term, getattr(review, "provenance", None)),
                         confidence=0.9,
                         polarity_distribution={review.revised_polarity: 0.9},
                     )
@@ -950,19 +999,19 @@ class SupervisorAgent:
                     new_span = getattr(review, "revised_opinion_span", None)
                     new_term = getattr(review, "revised_opinion_term", None)
                     if new_span:
-                        if sentiment.opinion_term:
-                            sentiment.opinion_term.span = new_span
+                        if sentiment.aspect_term:
+                            sentiment.aspect_term.span = new_span
                             if new_term:
-                                sentiment.opinion_term.term = new_term
+                                sentiment.aspect_term.term = new_term
                         else:
-                            sentiment.opinion_term = OpinionTerm(term=new_term or aspect_ref, span=new_span)
+                            sentiment.aspect_term = AspectTerm(term=new_term or target_term, span=new_span)
                 if action == "revise_opinion_term":
                     new_term = getattr(review, "revised_opinion_term", None)
                     if new_term:
-                        if sentiment.opinion_term:
-                            sentiment.opinion_term.term = new_term
+                        if sentiment.aspect_term:
+                            sentiment.aspect_term.term = new_term
                         else:
-                            sentiment.opinion_term = OpinionTerm(term=new_term, span=Span(start=0, end=0))
+                            sentiment.aspect_term = AspectTerm(term=new_term, span=Span(start=0, end=0))
 
         # Debate override: apply direct debate hints when Stage2 review was silent or weak
         if isinstance(debate_review_context, dict):
@@ -970,8 +1019,8 @@ class SupervisorAgent:
             min_margin = float(self.debate_override_cfg.get("min_margin", 0.8))
             min_target_conf = float(self.debate_override_cfg.get("min_target_conf", 0.7))
             aspect_hints = debate_review_context.get("aspect_hints") or {}
-            for aspect_ref, hints in aspect_hints.items():
-                if not aspect_ref or not isinstance(hints, list):
+            for aspect_term_str, hints in aspect_hints.items():
+                if not aspect_term_str or not isinstance(hints, list):
                     continue
                 pos_score = sum(float(h.get("weight") or 0) for h in hints if h.get("polarity_hint") == "positive")
                 neg_score = sum(float(h.get("weight") or 0) for h in hints if h.get("polarity_hint") == "negative")
@@ -984,11 +1033,11 @@ class SupervisorAgent:
                     continue
                 target_pol = "positive" if pos_score > neg_score else "negative"
 
-                matching = [s for s in sentiments if s.aspect_ref == aspect_ref]
+                matching = [s for s in sentiments if self._term_str(s) == aspect_term_str]
                 if not matching:
                     sentiments.append(
                         AspectSentimentItem(
-                            aspect_ref=aspect_ref,
+                            aspect_term=AspectTerm(term=aspect_term_str, span=Span(start=0, end=0)),
                             polarity=target_pol,
                             evidence="debate_override",
                             confidence=min_target_conf,
@@ -999,7 +1048,7 @@ class SupervisorAgent:
                     correction_applied_log.append(
                         {
                             "proposal_type": "DEBATE_OVERRIDE",
-                            "target_aspect": aspect_ref,
+                            "target_aspect": aspect_term_str,
                             "rationale": f"debate_hint {target_pol}",
                             "applied": True,
                             "reason": "debate_override_add",
@@ -1008,6 +1057,7 @@ class SupervisorAgent:
                     continue
                 for sentiment in matching:
                     if sentiment.confidence >= min_target_conf and sentiment.polarity == target_pol:
+                        self._override_stats["skipped_already_confident"] += 1
                         continue
                     old_pol = sentiment.polarity
                     sentiment.polarity = target_pol
@@ -1017,7 +1067,7 @@ class SupervisorAgent:
                     correction_applied_log.append(
                         {
                             "proposal_type": "DEBATE_OVERRIDE",
-                            "target_aspect": aspect_ref,
+                            "target_aspect": aspect_term_str,
                             "rationale": f"debate_hint {target_pol}",
                             "applied": True,
                             "reason": f"debate_override_flip {old_pol}->{target_pol}",
@@ -1029,23 +1079,24 @@ class SupervisorAgent:
         anchor_issues: list[str] = []
         mapped_sentiments: list[AspectSentimentItem] = []
         for s in sentiments:
-            mapped = self._map_aspect_ref_to_terms(s.aspect_ref, aspect_terms)
+            t = self._term_str(s)
+            mapped = self._map_aspect_term_to_ate_terms(t, aspect_terms)
             if mapped is None:
-                anchor_issues.append(f"dropped_unanchored_aspect_ref:{s.aspect_ref}")
+                anchor_issues.append(f"dropped_unanchored_aspect_term:{t}")
                 continue
-            if mapped != s.aspect_ref:
-                anchor_issues.append(f"mapped_aspect_ref:{s.aspect_ref}->{mapped}")
-                s.aspect_ref = mapped
+            if mapped != t:
+                anchor_issues.append(f"mapped_aspect_term:{t}->{mapped}")
+                s.aspect_term = AspectTerm(term=mapped, span=s.aspect_term.span if s.aspect_term else Span(start=0, end=0))
             mapped_sentiments.append(s)
 
-        sentiments = [s for s in mapped_sentiments if s.aspect_ref in aspect_terms]
+        sentiments = [s for s in mapped_sentiments if self._term_str(s) in aspect_terms]
 
         # If reviews existed but no sentiments remain, create a neutral placeholder on first aspect to keep confidence >0
         if review_present and not sentiments and aspect_terms:
-            fallback_ref = next(iter(aspect_terms))
+            fallback_term = next(iter(aspect_terms))
             sentiments.append(
                 AspectSentimentItem(
-                    aspect_ref=fallback_ref,
+                    aspect_term=AspectTerm(term=fallback_term, span=Span(start=0, end=0)),
                     polarity="neutral",
                     confidence=0.5,
                     evidence="stage2 review present; placeholder sentiment",

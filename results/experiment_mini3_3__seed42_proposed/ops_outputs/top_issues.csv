@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00589,valid,unknown,proposed,gpt-4.1-mini,363,389,0.0153,108766,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""판테놀"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""판테놀"",
+      ""syntactic_head"": ""주요성분"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장에서 '판테놀'은 '주"
+nikluge-sa-2022-train-00839,valid,unknown,proposed,gpt-4.1-mini,375,373,0.01494,94132,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""클렌징"",
+      ""span"": {""start"": 9, ""end"": 12},
+      ""normalized"": ""클렌징"",
+      ""syntactic_head"": ""하고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에 '#클렌징'으로 명"
+nikluge-sa-2022-train-01349,valid,unknown,proposed,gpt-4.1-mini,351,370,0.014610000000000001,91070,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""주머니"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""주머니"",
+      ""syntactic_head"": ""넣으면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""주머니에 넣으면 구문에서 "
+nikluge-sa-2022-train-00340,valid,unknown,proposed,gpt-4.1-mini,359,520,0.01919,90089,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""화학성분"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""화학성분"",
+      ""syntactic_head"": ""없이"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 '화학성분없"
+nikluge-sa-2022-train-00038,valid,unknown,proposed,gpt-4.1-mini,358,361,0.01441,88678,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""한 철"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""한 철"",
+      ""syntactic_head"": ""입다가"",
+      ""confidence"": 0.9,
+      ""rationale"": ""한 철은 '입다가'라는 동사"
+nikluge-sa-2022-train-00651,valid,unknown,proposed,gpt-4.1-mini,360,482,0.01806,87756,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""크림"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""크림"",
+      ""syntactic_head"": ""사용"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반 '크림 사용 전에'에"
+nikluge-sa-2022-train-02916,valid,unknown,proposed,gpt-4.1-mini,357,463,0.01746,87524,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""자외선"",
+      ""syntactic_head"": ""자극받은"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '자외선'이 '"
+nikluge-sa-2022-train-00089,valid,unknown,proposed,gpt-4.1-mini,348,263,0.01137,86306,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모냥"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""모양"",
+      ""syntactic_head"": ""빠져도"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반에 '모냥이 빠져도'라"
+nikluge-sa-2022-train-02272,valid,unknown,proposed,gpt-4.1-mini,340,306,0.012580000000000001,84758,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""스마트폰 삼각대"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""스마트폰 삼각대"",
+      ""syntactic_head"": ""추천"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반"
+nikluge-sa-2022-train-01452,valid,unknown,proposed,gpt-4.1-mini,363,379,0.015,84311,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""휴대용선풍기"",
+      ""span"": {""start"": 9, ""end"": 15},
+      ""normalized"": ""휴대용 선풍기"",
+      ""syntactic_head"": ""작아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '휴"
+nikluge-sa-2022-train-00216,valid,unknown,proposed,gpt-4.1-mini,342,353,0.014010000000000002,84280,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""두피"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""두피"",
+      ""syntactic_head"": ""보호"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '두피와 모발 보호' "
+nikluge-sa-2022-train-00466,valid,unknown,proposed,gpt-4.1-mini,370,395,0.01555,83543,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""루나 스틱 컨실러"",
+      ""span"": {""start"": 7, ""end"": 16},
+      ""normalized"": ""루나 스틱 컨실러"",
+      ""syntactic_head"": ""사용해봤는데"",
+      ""confidence"": 1.0,
+      ""rationale"": "
+nikluge-sa-2022-train-00407,valid,unknown,proposed,gpt-4.1-mini,338,277,0.011689999999999999,82819,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""내구성"",
+      ""span"": {""start"": 1, ""end"": 4},
+      ""normalized"": ""내구성"",
+      ""syntactic_head"": ""우수한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""‘내구성이 우수한’에서 ‘"
+nikluge-sa-2022-train-00465,valid,unknown,proposed,gpt-4.1-mini,348,210,0.00978,78023,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""한번 터치"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""한번 터치"",
+      ""syntactic_head"": ""커버되니까"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '한번"
+nikluge-sa-2022-train-01944,valid,unknown,proposed,gpt-4.1-mini,337,188,0.00901,77514,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""휴대"",
+      ""span"": {""start"": 6, ""end"": 8},
+      ""normalized"": ""휴대"",
+      ""syntactic_head"": ""편리한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '휴대가 편리한'이라"
+nikluge-sa-2022-train-01753,valid,unknown,proposed,gpt-4.1-mini,331,109,0.006580000000000001,76155,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""광택"",
+      ""span"": {""start"": 10, ""end"": 12},
+      ""normalized"": ""광택"",
+      ""syntactic_head"": ""촉촉한"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '광택'이 명사로 "
+nikluge-sa-2022-train-00842,valid,unknown,proposed,gpt-4.1-mini,358,307,0.01279,74406,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""뿌리는 마스크팩"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""마스크팩"",
+      ""syntactic_head"": ""밀착되니깐"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-00722,valid,unknown,proposed,gpt-4.1-mini,336,105,0.00651,73278,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""장미향"",
+      ""span"": {""start"": 6, ""end"": 9},
+      ""normalized"": ""장미향"",
+      ""syntactic_head"": ""좋음"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '장미향'이 '좋음"
+nikluge-sa-2022-train-00088,valid,unknown,proposed,gpt-4.1-mini,337,187,0.00898,72287,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""국산"",
+      ""span"": {""start"": 3, ""end"": 5},
+      ""normalized"": ""국산"",
+      ""syntactic_head"": ""살"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '국산'은 '살'이라는 동"
+nikluge-sa-2022-train-01073,valid,unknown,proposed,gpt-4.1-mini,333,231,0.01026,71134,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""세안후"",
+      ""span"": { ""start"": 0, ""end"": 3 },
+      ""normalized"": ""세안 후"",
+      ""syntactic_head"": ""촉촉하고요"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '세안후'"

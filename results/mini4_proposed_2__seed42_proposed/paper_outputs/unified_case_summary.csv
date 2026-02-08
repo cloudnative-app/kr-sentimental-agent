@@ -1,0 +1,11 @@
+uid,run_id,timestamp_utc,split,case_type,structural_risk,parse_failed,generate_failed,fallback_used,polarity_conflict,final_triplet_count,stage1_triplet_count,text_preview
+nikluge-sa-2022-train-02829,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,2,2,
+nikluge-sa-2022-train-00797,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,3,3,
+nikluge-sa-2022-train-00474,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,False,2,2,
+nikluge-sa-2022-train-01065,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,3,3,
+nikluge-sa-2022-train-01233,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,5,5,
+nikluge-sa-2022-train-01230,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,2,2,
+nikluge-sa-2022-train-01089,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,5,5,
+nikluge-sa-2022-train-00692,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,6,6,
+nikluge-sa-2022-train-01557,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,4,4,
+nikluge-sa-2022-train-02917,mini4_proposed_2__seed42_proposed,2026-02-08T10:58:02.092749Z,valid,unknown,False,False,False,False,True,5,5,

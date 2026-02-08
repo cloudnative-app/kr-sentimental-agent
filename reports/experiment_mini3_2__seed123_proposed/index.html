@@ -1,0 +1,175 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Run Report - experiment_mini3_2__seed123_proposed</title><style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1, h2 { margin-bottom: 6px; }
+    .badge { padding: 6px 10px; border-radius: 6px; color: white; display: inline-block; }
+    .PASS { background: #2e8b57; }
+    .WARN { background: #f0ad4e; }
+    .FAIL { background: #d9534f; }
+    .NA { background: #777; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+    th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; vertical-align: top; }
+    th { background: #f5f5f5; }
+    details { margin: 10px 0; }
+    .warning-banner { background: #fff3cd; border: 2px solid #f0ad4e; padding: 12px; margin: 12px 0; border-radius: 6px; }
+    .error-banner { background: #f8d7da; border: 2px solid #d9534f; padding: 12px; margin: 12px 0; border-radius: 6px; }
+    </style></head><body><h1>Run Report: experiment_mini3_2__seed123_proposed</h1><div><strong>Timestamp:</strong> 2026-02-03T09:29:46.332175Z &nbsp; <strong>cfg_hash:</strong> 05a2a33fb96aa7f3e8875b8652815524b6f891060e82e9dd5ebcca97d75fce7d &nbsp; <strong>backbone:</strong> gpt-4.1-mini &nbsp; <strong>purpose:</strong> paper</div><h2>Overall Verdict <span class="badge FAIL">FAIL</span></h2><table><thead><tr><th>Gate</th><th>Value</th><th>Verdict</th><th>Thresholds</th><th>Meaning</th><th>Criterion</th></tr></thead><tbody><tr><td>parse_failed_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.02}; warn: {'lte': 0.02}; pass: {'lte': 0.005}</td><td>출력 파싱 실패 비율</td><td>스키마/포맷 붕괴 여부의 1차 스모크 지표</td></tr><tr><td>generate_failed_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.01}; warn: {'lte': 0.01}; pass: {'lte': 0.003}</td><td>LLM 호출/생성 실패 비율</td><td>런 안정성(레이트리밋/네트워크/모델 오류) 지표</td></tr><tr><td>fallback_used_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.01}</td><td>fallback 사용 비율</td><td>정상 경로 실패를 우회한 정도(품질 리스크)</td></tr><tr><td>empty_output_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>빈 출력 비율(aspect 0개 등)</td><td>실질적 무응답/측정불능 비율</td></tr><tr><td>latency_ms_p95</td><td>90764.44999999998</td><td>WARN</td><td>fail: {'gt': 15000}; warn: {'lte': 15000}; pass: {'lte': 8000}</td><td>지연시간 p95 (ms)</td><td>운영 응답성/타임아웃 리스크 (paper/main: 엄격)</td></tr><tr><td>cost_usd_sum</td><td>0.30891</td><td>PASS</td><td>fail: {'gt': 15.0}; warn: {'lte': 15.0}; pass: {'lte': 5.0}</td><td>총 비용(USD)</td><td>런 단위 비용 상한선(운영 안전장치)</td></tr><tr><td>split_overlap_any_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.0}</td><td>split 간 중복 데이터 비율(train/valid/test 교집합)</td><td>일반화 검증 무결성(0이어야 함)</td></tr><tr><td>pass_rate</td><td>0.1</td><td>FAIL</td><td>fail: {'lt': 0.94}; warn: {'gte': 0.94}; pass: {'gte': 0.97}</td><td>전체 패스 비율(정의된 검증 기준 통과)</td><td>프레임워크 규칙 준수/구조적 타당도</td></tr><tr><td>valid_aspect_rate</td><td>0.9666666666666667</td><td>PASS</td><td>fail: {'lt': 0.92}; warn: {'gte': 0.92}; pass: {'gte': 0.95}</td><td>유효 aspect 비율</td><td>aspect 추출의 기본 건전성</td></tr><tr><td>polarity_conflict_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>동일 aspect polarity 충돌 비율</td><td>구조적 일관성(상충 출력) 리스크</td></tr><tr><td>structural_risk_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.02}</td><td>Structural Risk 비율</td><td>규칙 기반 구조 검증에서 위험 신호</td></tr><tr><td>targetless_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>Targetless 비율</td><td>aspect/opinion/target 연결 붕괴</td></tr><tr><td>unanchored_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>Unanchored 비율(span이 원문에 없거나 비정상)</td><td>추출 정합성(anchoring) 실패</td></tr><tr><td>self_consistency_exact</td><td></td><td>N/A</td><td>fail: {'lt': 0.9}; warn: {'gte': 0.9}; pass: {'gte': 0.95}</td><td>Self-consistency(동일 입력 반복 일치율)</td><td>출력 안정성/재현성</td></tr></tbody></table><details><summary>Ops table</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>split</th><th>n</th><th>parse_failed_rate</th><th>generate_failed_rate</th><th>fallback_used_rate</th><th>tokens_in_mean</th><th>tokens_out_mean</th><th>cost_usd_sum</th><th>latency_ms_p50</th><th>latency_ms_p95</th><th>retries_mean</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>valid</td><td>30</td><td>0</td><td>0</td><td>0</td><td>344.8</td><td>228.3</td><td>0.30891</td><td>69112.5</td><td>90764.44999999998</td><td>0</td></tr></tbody></table></details><details><summary>Top issues</summary><table><thead><tr><th>uid</th><th>split</th><th>case_type</th><th>runner_name</th><th>backbone_model_id</th><th>tokens_in</th><th>tokens_out</th><th>cost_usd</th><th>latency_ms</th><th>retries</th><th>flags</th><th>text_preview</th><th>raw_output_preview</th></tr></thead><tbody><tr><td>nikluge-sa-2022-train-00340</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>359</td><td>486</td><td>0.01817</td><td>94470</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "화학성분",
+      "span": {"start": 0, "end": 5},
+      "normalized": "화학성분",
+      "syntactic_head": "없이",
+      "confidence": 0.95,
+      "rationale": "문장에서 '화학성분없이'</td></tr><tr><td>nikluge-sa-2022-train-00651</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>360</td><td>482</td><td>0.01806</td><td>93374</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "크림",
+      "span": {"start": 0, "end": 2},
+      "normalized": "크림",
+      "syntactic_head": "사용",
+      "confidence": 0.95,
+      "rationale": "문장 초반 '크림 사용 전에'에</td></tr><tr><td>nikluge-sa-2022-train-01452</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>363</td><td>377</td><td>0.01494</td><td>87575</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "휴대용선풍기",
+      "span": {"start": 10, "end": 16},
+      "normalized": "휴대용 선풍기",
+      "syntactic_head": "작아",
+      "confidence": 0.95,
+      "rationale": "문장에서 '</td></tr><tr><td>nikluge-sa-2022-train-02916</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>357</td><td>467</td><td>0.01758</td><td>85339</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "자외선",
+      "span": {"start": 0, "end": 3},
+      "normalized": "자외선",
+      "syntactic_head": "자극받은",
+      "confidence": 0.95,
+      "rationale": "문장에서 '자외선'이 '</td></tr><tr><td>nikluge-sa-2022-train-00089</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>348</td><td>283</td><td>0.01197</td><td>76058</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "모냥",
+      "span": {"start": 0, "end": 2},
+      "normalized": "모양",
+      "syntactic_head": "빠져도",
+      "confidence": 0.9,
+      "rationale": "문장 초반에 '모냥이 빠져도'라</td></tr><tr><td>nikluge-sa-2022-train-01349</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>351</td><td>301</td><td>0.012539999999999999</td><td>75810</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "주머니",
+      "span": {"start": 0, "end": 3},
+      "normalized": "주머니",
+      "syntactic_head": "넣으면",
+      "confidence": 0.95,
+      "rationale": "주머니에 넣으면 구문에서 </td></tr><tr><td>nikluge-sa-2022-train-02272</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>340</td><td>264</td><td>0.01132</td><td>75099</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "스마트폰 삼각대",
+      "span": {"start": 0, "end": 7},
+      "normalized": "스마트폰 삼각대",
+      "syntactic_head": "추천",
+      "confidence": 0.95,
+      "rationale": "문장 시작</td></tr><tr><td>nikluge-sa-2022-train-00407</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>338</td><td>284</td><td>0.011899999999999999</td><td>73440</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "내구성",
+      "span": {"start": 1, "end": 4},
+      "normalized": "내구성",
+      "syntactic_head": "우수한",
+      "confidence": 0.95,
+      "rationale": "문장에서 '내구성이 우수한</td></tr><tr><td>nikluge-sa-2022-train-00839</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>375</td><td>346</td><td>0.01413</td><td>71949</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "클렌징",
+      "span": {"start": 9, "end": 12},
+      "normalized": "클렌징",
+      "syntactic_head": "하고",
+      "confidence": 0.95,
+      "rationale": "문장에서 '#클렌징 하고'</td></tr><tr><td>nikluge-sa-2022-train-00088</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>337</td><td>100</td><td>0.006370000000000001</td><td>71828</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "국산",
+      "span": {"start": 3, "end": 5},
+      "normalized": "국산",
+      "syntactic_head": "살",
+      "confidence": 0.9,
+      "rationale": "문장에서 '국산'은 '살'이라는 동</td></tr><tr><td>nikluge-sa-2022-train-00589</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>363</td><td>393</td><td>0.01542</td><td>70811</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "판테놀",
+      "span": {"start": 0, "end": 4},
+      "normalized": "판테놀",
+      "syntactic_head": "주요성분",
+      "confidence": 0.95,
+      "rationale": "문장에서 '판테놀'은 '</td></tr><tr><td>nikluge-sa-2022-train-00038</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>358</td><td>370</td><td>0.01468</td><td>70779</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "한 철",
+      "span": {"start": 0, "end": 3},
+      "normalized": "한 철",
+      "syntactic_head": "입다가",
+      "confidence": 0.9,
+      "rationale": "한 철은 '입다가'라는 동사</td></tr><tr><td>nikluge-sa-2022-train-00216</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>342</td><td>353</td><td>0.014010000000000002</td><td>70655</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "두피",
+      "span": {"start": 7, "end": 9},
+      "normalized": "두피",
+      "syntactic_head": "보호",
+      "confidence": 0.95,
+      "rationale": "문장에서 '두피와 모발 보호' </td></tr><tr><td>nikluge-sa-2022-train-01944</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>337</td><td>182</td><td>0.008830000000000001</td><td>70201</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "휴대",
+      "span": {"start": 6, "end": 8},
+      "normalized": "휴대",
+      "syntactic_head": "편리한",
+      "confidence": 0.95,
+      "rationale": "문장에서 '휴대'가 '편리한'</td></tr><tr><td>nikluge-sa-2022-train-00465</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>348</td><td>130</td><td>0.007379999999999999</td><td>69765</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "인생컨실러",
+      "span": {"start": 21, "end": 26},
+      "normalized": "인생 컨실러",
+      "syntactic_head": "수식하다",
+      "confidence": 0.95,
+      "rationale": "문장에서 '</td></tr><tr><td>nikluge-sa-2022-train-00466</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>370</td><td>382</td><td>0.01516</td><td>68460</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "루나 스틱 컨실러",
+      "span": {"start": 7, "end": 16},
+      "normalized": "루나 스틱 컨실러",
+      "syntactic_head": "사용해봤는데",
+      "confidence": 0.95,
+      "rationale":</td></tr><tr><td>nikluge-sa-2022-train-01073</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>333</td><td>216</td><td>0.00981</td><td>68189</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "세안후",
+      "span": {"start": 0, "end": 3},
+      "normalized": "세안 후",
+      "syntactic_head": "촉촉하고요",
+      "confidence": 0.9,
+      "rationale": "문장에서 '세안후'는 </td></tr><tr><td>nikluge-sa-2022-train-00842</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>358</td><td>316</td><td>0.013059999999999999</td><td>67846</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "뿌리는 마스크팩",
+      "span": {"start": 0, "end": 8},
+      "normalized": "마스크팩",
+      "syntactic_head": "흘러내리지",
+      "confidence": 0.95,
+      "rationale": "문장에서 '</td></tr><tr><td>nikluge-sa-2022-train-02843</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>338</td><td>106</td><td>0.00656</td><td>65623</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "발",
+      "span": {"start": 0, "end": 1},
+      "normalized": "발",
+      "syntactic_head": "되게 부드럽게 밀착",
+      "confidence": 0.95,
+      "rationale": "문장 첫 부분에 명시</td></tr><tr><td>nikluge-sa-2022-train-01753</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>331</td><td>112</td><td>0.006670000000000001</td><td>63818</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "광택",
+      "span": {"start": 10, "end": 12},
+      "normalized": "광택",
+      "syntactic_head": "촉촉한",
+      "confidence": 0.9,
+      "rationale": "문장에서 '광택'이 명사로 </td></tr></tbody></table></details><details open><summary>Paper Table 3 (main results)</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>timestamp_utc</th><th>pass_rate</th><th>valid_aspect_rate</th><th>polarity_conflict_rate</th><th>unanchored_rate</th><th>self_consistency_exact</th><th>parse_failure_rate</th><th>generate_failure_rate</th><th>fallback_used_rate</th><th>cost_usd_mean</th><th>cost_usd_std</th><th>latency_ms_mean</th><th>latency_ms_std</th><th>tokens_in_mean</th><th>tokens_in_std</th><th>tokens_out_mean</th><th>tokens_out_std</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>2026-02-03T09:29:46.332175Z</td><td>0.1</td><td>0.9666666666666667</td><td>0.0</td><td>0.0</td><td></td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.010297</td><td>0.0043411696964451105</td><td>68913</td><td>10996.093760968028</td><td>344.8</td><td>13.43478073261091</td><td>228.3</td><td>140.98419533172267</td></tr></tbody></table></details><details open><summary>Paper Table 4 (failure breakdown)</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>structural_risk_rate</th><th>structural_risk</th><th>unanchored_rate</th><th>unanchored_aspect_ref</th><th>targetless_rate</th><th>targetless</th><th>polarity_conflict_count</th><th>polarity_conflict_rate</th><th>parse_failed</th><th>generate_failed</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>0.0</td><td>0</td><td>0.0</td><td>0</td><td>0.0</td><td>0</td><td>0</td><td>0.0</td><td>0</td><td>0</td></tr></tbody></table></details></body></html>

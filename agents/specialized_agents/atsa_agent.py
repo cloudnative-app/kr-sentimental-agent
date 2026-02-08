@@ -60,7 +60,7 @@ class ATSAAgent:
         domain_id: str = "unknown",
         extra_context: str | None = None,
     ) -> StructuredResult[AspectSentimentStage2Schema]:
-        extra_instruction = "\nInstruction: Use only ATE terms verbatim for aspect_ref."
+        extra_instruction = "\nInstruction: Output aspect_term (term + span) for the aspect surface form from the sentence; use ATE term/span when applicable."
         system_prompt = (
             load_prompt("atsa_stage2")
             + extra_instruction

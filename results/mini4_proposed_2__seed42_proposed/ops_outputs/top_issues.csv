@@ -1,0 +1,94 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01089,valid,unknown,proposed,gpt-4.1-mini,356,390,0.01526,81551,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""화이트 베이스"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""화이트 베이스"",
+      ""syntactic_head"": ""높이구"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-01233,valid,unknown,proposed,gpt-4.1-mini,357,388,0.01521,75947,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""싱크대거름망"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""싱크대 거름망"",
+      ""syntactic_head"": ""만들어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 "
+nikluge-sa-2022-train-00692,valid,unknown,proposed,gpt-4.1-mini,361,484,0.01813,75220,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""와플모양의 순면패드"",
+      ""span"": {""start"": 0, ""end"": 11},
+      ""normalized"": ""순면패드"",
+      ""syntactic_head"": ""지워주면서도"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장"
+nikluge-sa-2022-train-01557,valid,unknown,proposed,gpt-4.1-mini,342,286,0.012,70661,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""미생물 발효기술"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""미생물 발효기술"",
+      ""syntactic_head"": ""이용한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫"
+nikluge-sa-2022-train-00474,valid,unknown,proposed,gpt-4.1-mini,322,96,0.0061,68718,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""인정"",
+      ""span"": {
+        ""start"": 0,
+        ""end"": 2
+      },
+      ""normalized"": ""인정"",
+      ""syntactic_head"": """",
+      ""confidence"": 0.9,
+      ""rationale"
+nikluge-sa-2022-train-01065,valid,unknown,proposed,gpt-4.1-mini,349,207,0.0097,66308,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""하루 한장"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""하루 한장"",
+      ""syntactic_head"": ""뜯어 사용후"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '하루"
+nikluge-sa-2022-train-00797,valid,unknown,proposed,gpt-4.1-mini,344,185,0.008990000000000001,65274,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""순한 성분"",
+      ""span"": {""start"": 18, ""end"": 23},
+      ""normalized"": ""순한 성분"",
+      ""syntactic_head"": ""사용 가능"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '"
+nikluge-sa-2022-train-02917,valid,unknown,proposed,gpt-4.1-mini,350,386,0.01508,60486,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""수분 공급"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""수분 공급"",
+      ""syntactic_head"": ""만들어주어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '수분"
+nikluge-sa-2022-train-02829,valid,unknown,proposed,gpt-4.1-mini,339,105,0.00654,59416,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부톤"",
+      ""span"": {""start"": 11, ""end"": 14},
+      ""normalized"": ""피부톤"",
+      ""syntactic_head"": ""맑아지는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '피부톤'이"
+nikluge-sa-2022-train-01230,valid,unknown,proposed,gpt-4.1-mini,336,109,0.0066300000000000005,55441,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""퀄리티"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""퀄리티"",
+      ""syntactic_head"": ""대박이고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트 내 '퀄리티'라는"

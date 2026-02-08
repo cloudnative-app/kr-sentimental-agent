@@ -1,0 +1,10 @@
+{"uid": "nikluge-sa-2022-train-02829", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00797", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00474", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01065", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}, {"aspect_ref": "제품 전체#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01233", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "옥수수전분으로 만들어 자연분해돼는 친환경제품", "polarity": "positive", "span": {"start": 20, "end": 44}}]}
+{"uid": "nikluge-sa-2022-train-01230", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}, {"aspect_ref": "제품 전체#디자인", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01089", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00692", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01557", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "가슴크림", "polarity": "positive", "span": {"start": 25, "end": 29}}]}
+{"uid": "nikluge-sa-2022-train-02917", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "담젤크림", "polarity": "positive", "span": {"start": 41, "end": 45}}]}

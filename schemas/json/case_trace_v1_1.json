@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "CaseTraceV1_1",
+  "title": "CaseTraceV1_1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_meta",
+    "case_id",
+    "input_signature",
+    "stage1_output",
+    "debate_log",
+    "memory_bundle",
+    "final_output",
+    "risk",
+    "override",
+    "coverage"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "run_meta": {
+      "type": "object",
+      "required": ["run_id", "condition", "seed", "timestamp"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "condition": { "type": "string", "enum": ["C1", "C2", "C2_silent"] },
+        "seed": { "type": "integer" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "case_id": { "type": "string" },
+    "input_signature": { "$ref": "episodic_memory_entry_v1_1.json#/properties/input_signature" },
+    "stage1_output": { "$ref": "episodic_memory_entry_v1_1.json#/$defs/StageSnapshot" },
+    "debate_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["round", "speaker", "stance", "message", "confidence"],
+        "properties": {
+          "round": { "type": "integer", "minimum": 1 },
+          "speaker": { "type": "string" },
+          "stance": { "type": "string", "enum": ["pro", "con", "neutral"] },
+          "message": { "type": "string", "maxLength": 600 },
+          "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "memory_bundle": { "$ref": "advisory_bundle_v1_1.json" },
+    "final_output": { "$ref": "episodic_memory_entry_v1_1.json#/$defs/StageSnapshot" },
+    "risk": {
+      "type": "object",
+      "required": ["flagged", "residual", "severity_before", "severity_after", "tags_before", "tags_after"],
+      "properties": {
+        "flagged": { "type": "boolean" },
+        "residual": { "type": "boolean" },
+        "severity_before": { "type": "number", "minimum": 0.0 },
+        "severity_after": { "type": "number", "minimum": 0.0 },
+        "tags_before": { "type": "array", "items": { "type": "string" } },
+        "tags_after": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "override": {
+      "type": "object",
+      "required": ["eligible", "applied", "success", "harm", "accepted_changes", "rejected_changes"],
+      "properties": {
+        "eligible": { "type": "boolean" },
+        "applied": { "type": "boolean" },
+        "success": { "type": "boolean" },
+        "harm": { "type": "boolean" },
+        "accepted_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["change_id", "reasoning"],
+            "properties": {
+              "change_id": { "type": "string" },
+              "reasoning": { "type": "string", "maxLength": 400 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "rejected_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["change_id", "reasoning"],
+            "properties": {
+              "change_id": { "type": "string" },
+              "reasoning": { "type": "string", "maxLength": 400 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["risk_tag_to_principle_mapped", "mapping_coverage_hit"],
+      "properties": {
+        "risk_tag_to_principle_mapped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["risk_tag", "principle_id"],
+            "properties": {
+              "risk_tag": { "type": "string" },
+              "principle_id": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "mapping_coverage_hit": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

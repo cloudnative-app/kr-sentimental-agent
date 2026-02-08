@@ -263,16 +263,17 @@ def run_single_pipeline(config_path: Path, run_id: str, mode: str, profile: str,
     derived_dir = run_dir / "derived"
     reports_dir = PROJECT_ROOT / "reports" / f"{run_id}_{mode}"
 
+    prefix = f"[{run_id}]"
     print("\n" + "=" * 60)
-    print("ABSA Pipeline Runner")
+    print(f"{prefix} ABSA Pipeline Runner")
     print("=" * 60)
-    print(f"Config:    {config_path}")
-    print(f"Run ID:    {run_id}")
-    print(f"Mode:      {mode}")
-    print(f"Profile:   {profile}")
-    print(f"Run dir:   {run_dir}")
-    print(f"Derived:   {derived_dir}")
-    print(f"Reports:   {reports_dir}")
+    print(f"{prefix} Config:    {config_path}")
+    print(f"{prefix} Run ID:    {run_id}")
+    print(f"{prefix} Mode:      {mode}")
+    print(f"{prefix} Profile:   {profile}")
+    print(f"{prefix} Run dir:   {run_dir}")
+    print(f"{prefix} Derived:   {derived_dir}")
+    print(f"{prefix} Reports:   {reports_dir}")
     print("=" * 60)
 
     # Validate config exists

@@ -195,7 +195,8 @@ class BackboneClient:
                     aspects.append(rh)
                 return aspects or [_clause_aspect(text, 0)]
 
-            def _opinion_term(text: str, start_after: int):
+            def _aspect_term_span(text: str, start_after: int):
+                """Return (term_text, start, end) for aspect surface form in text."""
                 m = token_pattern.search(text, start_after)
                 if m:
                     return m.group(0), m.start(), m.end()
@@ -235,7 +236,7 @@ class BackboneClient:
             elif "ATSA" in stage and "reanalysis" not in stage:
                 sentiments = []
                 for i, (term, s, e) in enumerate(aspects_raw):
-                    op_term, op_s, op_e = _opinion_term(user_text, e)
+                    at_term, at_s, at_e = _aspect_term_span(user_text, e)
                     pol_i = "positive"
                     if contrast:
                         pol_i = "negative" if i == 1 else "positive"
@@ -243,10 +244,9 @@ class BackboneClient:
                         pol_i = pol
                     sentiments.append(
                         {
-                            "aspect_ref": term,
+                            "aspect_term": {"term": at_term, "span": {"start": at_s, "end": at_e}},
                             "polarity": pol_i,
-                            "opinion_term": {"term": op_term, "span": {"start": op_s, "end": op_e}},
-                            "evidence": user_text[max(0, s - 2) : min(len(user_text), op_e + 6)],
+                            "evidence": user_text[max(0, s - 2) : min(len(user_text), at_e + 6)],
                             "confidence": 0.8 if i == 0 else 0.7,
                             "polarity_distribution": {pol_i: 0.8, "neutral": 0.1},
                             "is_implicit": False,
@@ -268,7 +268,7 @@ class BackboneClient:
                     payload = {
                         "sentiment_review": [
                             {
-                                "aspect_ref": aspects_raw[0][0],
+                                "aspect_term": aspects_raw[0][0],
                                 "action": "flip_polarity",
                                 "revised_polarity": "negative",
                                 "reason": "mock flip on negation keyword",

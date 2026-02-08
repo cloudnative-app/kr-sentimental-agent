@@ -1,4 +1,4 @@
-﻿"""
+"""
 Provider dry-run: verify real backbone connectivity through SupervisorAgent (same path as schema_validation_test).
 
 Usage (example):
@@ -134,12 +134,16 @@ def _filter_sentiment_list(lst: List[Any]) -> List[Any]:
         if not isinstance(s, dict):
             continue
 
+        at = s.get("aspect_term")
         opinion_term = s.get("opinion_term") or {}
         if not isinstance(opinion_term, dict):
             opinion_term = {}
-
-        ref = s.get("aspect_ref") or s.get("target")
-        span = s.get("span") or s.get("opinion_span") or opinion_term.get("span")
+        if isinstance(at, dict):
+            ref = (at.get("term") or "").strip()
+            span = at.get("span") or opinion_term.get("span")
+        else:
+            ref = (s.get("aspect_term") if isinstance(s.get("aspect_term"), str) else "") or (opinion_term.get("term") or "").strip() or s.get("aspect_ref") or s.get("target")
+            span = s.get("span") or s.get("opinion_span") or opinion_term.get("span")
         start = span.get("start") if isinstance(span, dict) else None
         end = span.get("end") if isinstance(span, dict) else None
         label = s.get("polarity") or s.get("label")

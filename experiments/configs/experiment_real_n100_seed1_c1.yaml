@@ -1,0 +1,52 @@
+# C1 (no memory): real 규칙, N=100 valid, seed=1. b1 스타일.
+# mini4 기준 C1=b1. DEBATE_CONTEXT__MEMORY 슬롯 존재하나 빈 값.
+run_purpose: paper
+run_id: experiment_real_n100_seed1_c1
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  leakage_guard: true
+
+episodic_memory:
+  condition: C1
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real_n100_seed1/train.csv
+  valid_file: real_n100_seed1/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real_n100_seed1/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 1
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [1]
+  concurrency: 1

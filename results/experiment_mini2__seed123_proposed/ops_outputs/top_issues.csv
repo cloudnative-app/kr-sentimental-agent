@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,413,666,0.02411,104937,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""얼음정수기 기능"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""얼음정수기 기능"",
+      ""syntactic_head"": ""갖고 있어야"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문"
+nikluge-sa-2022-train-01901,valid,unknown,proposed,gpt-4.1-mini,346,356,0.014139999999999998,94409,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""갈라지는 발"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""발"",
+      ""syntactic_head"": ""사용가능"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에 명시된"
+nikluge-sa-2022-train-02858,valid,unknown,proposed,gpt-4.1-mini,363,302,0.01269,91793,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""미생물"",
+      ""span"": {""start"": 8, ""end"": 11},
+      ""normalized"": ""미생물"",
+      ""syntactic_head"": ""테스트하고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '미생물'은"
+nikluge-sa-2022-train-01012,valid,unknown,proposed,gpt-4.1-mini,349,401,0.015519999999999999,91243,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""7L 초대용량"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""7L 대용량"",
+      ""syntactic_head"": ""인데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 '"
+nikluge-sa-2022-train-01814,valid,unknown,proposed,gpt-4.1-mini,339,210,0.00969,89463,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""미백주름개선"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""미백 주름 개선"",
+      ""syntactic_head"": ""발라도"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 시작 "
+nikluge-sa-2022-train-02891,valid,unknown,proposed,gpt-4.1-mini,357,435,0.016620000000000003,86267,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""천연재료"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""천연재료"",
+      ""syntactic_head"": ""이용하여"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 시작 부분에 명"
+nikluge-sa-2022-train-00792,valid,unknown,proposed,gpt-4.1-mini,345,373,0.01464,84545,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""기존 궐련형 전자담배"",
+      ""span"": {""start"": 0, ""end"": 10},
+      ""normalized"": ""기존 궐련형 전자담배"",
+      ""syntactic_head"": ""보완하고"",
+      ""confidence"": 0.95,
+      ""rationale"
+nikluge-sa-2022-train-02207,valid,unknown,proposed,gpt-4.1-mini,329,101,0.006319999999999999,82933,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""밀착"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '피부에 밀착' 구문에"
+nikluge-sa-2022-train-00672,valid,unknown,proposed,gpt-4.1-mini,356,490,0.01826,81283,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""에스테틱"",
+      ""span"": {""start"": 3, ""end"": 7},
+      ""normalized"": ""에스테틱"",
+      ""syntactic_head"": ""가지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""에스테틱이 피부과와 대비되"
+nikluge-sa-2022-train-02753,valid,unknown,proposed,gpt-4.1-mini,340,188,0.00904,80209,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""착한성분"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""착한 성분"",
+      ""syntactic_head"": ""자극없어서"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '착한성분"
+nikluge-sa-2022-train-01692,valid,unknown,proposed,gpt-4.1-mini,369,296,0.01257,80027,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""부시시함"",
+      ""span"": {""start"": 9, ""end"": 12},
+      ""normalized"": ""부시시함"",
+      ""syntactic_head"": ""이었는데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""히피펌 후 상태를 "
+nikluge-sa-2022-train-01050,valid,unknown,proposed,gpt-4.1-mini,375,449,0.01722,79874,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 3, ""end"": 5},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""예민한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '피부가 예민한 편'"
+nikluge-sa-2022-train-00449,valid,unknown,proposed,gpt-4.1-mini,358,313,0.01297,79470,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""트러블성 피부"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""트러블성 피부"",
+      ""syntactic_head"": ""좋다고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-01919,valid,unknown,proposed,gpt-4.1-mini,333,221,0.00996,79104,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""골라쓰기"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '피부에따라'라는 표"
+nikluge-sa-2022-train-01876,valid,unknown,proposed,gpt-4.1-mini,346,408,0.0157,79034,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""쫀쫀하며"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""쫀쫀함"",
+      ""syntactic_head"": ""좋으며"",
+      ""confidence"": 0.9,
+      ""rationale"": ""텍스트에서 '쫀쫀하며'는 "
+nikluge-sa-2022-train-00764,valid,unknown,proposed,gpt-4.1-mini,336,112,0.00672,78333,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#승무원비누"",
+      ""span"": {""start"": 5, ""end"": 11},
+      ""normalized"": ""#승무원비누"",
+      ""syntactic_head"": ""유명하죠"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에 '#"
+nikluge-sa-2022-train-02099,valid,unknown,proposed,gpt-4.1-mini,345,203,0.00954,77767,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""높은 등받이"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""등받이"",
+      ""syntactic_head"": ""잡아주어서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '높은 "
+nikluge-sa-2022-train-01105,valid,unknown,proposed,gpt-4.1-mini,362,412,0.01598,76292,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모기나 벌레"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""모기 및 벌레"",
+      ""syntactic_head"": ""알러지반응"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 "
+nikluge-sa-2022-train-00409,valid,unknown,proposed,gpt-4.1-mini,340,358,0.01414,76246,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""넷기어앱"",
+      ""span"": {""start"": 1, ""end"": 6},
+      ""normalized"": ""넷기어 앱"",
+      ""syntactic_head"": ""다운시"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '넷기어앱'"
+nikluge-sa-2022-train-00098,valid,unknown,proposed,gpt-4.1-mini,336,98,0.0063,76157,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""삼선"",
+      ""span"": {""start"": 9, ""end"": 11},
+      ""normalized"": ""삼선"",
+      ""syntactic_head"": ""없다"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장에서 '삼선'은 '없다'라는"

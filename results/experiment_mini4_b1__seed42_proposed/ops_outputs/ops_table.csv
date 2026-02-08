@@ -1,0 +1,2 @@
+runner_name,backbone_model_id,split,n,parse_failed_rate,generate_failed_rate,fallback_used_rate,tokens_in_mean,tokens_out_mean,cost_usd_sum,latency_ms_p50,latency_ms_p95,retries_mean
+proposed,gpt-4.1-mini,valid,10,0,0,0,345.6,271,0.11586,74433.0,82098.29999999999,0

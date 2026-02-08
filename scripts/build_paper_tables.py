@@ -19,6 +19,10 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
+# Ensure project root is on path when run as script (e.g. python scripts/build_paper_tables.py)
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 # ---------- IO helpers ----------
 
@@ -56,9 +60,19 @@ def normalize_text(text: Optional[str]) -> str:
 Triplet = Tuple[str, str, str]
 
 
+def _aspect_term_text(sent: Dict) -> str:
+    """Aspect surface-form text from aspect_term (AspectTerm.term or string) or legacy opinion_term.term."""
+    at = sent.get("aspect_term")
+    if isinstance(at, dict) and at.get("term") is not None:
+        return (at.get("term") or "").strip()
+    if isinstance(at, str):
+        return at.strip()
+    return ((sent.get("opinion_term") or {}).get("term") or "").strip()
+
+
 def triplet_from_sentiment(sent: Dict) -> Triplet:
     aspect = normalize_text(sent.get("aspect_ref") or sent.get("term"))
-    opinion = normalize_text((sent.get("opinion_term") or {}).get("term"))
+    opinion = normalize_text(_aspect_term_text(sent))
     polarity = normalize_text(sent.get("polarity") or sent.get("label"))
     return (aspect, opinion, polarity)
 
@@ -94,10 +108,9 @@ def extract_stage2_triplets(sc_row: Dict) -> Set[Triplet]:
 
 
 def extract_gold_triplets(sc_row: Dict) -> Optional[Set[Triplet]]:
-    gold = sc_row.get("gold_triplets") or sc_row.get("inputs", {}).get("gold_triplets")
-    if isinstance(gold, list):
-        return triplets_from_list(gold)
-    return None
+    """Gold as set of (aspect_ref, aspect_term, polarity). Accepts gold_tuples or gold_triplets. F1 uses (aspect_term, polarity) only; aspect_ref only for gold."""
+    from metrics.eval_tuple import gold_tuple_set_from_record
+    return gold_tuple_set_from_record(sc_row)
 
 
 def has_structural_risk(sc_row: Dict) -> bool:
@@ -117,7 +130,7 @@ def has_structural_risk(sc_row: Dict) -> bool:
 
 def has_unanchored_ref(sc_row: Dict) -> bool:
     analysis = sc_row.get("analysis_flags") or sc_row.get("flags", {}).get("analysis_flags", {})
-    if isinstance(analysis, dict) and analysis.get("unanchored_aspect_ref"):
+    if isinstance(analysis, dict) and analysis.get("unanchored_aspect_term"):
         return True
     return False
 
@@ -175,13 +188,17 @@ def token_cost_latency(sc_row: Dict):
 
 
 def precision_recall_f1(pred: Set[Triplet], gold: Set[Triplet]) -> Tuple[float, float, float]:
+    """F1 on (aspect_term, polarity) only. Rows without gold excluded by caller."""
+    from metrics.eval_tuple import tuples_to_pairs
     if gold is None or len(gold) == 0:
         return (math.nan, math.nan, math.nan)
     if pred is None:
         pred = set()
-    tp = len(pred & gold)
-    fp = len(pred - gold)
-    fn = len(gold - pred)
+    gold_pairs = tuples_to_pairs(gold)
+    pred_pairs = tuples_to_pairs(pred)
+    tp = len(pred_pairs & gold_pairs)
+    fp = len(pred_pairs - gold_pairs)
+    fn = len(gold_pairs - pred_pairs)
     prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     if prec + rec == 0:
@@ -740,7 +757,7 @@ def build_tables_for_runs(
                 "structural_risk_rate": metrics.get("structural_risk_rate"),
                 "structural_risk": metrics.get("count_structural_risk"),
                 "unanchored_rate": metrics.get("unanchored_rate"),
-                "unanchored_aspect_ref": metrics.get("count_unanchored"),
+                "unanchored_aspect_term": metrics.get("count_unanchored"),
                 "targetless_rate": metrics.get("targetless_rate"),
                 "targetless": metrics.get("count_targetless"),
                 "polarity_conflict_count": metrics.get("count_polarity_conflict"),

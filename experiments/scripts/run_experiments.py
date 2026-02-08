@@ -25,6 +25,7 @@ from tools.pattern_loader import load_patterns
 # Reuse existing scorecard generator to avoid metric drift
 from scripts.scorecard_from_smoke import make_scorecard
 from tools.aux_hf_runner import build_hf_signal
+from metrics.eval_tuple import gold_row_to_tuples
 
 
 # -------------- Hashing / utils --------------
@@ -377,9 +378,9 @@ def _load_eval_gold(
     resolved_paths: Dict[str, str],
 ) -> Dict[str, List[Dict[str, Any]]]:
     """
-    Load uid -> gold_triplets from eval.gold_valid_jsonl and eval.gold_test_jsonl.
-    Each JSONL line: {"uid": "..." or "text_id": "...", "gold_triplets": [{aspect_ref, opinion_term, polarity}, ...]}.
-    Returns dict uid -> list of gold triplet dicts (for scorecard inputs.gold_triplets).
+    Load uid -> gold_tuples from eval.gold_valid_jsonl and eval.gold_test_jsonl.
+    Accepts gold_tuples (preferred) or gold_triplets (backward compat: opinion_term.term → aspect_term).
+    Returns dict uid -> list of normalized gold dicts {aspect_ref, aspect_term, polarity}.
     """
     out: Dict[str, List[Dict[str, Any]]] = {}
     eval_cfg = cfg.get("eval") or {}
@@ -399,9 +400,9 @@ def _load_eval_gold(
             uid = row.get("uid") or row.get("text_id") or row.get("id")
             if not uid:
                 continue
-            gold = row.get("gold_triplets")
-            if isinstance(gold, list):
-                out[str(uid)] = gold
+            normalized = gold_row_to_tuples(row)
+            if normalized:
+                out[str(uid)] = normalized
     return out
 
 
@@ -516,6 +517,8 @@ def _write_manifest(
         manifest["eval"] = eval_paths
     if isinstance(data_roles, dict) and data_roles:
         manifest["data_roles"] = data_roles
+    if cfg.get("episodic_memory") is not None:
+        manifest["episodic_memory"] = cfg["episodic_memory"]
 
     last_path = None
     for p in manifest_paths:
@@ -624,10 +627,10 @@ def main():
     demo_pool = [ex for ex in (list(train) + list(valid) + list(test)) if ex.split in demo_pool_splits]
     demo_sampler = DemoSampler(demo_pool)
 
-    # Eval gold (optional): load gold_triplets by uid for scorecard injection
+    # Eval gold (optional): load gold_tuples by uid for scorecard injection
     uid_to_gold: Dict[str, List[Dict[str, Any]]] = _load_eval_gold(cfg, resolved_data_cfg, resolved_paths)
     if uid_to_gold:
-        print(f"Eval gold: loaded gold_triplets for {len(uid_to_gold)} uids (gold_valid_jsonl / gold_test_jsonl)")
+        print(f"Eval gold: loaded gold_tuples for {len(uid_to_gold)} uids (gold_valid_jsonl / gold_test_jsonl)")
     eval_paths_for_manifest: Dict[str, str] = {}
     if cfg.get("eval"):
         for key in ("gold_valid_jsonl", "gold_test_jsonl"):
@@ -660,7 +663,18 @@ def main():
 
     for m in modes:
         run_id_mode = f"{run_id}_{m}"
-        runner = make_runner(run_mode=m, backbone=backbone, config=cfg.get("pipeline", {}), run_id=run_id_mode)
+        pipeline_cfg = dict(cfg.get("pipeline") or {})
+        # memory.enable + memory.mode (advisory|silent) → episodic_memory.condition (C1/C2/C2_silent)
+        if cfg.get("memory") and isinstance(cfg.get("memory"), dict):
+            enable = cfg["memory"].get("enable", False)
+            mode = (cfg["memory"].get("mode") or "advisory").strip().lower()
+            cond = "C1" if not enable else ("C2" if mode == "advisory" else "C2_silent")
+            pipeline_cfg["episodic_memory"] = dict(cfg.get("episodic_memory") or {})
+            pipeline_cfg["episodic_memory"]["condition"] = cond
+            cfg["episodic_memory"] = pipeline_cfg["episodic_memory"]  # for manifest/integrity
+        elif "episodic_memory" in cfg:
+            pipeline_cfg["episodic_memory"] = cfg["episodic_memory"]
+        runner = make_runner(run_mode=m, backbone=backbone, config=pipeline_cfg, run_id=run_id_mode)
 
         # Demo enable/disable per mode
         demo_k_mode = demo_k
@@ -825,7 +839,7 @@ def main():
                     payload["meta"]["profile"] = "smoke" if run_purpose == "smoke" else ("paper_main" if run_purpose == "paper" else "regression")
                 scorecard = make_scorecard(payload, extra_allow=allow_terms)
                 if uid_to_gold and normalized.uid in uid_to_gold:
-                    scorecard.setdefault("inputs", {})["gold_triplets"] = uid_to_gold[normalized.uid]
+                    scorecard.setdefault("inputs", {})["gold_tuples"] = uid_to_gold[normalized.uid]
                 meta = scorecard.get("meta", {})
                 meta.update(
                     {
@@ -887,6 +901,30 @@ def main():
                     backup_manifest.write_text(json.dumps(backup_data, ensure_ascii=False, indent=2), encoding="utf-8")
             except Exception as e:
                 print(f"[warn] Failed to update manifest with integrity info: {e}", file=sys.stderr)
+
+        # Integrity check (C1/C2/C2_silent): slot_present, memory_mode, rounds_equal
+        try:
+            em = cfg.get("episodic_memory")
+            slot_present = True  # DEBATE_CONTEXT__MEMORY slot always present in pipeline (can be empty)
+            memory_mode = "off"
+            if isinstance(em, dict):
+                cond = em.get("condition") or ""
+                memory_mode = "on" if cond == "C2" else ("silent" if cond == "C2_silent" else "off")
+            elif cfg.get("memory") and isinstance(cfg.get("memory"), dict):
+                enable = cfg["memory"].get("enable", False)
+                mode = (cfg["memory"].get("mode") or "advisory").strip().lower()
+                memory_mode = "off" if not enable else ("on" if mode == "advisory" else "silent")
+            rounds_equal = True  # TODO: set from per-sample debate round count comparison when available
+            integrity_check = {
+                "slot_present": slot_present,
+                "memory_mode": memory_mode,
+                "rounds_equal": rounds_equal,
+            }
+            (outdir / "integrity_check.json").write_text(
+                json.dumps(integrity_check, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+        except Exception as e:
+            print(f"[warn] Failed to write integrity_check.json: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

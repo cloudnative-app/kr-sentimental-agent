@@ -6,6 +6,7 @@ run_id: experiment_mini
 run_mode: proposed
 
 pipeline:
+  temperature: 0
   enable_stage2: true
   enable_validator: true
   leakage_guard: true

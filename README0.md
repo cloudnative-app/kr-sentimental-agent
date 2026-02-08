@@ -238,7 +238,7 @@ python scripts/experiment_results_integrate.py --run_dir results/my_run_proposed
    python scripts/aggregate_seed_metrics.py --base_run_id experiment_mini --mode proposed --seeds 42,123,456,789,101 --outdir results/experiment_mini_aggregated --metrics_profile paper_main --with_metric_report
    ```
    또는 이미 있는 런만 지정: `--run_dirs results/experiment_mini__seed42_proposed,results/experiment_mini__seed123_proposed`  
-   산출: `outdir/merged_scorecards.jsonl`, `outdir/merged_metrics/`, `outdir/aggregated_mean_std.csv`, `outdir/aggregated_mean_std.md`, `outdir/integrated_report.md`, (--with_metric_report 시) `reports/merged_run/metric_report.html`.
+   산출: `outdir/merged_scorecards.jsonl`, `outdir/merged_metrics/`, `outdir/merged_run_<base_run_id>/`, `outdir/aggregated_mean_std.csv`, `outdir/aggregated_mean_std.md`, `outdir/integrated_report.md`, (--with_metric_report 시) `reports/merged_run_<base_run_id>/metric_report.html` (실험별 경로로 덮어쓰기 방지).
 
 3. **수동 절차 (선택)**  
    스크립트 없이 하려면 시드별 scorecards 이어붙이기 → `experiment_results_integrate.py --merged_scorecards`로 머지 메트릭만 생성 후, 시드별 CSV 평균·표준편차·통합 보고서는 엑셀/스크립트로 직접 작성.

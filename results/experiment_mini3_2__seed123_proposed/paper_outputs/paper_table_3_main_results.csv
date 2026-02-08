@@ -1,0 +1,2 @@
+runner_name,backbone_model_id,timestamp_utc,pass_rate,valid_aspect_rate,polarity_conflict_rate,unanchored_rate,self_consistency_exact,parse_failure_rate,generate_failure_rate,fallback_used_rate,cost_usd_mean,cost_usd_std,latency_ms_mean,latency_ms_std,tokens_in_mean,tokens_in_std,tokens_out_mean,tokens_out_std
+proposed,gpt-4.1-mini,2026-02-03T09:29:46.332175Z,0.1,0.9666666666666667,0.0,0.0,,0.0,0.0,0.0,0.010297,0.0043411696964451105,68913,10996.093760968028,344.8,13.43478073261091,228.3,140.98419533172267

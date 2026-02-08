@@ -10,6 +10,7 @@ data:
   text_column: text
   train_file: tmp_runs/mini60_real_mini_suite.csv
 pipeline:
+  temperature: 0
   enable_stage2: true
   enable_validator: true
 run_mode: proposed

@@ -60,6 +60,7 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
   <span><strong>Provider/Model</strong> mock / mock-model</span>
   <span><strong>Dataset</strong> test_small.csv</span>
   <span><strong>N</strong> 6</span>
+  <span><strong>Episodic memory</strong> —</span>
   <span><strong>Schema</strong> scorecard_v2</span>
 </div>
 </header>
@@ -95,16 +96,19 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 <section class="section" id="rq3">
 <h2>RQ3: CBL Effectiveness</h2>
 <h3>Risk decomposition</h3>
-<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk-Flagged Rate</td><td>0.0%</td></tr><tr><td>Risk-Affected Change Rate</td><td>0.0%</td></tr><tr><td>Risk-Resolved-with-Change (rate)</td><td>0.0%</td></tr><tr><td>Risk-Resolved-without-Change (rate)</td><td>0.0%</td></tr><tr><td>Ignored Proposal Rate</td><td>0.0%</td></tr></tbody></table>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk-Flagged Rate (RQ1)</td><td>0.0%</td></tr><tr><td>Residual Risk Rate (RQ1)</td><td>N/A</td></tr><tr><td>Risk-Affected Change Rate</td><td>0.0%</td></tr><tr><td>Risk-Resolved-with-Change (rate)</td><td>0.0%</td></tr><tr><td>Risk-Resolved-without-Change (rate)</td><td>0.0%</td></tr><tr><td>Ignored Proposal Rate</td><td>0.0%</td></tr></tbody></table>
 <h3>Stage1 vs Stage2 요약</h3>
 <table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Risk Resolution Rate</td><td>0.0%</td></tr><tr><td>Guided Change Rate</td><td>0.0%</td></tr><tr><td>Unguided Drift Rate</td><td>0.0%</td></tr><tr><td>Stage2 Adoption Rate</td><td>100.0%</td></tr></tbody></table>
 <h3>Debate mapping metrics</h3>
-<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Debate Mapping Coverage</td><td>100.0%</td></tr><tr><td>Debate Mapping Direct Rate</td><td>0.0%</td></tr><tr><td>Debate Mapping Fallback Rate</td><td>100.0%</td></tr><tr><td>Debate Mapping None Rate</td><td>0.0%</td></tr><tr><td>Debate Fail (no_aspects)</td><td>0.0%</td></tr><tr><td>Debate Fail (no_match)</td><td>0.0%</td></tr><tr><td>Debate Fail (neutral_stance)</td><td>0.0%</td></tr><tr><td>Debate Fail (fallback_used)</td><td>100.0%</td></tr></tbody></table>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Debate Mapping Coverage</td><td>100.0%</td></tr><tr><td>Debate Mapping Direct Rate</td><td>0.0%</td></tr><tr><td>Debate Mapping Fallback Rate</td><td>100.0%</td></tr><tr><td>Debate Mapping None Rate</td><td>0.0%</td></tr><tr><td>Debate Fail (no_aspects)</td><td>0.0%</td></tr><tr><td>Debate Fail (no_match)</td><td>0.0%</td></tr><tr><td>Debate Fail (neutral_stance)</td><td>0.0%</td></tr><tr><td>Debate Fail (fallback_used)</td><td>100.0%</td></tr><tr><td>Debate Override Applied (count)</td><td>N/A</td></tr><tr><td>Debate Override Skipped Low Signal (count)</td><td>N/A</td></tr><tr><td>Debate Override Skipped Conflict (count)</td><td>N/A</td></tr><tr><td>Debate Override Skipped Already Confident (count)</td><td>N/A</td></tr><tr><td>Debate Override Skipped Already Confident (rate)</td><td>N/A</td></tr><tr><td>Override Applied Rate (RQ3)</td><td>N/A</td></tr><tr><td>Override Success Rate (RQ3, risk 개선·안전)</td><td>N/A</td></tr></tbody></table>
 <p class="header-meta">Thresholds: coverage_warn=0.4, no_match_warn=0.4, neutral_warn=0.4.</p>
-<h3>Table 2: Triplet F1, ΔF1, Fix Rate, Break Rate, Net Gain (gold required)</h3>
-<p class="header-meta">Gold triplets not present; Table 2 (ΔF1, Fix Rate, Break Rate, Net Gain) requires labeled data.</p>
+<h3>Override Conditional Effects (Applied vs Skipped-Conflict)</h3>
+<table class="data-table"><thead><tr><th>Subset</th><th>n</th><th>ΔF1 (mean)</th><th>Unsupported Polarity</th><th>Negation/Contrast Fail</th></tr></thead><tbody><tr><td>Override Applied</td><td>0</td><td>N/A</td><td>N/A</td><td>N/A</td></tr><tr><td>Skipped (Conflict)</td><td>0</td><td>N/A</td><td>N/A</td><td>N/A</td></tr></tbody></table>
+<p class="header-meta">Applied에서 ΔF1이 플러스이고 오류율이 낮으면: override는 유익. Conflict subset에서 오류율이 높으면: 토론 신호가 갈리는 문장(대조/부정)에선 보수적 스킵이 합리적.</p>
+<h3>Table 2: Tuple F1, ΔF1, Fix Rate, Break Rate, Net Gain (gold required)</h3>
+<p class="header-meta">Gold tuples not present; Table 2 (ΔF1, Fix Rate, Break Rate, Net Gain) requires labeled data.</p>
 <h3>Transition table (correctness snapshot)</h3>
-<p class="header-meta">Correctness snapshot not present in scorecards; transition table requires label experiment (correctness or triplet_correctness).</p>
+<p class="header-meta">Correctness snapshot not present in scorecards; transition table requires label experiment (correctness or tuple_correctness).</p>
 
 <h3>Adoption/Reject breakdown (Rule A~D)</h3>
 <table class="data-table"><thead><tr><th>Rule</th><th>Count</th></tr></thead><tbody><tr><td>RuleA</td><td>0</td></tr><tr><td>RuleB</td><td>6</td></tr><tr><td>RuleM</td><td>0</td></tr><tr><td>RuleD</td><td>0</td></tr></tbody></table>
@@ -112,13 +116,18 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 
 <section class="section" id="rq2">
 <h2>RQ2: Reliability & Stability</h2>
-<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Self-consistency (exact)</td><td>100.0%</td></tr><tr><td>Risk-set consistency</td><td>100.0%</td></tr></tbody></table>
+<table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Self-consistency (exact)</td><td>100.0%</td></tr><tr><td>Risk-set consistency</td><td>100.0%</td></tr><tr><td>Flip-flop rate (RQ2)</td><td>N/A</td></tr><tr><td>Variance (RQ2)</td><td>N/A</td></tr></tbody></table>
 
 </section>
 
 <section class="section" id="efficiency">
 <h2>Efficiency / QA</h2>
 <table class="data-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Latency p50 (ms)</td><td>52</td></tr><tr><td>Latency p95 (ms)</td><td>160</td></tr><tr><td>Gate status</td><td>PASS: 6</td></tr><tr><td>Parse failure rate</td><td>0.0%</td></tr><tr><td>Generate failure rate</td><td>0.0%</td></tr><tr><td>Fallback used rate</td><td>0.0%</td></tr></tbody></table>
+</section>
+
+<section class="section" id="memory-growth">
+<h2>Memory Growth (episodic memory)</h2>
+<p class="header-meta">Memory growth (accumulation/usage/effect): N/A (episodic memory off). RQ metrics below from scorecards.</p><table class="data-table"><thead><tr><th>Metric</th><th>Value (last window)</th></tr></thead><tbody><tr><td>window_end_sample</td><td>5</td></tr><tr><td>window_size</td><td>6</td></tr><tr><td>memory_mode</td><td>off</td></tr><tr><td>store_size</td><td>—</td></tr><tr><td>store_new_entry_rate</td><td>0.0000</td></tr><tr><td>advisory_presence_rate</td><td>0.0000</td></tr><tr><td>follow_rate</td><td>—</td></tr><tr><td>mean_delta_risk_followed</td><td>—</td></tr><tr><td>mean_delta_risk_ignored</td><td>—</td></tr><tr><td>harm_rate_followed</td><td>—</td></tr><tr><td>harm_rate_ignored</td><td>—</td></tr><tr><td>retrieval_hit_k</td><td>0.0000</td></tr><tr><td>mean_tuple_f1_s2</td><td>—</td></tr><tr><td>accuracy_rate</td><td>—</td></tr></tbody></table>
 </section>
 
 <section class="section" id="appendix">

@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "EpisodicMemoryEntryV1_1",
+  "title": "EpisodicMemoryEntryV1_1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "episode_id",
+    "episode_type",
+    "error_category",
+    "input_signature",
+    "case_summary",
+    "stage_snapshot",
+    "correction",
+    "evaluation",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "episode_id": { "type": "string", "pattern": "^epi_[0-9]{6,}$" },
+    "episode_type": {
+      "type": "string",
+      "enum": ["success", "harm", "neutral"]
+    },
+    "error_category": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["negation", "contrast", "irony", "aspect_conflict", "implicit_opinion", "format_error", "none"]
+      },
+      "minItems": 1
+    },
+    "input_signature": {
+      "type": "object",
+      "required": ["language", "detected_structure", "num_aspects", "length_bucket"],
+      "properties": {
+        "language": { "type": "string", "enum": ["ko", "en", "other"] },
+        "detected_structure": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["negation", "contrast", "irony", "none"] }
+        },
+        "contrast_marker": { "type": "string" },
+        "has_negation": { "type": "boolean" },
+        "num_aspects": { "type": "integer", "minimum": 0 },
+        "length_bucket": { "type": "string", "enum": ["short", "medium", "long"] }
+      },
+      "additionalProperties": false
+    },
+    "case_summary": {
+      "type": "object",
+      "required": ["target_aspect_type", "symptom", "rationale_summary"],
+      "properties": {
+        "target_aspect_type": { "type": "string" },
+        "symptom": { "type": "string" },
+        "rationale_summary": { "type": "string", "maxLength": 500 }
+      },
+      "additionalProperties": false
+    },
+    "stage_snapshot": {
+      "type": "object",
+      "required": ["stage1", "final"],
+      "properties": {
+        "stage1": { "$ref": "#/$defs/StageSnapshot" },
+        "final": { "$ref": "#/$defs/StageSnapshot" }
+      },
+      "additionalProperties": false
+    },
+    "correction": {
+      "type": "object",
+      "required": ["corrective_principle", "applicable_conditions"],
+      "properties": {
+        "principle_id": { "type": "string" },
+        "corrective_principle": { "type": "string", "maxLength": 400 },
+        "applicable_conditions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "anti_pattern": { "type": "string", "maxLength": 200 }
+      },
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["risk_before", "risk_after", "override_applied", "override_success", "override_harm"],
+      "properties": {
+        "risk_before": { "$ref": "#/$defs/RiskVector" },
+        "risk_after": { "$ref": "#/$defs/RiskVector" },
+        "override_applied": { "type": "boolean" },
+        "override_success": { "type": "boolean" },
+        "override_harm": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["created_from_split", "used_in_eval", "timestamp", "version", "has_gold"],
+      "properties": {
+        "created_from_split": { "type": "string" },
+        "used_in_eval": { "type": "boolean" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "version": { "type": "string" },
+        "has_gold": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "StageSnapshot": {
+      "type": "object",
+      "required": ["aspects_norm", "polarities", "confidence"],
+      "properties": {
+        "aspects_norm": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "polarities": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "enum": ["positive", "negative", "neutral", "conflict", "unknown"] }
+        },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "additionalProperties": false
+    },
+    "RiskVector": {
+      "type": "object",
+      "required": ["severity_sum", "tags"],
+      "properties": {
+        "severity_sum": { "type": "number", "minimum": 0.0 },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

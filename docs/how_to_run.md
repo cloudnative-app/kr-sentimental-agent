@@ -125,10 +125,11 @@ check_experiment_config(--with_integrity_check 시) → provider_dry_run(선택)
    - **개별 실행**: 아래처럼 한 번에 실행할 수도 있습니다.  
    `aggregate_seed_metrics.py`가 다음을 한 번에 수행합니다:  
    - 시드별 scorecards.jsonl 이어붙이기 → `merged_scorecards.jsonl`  
-   - 머지 메트릭 생성 (structural_error_aggregator) → `merged_metrics/`  
+   - 머지 메트릭 생성 (structural_error_aggregator) → `outdir/merged_metrics/`  
    - 시드별 structural_metrics.csv 수집 → **평균±표준편차** 계산 → `aggregated_mean_std.csv`, `aggregated_mean_std.md`  
    - **통합 보고서** 작성 → `integrated_report.md`  
-   - (선택) 머지 런용 메트릭 리포트 HTML → `--with_metric_report` 시 `reports/merged_run/metric_report.html`
+   - (선택) 머지 런용 메트릭 리포트 HTML → `--with_metric_report` 시 `reports/merged_run_<base_run_id>/metric_report.html`  
+   - 머지 결과 디렉터리: `outdir/merged_run_<base_run_id>/` (실험별로 분리되어 매 시행마다 덮어쓰기 방지)
 
    ```powershell
    # base_run_id + seeds 지정
@@ -307,7 +308,7 @@ demo:
 | dataset_root | allowed_roots 하위 | 동일 |
 | check_experiment_config | 선택 | **--strict 권장** |
 
-### 5.4 2-fold 설정 예 (minitest60_gold_fold0)
+### 5.4 2-fold 설정 예 (minitest60_gold_fold0) : 이 실험구조에 폴드설정은 적합x, 사용 x
 
 - valid_file 없이 train_file + test_file만 사용.
 - test_file이 곧 “이 폴드의 평가용 split” CSV. 골드는 같은 행에 대한 gold JSONL을 eval.gold_test_jsonl에 지정.
@@ -359,9 +360,15 @@ demo:
 **experiment_mini (리허설)**
 
 - **데이터 생성**: 단일 분할(폴드 없음). `experiments/configs/datasets/train/valid.jsonl` → 80/20 train/valid.
-- **스크립트**: `python scripts/make_mini_dataset.py` → `experiments/configs/datasets/mini/`에 `train.csv`, `valid.csv`, `valid.gold.jsonl` 생성.
+- **스크립트**: `python scripts/make_mini_dataset.py` → `experiments/configs/datasets/mini/`에 `train.csv`, `valid.csv`, `valid.gold.jsonl` (gold_tuples 포맷) 생성.
 - **설정**: `experiment_mini.yaml`. train_file: `mini/train.csv`, valid_file: `mini/valid.csv`, report_sources: `["valid_file"]`, experiment.repeat.mode: `seed`, seeds: `[42, 123, 456, 789, 101]`.
 - **실행 전**: `python scripts/check_experiment_config.py --config experiments/configs/experiment_mini.yaml --strict`.
+
+**experiment_mini2 / experiment_mini3 (소규모 시드 테스트)**
+
+- **mini2**: `scripts/make_mini2_dataset.py` → `experiments/configs/datasets/mini2/`. config: `experiment_mini2.yaml`, 시드 2개(42, 123).
+- **mini3**: `scripts/make_mini3_dataset.py` → `experiments/configs/datasets/mini3/` (train 570, valid 30). config: `experiment_mini3.yaml`.
+- 골드: `gold_tuples` (aspect_ref, aspect_term, polarity). 정의: `docs/absa_tuple_eval.md`.
 
 **experiment_real (본실험)**
 
@@ -389,6 +396,8 @@ demo:
 
 - **Seed 반복 정책 (Fold → Seed 전환)**: `docs/seed_repeat_policy.md`
 - **실험 무결성·누수 관리 상세**: `docs/experiment_integrity_and_leakage_management.md`
+- **Tuple 평가 정의 (gold_tuples, tuple_f1)**: `docs/absa_tuple_eval.md`
 - **본실험 데이터 배치·생성**: `experiments/configs/datasets/real/README.md`
 - **README0**: `README0.md` (§6 파이프라인 러너·실행 구조·N회 머징, §7 빠른 실행, §8 기술적 기여사항)
+- **origin vs 로컬 차이**: `docs/github_vs_local_diff.md`
 - **변경리포트 (A·C·D·E·F)**: `docs/change_report_A_C_D.md`

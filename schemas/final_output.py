@@ -23,6 +23,10 @@ class FinalResult(BaseModel):
     confidence: float = Field(default=0.5, ge=0.0, le=1.0, description="Confidence score.")
     rationale: str = Field(default="", description="Summary rationale for the final decision.")
     final_aspects: List[Dict[str, Any]] = Field(default_factory=list, description="Final aspect_sentiments list (ABSA output).")
+    # Optional tuple lists for F1 evaluation: list of {aspect_ref?, aspect_term, polarity}; pipeline uses aspect_term only.
+    stage1_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Stage1 (aspect_term, polarity) tuples for metrics.")
+    stage2_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Stage2 tuples for metrics.")
+    final_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Final tuples (same as final_aspects in tuple form) for metrics.")
 
 
 class FinalOutputSchema(BaseModel):

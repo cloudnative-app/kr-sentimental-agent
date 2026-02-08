@@ -1,0 +1,87 @@
+# conditions_memory_v1_1 — 3조건(C1 / C2 / C2_silent)
+# 원칙: 에이전트 수/역할/토론 위치/모더레이터/입출력 포맷 불변
+# 차이: Debate 단계 DEBATE_CONTEXT__MEMORY 슬롯에 advisory 채움(ON) / 비움(OFF·silent) 만 다름
+# C2_silent: retrieval은 실행하되 주입만 마스킹(실행 경로·라운드·토큰 통제 목적)
+#
+schema_version: "1.1"
+
+global:
+  run:
+    seed: 42
+    num_repeats: 1
+    log_level: "INFO"
+
+  io:
+    input_format: "json_internal"
+    output_format: "absa_json"
+    slot_memory_name: "DEBATE_CONTEXT__MEMORY"
+
+  pipeline:
+    stages:
+      - "ATE"
+      - "ATSA"
+      - "DEBATE"
+      - "MODERATOR"
+    debate:
+      enabled: true
+      max_rounds: 3
+      injection:
+        strategy: "during_debate_one_shot"
+        trigger: "deadlock_obs2of4"
+        allow_multiple_injections: false
+    moderator:
+      decision_policy: "P1_fixed"
+      accept_threshold: 0.70
+
+  episodic_memory:
+    store:
+      enabled: true
+      path: "memory/episodic_store.jsonl"
+      forbid_raw_text: true
+      max_items_total: 5000
+      prune:
+        enabled: true
+        strategy: "fifo"
+        keep_last_n: 5000
+
+    # 1단계: signature + lexical 만 사용. sentence-transformers hybrid는 2단계 옵션(필수 아님)
+    retrieval:
+      mode: "signature_lexical"
+      topk: 3
+      filters:
+        require_same_language: true
+        require_structure_overlap: true
+
+    injection_payload:
+      schema: "AdvisoryBundleV1_1"
+      include_fields:
+        - "memory_on"
+        - "retrieved"
+        - "warnings"
+        - "meta"
+      include_mode_decision: false
+
+conditions:
+  C1:
+    description: "Debate present, Episodic Memory OFF (slot present but empty)"
+    episodic_memory:
+      memory_mode: "off"
+      retrieval_execute: false
+      injection_mask: true
+      store_write: false
+
+  C2:
+    description: "Debate present, Episodic Memory ON (retrieve + inject advisory)"
+    episodic_memory:
+      memory_mode: "on"
+      retrieval_execute: true
+      injection_mask: false
+      store_write: true
+
+  C2_silent:
+    description: "Memory retrieval executed but advisory injection masked (control)"
+    episodic_memory:
+      memory_mode: "silent"
+      retrieval_execute: true
+      injection_mask: true
+      store_write: true

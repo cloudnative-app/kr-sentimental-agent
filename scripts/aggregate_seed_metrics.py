@@ -22,6 +22,13 @@ from typing import Any, Dict, List, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+# Metrics that should always appear in aggregated_mean_std (even when all values are N/A).
+REPORT_METRICS_ALWAYS = [
+    "n", "N_gold",
+    "tuple_f1_s1", "tuple_f1_s2", "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
+    "fix_rate", "break_rate", "net_gain",
+]
+
 
 def load_csv_row(path: Path) -> Optional[Dict[str, Any]]:
     """Load first data row of structural_metrics.csv."""
@@ -76,10 +83,13 @@ def compute_mean_std(per_seed_rows: List[Dict[str, Any]]) -> tuple[Dict[str, str
         if len(values) >= 1:
             numeric_cols.append(col)
 
+    # Always include F1 and key metrics in report when column exists (even if all values N/A)
+    cols_for_report = sorted(set(numeric_cols) | (set(REPORT_METRICS_ALWAYS) & all_keys))
+
     mean_dict: Dict[str, str] = {}
     std_dict: Dict[str, str] = {}
 
-    for col in numeric_cols:
+    for col in cols_for_report:
         values = [parse_float(r.get(col)) for r in per_seed_rows]
         values = [v for v in values if v is not None]
         if not values:
@@ -93,7 +103,7 @@ def compute_mean_std(per_seed_rows: List[Dict[str, Any]]) -> tuple[Dict[str, str
         mean_dict[col] = f"{mean:.4f}"
         std_dict[col] = f"{std:.4f}"
 
-    return mean_dict, std_dict, numeric_cols
+    return mean_dict, std_dict, cols_for_report
 
 
 def ensure_structural_metrics(run_dir: Path, profile: str = "paper_main") -> bool:
@@ -224,12 +234,26 @@ def main() -> None:
 
     # 4) Integrated report (markdown)
     report_path = outdir / "integrated_report.md"
+    memory_note = ""
+    first_manifest_path = run_dirs[0] / "manifest.json" if run_dirs else None
+    if first_manifest_path and first_manifest_path.exists():
+        try:
+            import json
+            m = json.loads(first_manifest_path.read_text(encoding="utf-8"))
+            em = m.get("episodic_memory")
+            if isinstance(em, dict):
+                c = em.get("condition") or ""
+                memory_note = f"- **Episodic memory**: {c} (on)" if c == "C2" else (f"- **Episodic memory**: {c} (off)" if c == "C1" else (f"- **Episodic memory**: {c} (silent)" if c == "C2_silent" else f"- **Episodic memory**: {c}")
+            elif em is not None:
+                memory_note = f"- **Episodic memory**: {em}"
+        except Exception:
+            pass
     report_lines = [
         f"# 시드별 집계 통합 보고서 — {base_run_id}",
         "",
         f"- **시드 런 수**: {len(run_dirs)}",
         f"- **머지 scorecards**: `{merged_path.name}` ({len(lines)} rows)",
-        "",
+        *([memory_note, ""] if memory_note else []),
         "## 1. 시드별 런 디렉터리",
         "",
         "| Seed / Run | 결과 디렉터리 | 메트릭 CSV |",
@@ -289,21 +313,22 @@ def main() -> None:
             for k, v in list(row.items())[:15]:
                 report_lines.append(f"| {k} | {v} |")
 
+    merged_run_dirname = f"merged_run_{base_run_id}"
     report_lines.extend([
         "",
         "## 5. 메트릭 리포트 (HTML)",
         "",
     ])
     if args.with_metric_report:
-        report_lines.append("- 머지 런: `reports/<merged_run_name>/metric_report.html` (아래 스크립트로 생성됨)")
+        report_lines.append(f"- 머지 런: `reports/{merged_run_dirname}/metric_report.html` (아래 스크립트로 생성됨)")
     report_lines.append("- 시드별: `reports/<run_id>__seed<N>_<mode>/metric_report.html` (run_pipeline --with_metrics 또는 build_metric_report로 생성)")
     report_lines.append("")
     report_path.write_text("\n".join(report_lines), encoding="utf-8")
     print(f"[OK] Wrote {report_path}")
 
-    # 5) Optional: build_metric_report for merged run
+    # 5) Optional: build_metric_report for merged run (dir name includes base_run_id to avoid overwrite across runs)
     if args.with_metric_report and merged_path.exists():
-        merged_run_dir = outdir / "merged_run"
+        merged_run_dir = outdir / merged_run_dirname
         merged_run_dir.mkdir(parents=True, exist_ok=True)
         # Copy merged scorecards and merged metrics so build_metric_report finds them
         import shutil

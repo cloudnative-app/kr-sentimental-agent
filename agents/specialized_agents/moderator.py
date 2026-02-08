@@ -182,7 +182,13 @@ class Moderator:
         self,
         final_aspect_sentiments: List[AspectSentimentItem] | None,
     ) -> List[Dict[str, Any]]:
-        """Convert final aspect_sentiments to final_aspects list for FinalResult."""
+        """Convert final aspect_sentiments to final_aspects list for FinalResult. 암시적(is_implicit)이면 aspect_term을 \"\"로 통일."""
         if not final_aspect_sentiments:
             return []
-        return [s.model_dump() for s in final_aspect_sentiments]
+        out: List[Dict[str, Any]] = []
+        for s in final_aspect_sentiments:
+            d = s.model_dump()
+            if d.get("is_implicit") is True:
+                d["aspect_term"] = {"term": "", "span": {"start": 0, "end": 0}}
+            out.append(d)
+        return out

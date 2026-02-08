@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AdvisoryBundleV1_1",
+  "title": "AdvisoryBundleV1_1",
+  "type": "object",
+  "required": ["schema_version", "memory_on", "retrieved", "warnings", "meta"],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "memory_on": { "type": "boolean" },
+    "retrieved": {
+      "type": "array",
+      "items": { "$ref": "advisory_v1_1.json" },
+      "maxItems": 3
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 200 },
+      "maxItems": 5
+    },
+    "meta": {
+      "type": "object",
+      "required": ["memory_mode", "topk", "masked_injection", "retrieval_executed"],
+      "properties": {
+        "memory_mode": { "type": "string", "enum": ["off", "on", "silent"] },
+        "topk": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "masked_injection": { "type": "boolean" },
+        "retrieval_executed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

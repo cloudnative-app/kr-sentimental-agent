@@ -10,6 +10,9 @@ scikit-learn>=1.5
 PyYAML>=6.0
 tqdm>=4.66
 
+# Analysis (memory growth plot)
+matplotlib>=3.7
+
 # Optional utils
 python-dotenv>=1.0
 rich>=13.7

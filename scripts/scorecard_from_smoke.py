@@ -8,8 +8,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
+
+# Ensure project root on path for structural_error_aggregator import
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 # Risk ID enum for validator normalization (canonical for S1/S2 comparison)
 VALIDATOR_RISK_IDS = (
@@ -24,6 +30,33 @@ TARGET_ALLOWLIST = {"뷰", "AS", "as", "ui", "UI", "앱", "app"}
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def load_gold_by_uid(gold_path: Path) -> Dict[str, List[Dict[str, Any]]]:
+    """Load uid -> list of normalized gold dicts from a gold JSONL (uid, gold_tuples or gold_triplets).
+    Same contract as run_experiments _load_eval_gold for scorecard gold injection."""
+    try:
+        from metrics.eval_tuple import gold_row_to_tuples
+    except ImportError:
+        return {}
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    if not gold_path.exists():
+        return out
+    for line in gold_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        uid = row.get("uid") or row.get("text_id") or row.get("id")
+        if not uid:
+            continue
+        normalized = gold_row_to_tuples(row)
+        if normalized:
+            out[str(uid)] = normalized
+    return out
 
 def _extract_call_meta(process_trace: List[Dict[str, Any]]) -> Dict[str, Any]:
     for tr in process_trace or []:
@@ -120,16 +153,22 @@ def _normalize_validator_stage(entry: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _build_stage_delta(entry: Dict[str, Any]) -> Dict[str, Any]:
-    """Build stage_delta: changed, change_type (guided|unguided|none), related_proposal_ids."""
+    """Build stage_delta: changed, change_type (guided|unguided|none), related_proposal_ids.
+    Override 적용 시 changed=True, debate 적용은 guided로 연결."""
     flags = entry.get("analysis_flags") or {}
-    correction_log = (entry.get("meta") or {}).get("correction_applied_log") or []
+    meta = entry.get("meta") or {}
+    correction_log = meta.get("correction_applied_log") or []
+    override_stats = (entry.get("debate") or {}).get("override_stats") or meta.get("debate_override_stats") or {}
+    override_applied = int(override_stats.get("applied") or 0)
     stage1_label = (entry.get("stage1_ate") or {}).get("label") or ""
     stage2_label = (entry.get("stage2_ate") or {}).get("label") if entry.get("stage2_ate") else None
-    changed = bool(flags.get("correction_occurred") or (stage2_label is not None and stage2_label != stage1_label))
+    label_changed = stage2_label is not None and stage2_label != stage1_label
+    changed = bool(flags.get("correction_occurred") or label_changed or override_applied > 0)
     related_ids = [str(i) for i in range(len(correction_log))] if correction_log else []
     if not changed:
         return {"changed": False, "change_type": "none", "related_proposal_ids": []}
-    guided = any(log.get("applied") for log in correction_log if isinstance(log, dict))
+    # guided: correction_log에 applied 있거나, debate override 적용됨
+    guided = any(log.get("applied") for log in correction_log if isinstance(log, dict)) or (override_applied > 0)
     change_type = "guided" if guided else "unguided"
     return {"changed": True, "change_type": change_type, "related_proposal_ids": related_ids}
 
@@ -138,6 +177,16 @@ def safe_sub(text: str, span: Dict[str, int]) -> str:
         return text[span["start"] : span["end"]]
     except Exception:
         return ""
+
+# Drop reason taxonomy for ATE filtered aspects (see docs/metric_spec_rq1_grounding_v2.md)
+DROP_REASON_ALIGNMENT_FAILURE = "alignment_failure"
+DROP_REASON_FILTER_REJECTION = "filter_rejection"
+DROP_REASON_SEMANTIC_HALLUCINATION = "semantic_hallucination"
+
+# Implicit grounding candidate trigger reasons (see docs/implicit_fallback_review_and_plan.md)
+IMPLICIT_TRIGGER_NO_ASPECT = "no_aspect"
+IMPLICIT_TRIGGER_EXPLICIT_ALIGNMENT_FAILED = "explicit_alignment_failed"
+
 
 def build_filtered_aspects(text: str, aspects: List[Dict[str, Any]], extra_allow: Set[str] | None = None):
     raw = []
@@ -149,11 +198,23 @@ def build_filtered_aspects(text: str, aspects: List[Dict[str, Any]], extra_allow
         raw.append({"term": term, "span": span})
         span_txt = safe_sub(text, span)
         span_ok = term == span_txt
+        has_span = isinstance(span, dict) and "start" in span and "end" in span
         # Allowlist terms bypass minimum length/stop checks
         is_valid = (term in allow) or ((len(term) >= 2) and ((term not in STOP_ASPECT_TERMS) or (term in allow)))
         action = "keep" if (is_valid and span_ok) else "drop"
-        drop_reason = None if action == "keep" else "other_not_target"
-        filtered.append({"term": term, "span": span, "action": action, "drop_reason": drop_reason})
+        drop_reason = None
+        if action == "drop":
+            if has_span and term != span_txt:
+                drop_reason = DROP_REASON_ALIGNMENT_FAILURE
+            elif not is_valid:
+                drop_reason = DROP_REASON_FILTER_REJECTION
+            else:
+                # span missing or out-of-range / out-of-text
+                drop_reason = DROP_REASON_SEMANTIC_HALLUCINATION
+        item = {"term": term, "span": span, "action": action, "drop_reason": drop_reason}
+        if span_txt is not None:
+            item["span_text"] = span_txt
+        filtered.append(item)
     kept_terms = [f["term"] for f in filtered if f["action"] == "keep"]
     dropped_terms = [f["term"] for f in filtered if f["action"] == "drop"]
     return raw, filtered, kept_terms, dropped_terms
@@ -187,39 +248,56 @@ def atsa_score(text: str, kept_terms: List[str], sentiments: List[Dict[str, Any]
             "evidence_relevance_score": 0.0,
             "evidence_flags": [],
         }
+    def _term_text(sent: dict) -> str:
+        at = sent.get("aspect_term")
+        if isinstance(at, dict) and at.get("term") is not None:
+            return (at.get("term") or "").strip()
+        if isinstance(at, str):
+            return at.strip()
+        return ((sent.get("opinion_term") or {}).get("term") or "").strip()
+
     judgements = []
     for s in sentiments:
-        ref = s.get("aspect_ref", "")
+        ref = _term_text(s)
         attr = 1.0 if ref in kept_terms else 0.0
-        op = s.get("opinion_term") or {}
+        op = s.get("aspect_term") or s.get("opinion_term") or {}
         ev = s.get("evidence") or ""
         opinion_grounded = False
         opinion_grounded_reason = ""
-        if isinstance(op, dict) and "span" in op:
+        # Option B: aspect_term이 str이면 span 검증 생략 → issues 만들지 않음
+        if isinstance(op, str):
+            opinion_grounded = True
+            opinion_grounded_reason = ""
+        elif isinstance(op, dict) and "span" in op:
             op_span = op.get("span", {})
             op_term = op.get("term", "")
             if op_span and op_term:
                 extracted_text = safe_sub(text, op_span)
                 opinion_grounded = extracted_text == op_term
                 if not opinion_grounded:
-                    opinion_grounded_reason = f"span_text='{extracted_text}' != opinion_term='{op_term}'"
+                    opinion_grounded_reason = f"span_text='{extracted_text}' != aspect_term='{op_term}'"
             else:
                 opinion_grounded_reason = f"missing span or term: span={op_span}, term={op_term}"
         else:
-            opinion_grounded_reason = "opinion_term missing or not dict"
-        evidence_relevant = ev in text
+            # aspect_term이 dict가 아니거나 span 없음 → str 허용 완화: issues 만들지 않음
+            opinion_grounded = True
+            opinion_grounded_reason = ""
+        evidence_relevant = bool(ev and ev in text)
         issues = []
         if not opinion_grounded:
             issues.append(f"opinion_not_grounded: {opinion_grounded_reason}")
+        # evidence/span 없을 때는 unknown/insufficient로만 (aggregator에서 unsupported로 강제하지 않음)
+        if not evidence_relevant:
+            issues.append("unknown/insufficient")
         judgements.append(
             {
-                "aspect_ref": ref,
+                "aspect_term": ref,
                 "attribution_score": attr,
                 "opinion_grounded": opinion_grounded,
                 "opinion_grounded_reason": opinion_grounded_reason if not opinion_grounded else "",
                 "evidence_relevant": evidence_relevant,
                 "issues": issues,
-                "suggested_fix": {"polarity": s.get("polarity"), "opinion_term": None, "evidence": ev if evidence_relevant else None},
+                "suggested_fix": {"polarity": s.get("polarity"), "aspect_term": None, "evidence": ev if evidence_relevant else None},
             }
         )
     n = len(judgements)
@@ -343,6 +421,19 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
     atsa = atsa_score(text, kept_terms, sentiments)
     policy = stage_policy_score(text, raw_aspects, kept_terms, sentence_sentiment)
 
+    # Implicit grounding candidate for RQ1 fallback (explicit_failure → implicit when doc polarity valid)
+    implicit_grounding_candidate = False
+    implicit_trigger_reason = ""
+    if not kept_terms:
+        implicit_grounding_candidate = True
+        implicit_trigger_reason = IMPLICIT_TRIGGER_NO_ASPECT
+    else:
+        drops = [f for f in filtered if f.get("action") == "drop"]
+        if drops and len(drops) == len(filtered):
+            if all((f.get("drop_reason") or "").strip() == DROP_REASON_ALIGNMENT_FAILURE for f in drops):
+                implicit_grounding_candidate = True
+                implicit_trigger_reason = IMPLICIT_TRIGGER_EXPLICIT_ALIGNMENT_FAILED
+
     quality_pass = True
     fail_reasons = []
     if policy["targetless_expected"]:
@@ -438,18 +529,46 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
             "filtered_aspects": filtered,
             "aspect_sentiments": sentiments,
             "sentence_sentiment": sentence_sentiment,
+            "implicit_grounding_candidate": implicit_grounding_candidate,
+            "implicit_trigger_reason": implicit_trigger_reason,
         },
         "ate_score": ate,
         "atsa_score": atsa,
         "stage_policy_score": policy,
-        "summary": {"quality_pass": quality_pass, "fail_reasons": fail_reasons},
+        "summary": {
+            "quality_pass": quality_pass,
+            "fail_reasons": fail_reasons,
+            "pass_reason_breakdown": fail_reasons,  # why fail (same as fail_reasons for traceability)
+        },
         "runtime": runtime,
     }
+    # C2/C3 memory verification: retrieved_k, retrieved_ids, exposed_to_debate, prompt_injection_chars
+    mem = (meta_in.get("memory") or {}) if isinstance(meta_in.get("memory"), dict) else {}
+    scorecard["memory"] = {
+        "retrieved_k": mem.get("retrieved_k", 0),
+        "retrieved_ids": mem.get("retrieved_ids") if isinstance(mem.get("retrieved_ids"), list) else [],
+        "exposed_to_debate": bool(mem.get("exposed_to_debate", False)),
+        "prompt_injection_chars": int(mem.get("prompt_injection_chars", 0)),
+    }
+    # RQ3 extended stage1/stage2 structural risk (for risk_resolution_rate denominator)
+    try:
+        from scripts.structural_error_aggregator import has_stage1_structural_risk, has_stage2_structural_risk
+        scorecard["stage1_structural_risk"] = has_stage1_structural_risk(scorecard)
+        scorecard["stage2_structural_risk"] = has_stage2_structural_risk(scorecard)
+    except Exception:
+        # Leave keys unset so aggregator recomputes from record
+        pass
     return scorecard
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", type=str, default="experiments/results/proposed/smoke_outputs.jsonl")
+    ap.add_argument(
+        "--gold",
+        type=str,
+        default=None,
+        help="Optional path to gold JSONL (uid, gold_tuples). Merges gold into scorecards by uid/text_id for N_gold > 0.",
+    )
     ap.add_argument(
         "--aspect_allowlist",
         type=str,
@@ -459,6 +578,16 @@ def main():
     args = ap.parse_args()
     smoke_path = Path(args.smoke)
     cards_path = smoke_path.parent / "scorecards.jsonl"
+
+    uid_to_gold: Dict[str, List[Dict[str, Any]]] = {}
+    if args.gold:
+        gold_path = Path(args.gold)
+        if not gold_path.is_absolute():
+            _root = Path(__file__).resolve().parent.parent
+            gold_path = (_root / gold_path).resolve()
+        uid_to_gold = load_gold_by_uid(gold_path)
+        if uid_to_gold:
+            print(f"Gold: loaded gold_tuples for {len(uid_to_gold)} uids from {gold_path}")
 
     allow_terms: Set[str] = set()
     if args.aspect_allowlist:
@@ -489,6 +618,9 @@ def main():
     with cards_path.open("w", encoding="utf-8", newline="\n") as f:
         for entry in data:
             card = make_scorecard(entry, extra_allow=allow_terms)
+            uid = (entry.get("meta") or {}).get("text_id") or entry.get("text_id") or entry.get("uid") or ""
+            if uid_to_gold and uid in uid_to_gold:
+                card.setdefault("inputs", {})["gold_tuples"] = uid_to_gold[uid]
             f.write(json.dumps(card, ensure_ascii=False) + "\n")
     print(f"wrote {cards_path} ({len(data)} records)")
 

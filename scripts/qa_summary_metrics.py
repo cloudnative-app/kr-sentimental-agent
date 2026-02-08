@@ -48,9 +48,9 @@ def main():
     for obj in records:
         issues = obj.get("stage2_validator", {}).get("issues", []) or []
         for iss in issues:
-            if "mapped_aspect_ref" in iss:
+            if "mapped_aspect_term" in iss:
                 mapped += 1
-            if "dropped_unanchored_aspect_ref" in iss:
+            if "dropped_unanchored_aspect_term" in iss:
                 dropped += 1
         trace = obj.get("process_trace", [])
         has_review = any(t.get("stage") == "stage2" and ((t.get("agent") == "ATE" and t.get("output", {}).get("aspect_review")) or (t.get("agent") == "ATSA" and t.get("output", {}).get("sentiment_review"))) for t in trace)
