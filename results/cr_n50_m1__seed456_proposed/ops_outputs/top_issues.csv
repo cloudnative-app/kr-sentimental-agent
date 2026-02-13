@@ -1,0 +1,172 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,352,1109,0.03679,54195,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""얼음정수기 기능"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""기능"",
+      ""evidence"": ""얼음정수기 기능 이외에도 냉장고가 갖고 있어야 할 기본적인 기능은 물론이고"",
+      ""span"": ""얼음정수기 기"
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,289,384,0.014410000000000001,45355,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""주름"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""주름,미백,피부진정,보습을 #리뉴본달팽이크림 하나로 #피부관리"",
+      ""confidence"": 0.8,
+      ""rationale"": ""The text lists ski"
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,308,334,0.0131,35773,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""두피활력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""촉진"",
+      ""evidence"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"",
+      ""span"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"","
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,316,369,0.01423,35073,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부결"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""중요한"",
+      ""evidence"": ""그만큼 피부결이 중요한데"",
+      ""span"": ""그만큼 피부결이 중요한데"",
+      ""confidence"": 0.9"
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,289,230,0.00979,31193,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""성분"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""착한"",
+      ""evidence"": ""99.9% 자연유래의 착한 성분들이라서 안심하고 사용할 수 있는"",
+      ""span"": ""99.9% 자연유래의 착한 성분들이"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,283,340,0.01303,31119,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아담한사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""사랑스런"",
+      ""evidence"": ""아담한사이즈 그리고 #프릴장식 까지 넘 사랑스런 #토끼인형"",
+      ""span"": ""아담한사이즈 ... 사랑스런"""
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,302,251,0.01055,30346,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""캐비아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""고가의"",
+      ""evidence"": ""고가의 캐비아를 저렴한 가격에 마스크팩으로 피부관리를 할 수 있으니"",
+      ""span"": ""고가의 캐비아를 저렴한 가격"
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,307,269,0.011139999999999999,30228,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""작은사이즈의 #스틱비누"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋고"",
+      ""evidence"": ""작은사이즈의 #스틱비누 휴대하며 사용중인데 가지고 다니며 사용하니 아이들 손씻길때도 좋고"",
+      ""spa"
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,287,240,0.010069999999999999,30166,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""자외선 차단"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""물론이고"",
+      ""evidence"": ""자외선 차단은 물론이고 자연스러운 톤업되는 선케어를 찾으시면 요거 추천해요"",
+      ""span"": ""자외선 차단은"
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,286,215,0.00931,29650,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""뒷백"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""별롤세"",
+      ""evidence"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""span"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""confidence"""
+nikluge-sa-2022-train-01241,valid,unknown,proposed,gpt-4.1-mini,280,118,0.006339999999999999,25800,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""1+1 행사"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""하니"",
+      ""evidence"": ""지금 1+1 행사도 하니 또 쟁여놔야지~~😁"",
+      ""span"": ""지금 1+1 행사도 하니"",
+      ""con"
+nikluge-sa-2022-train-01797,valid,unknown,proposed,gpt-4.1-mini,277,242,0.01003,25736,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""좋아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋아"",
+      ""evidence"": ""너무 좋아"",
+      ""span"": ""0-3"",
+      ""confidence"": 0.95,
+      ""rationale"""
+nikluge-sa-2022-train-00237,valid,unknown,proposed,gpt-4.1-mini,291,165,0.007859999999999999,25622,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""프라젠트라 벨리크림"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""예방과 개선이 가능한"",
+      ""evidence"": ""인체 적용 시험으로 확인된 예방과 개선이 가능한 바디케어 제품이 바로 프라젠트라 벨리크림이랍니다~"""
+nikluge-sa-2022-train-01112,valid,unknown,proposed,gpt-4.1-mini,280,217,0.009309999999999999,22883,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""넉넉하게 나와서"",
+      ""evidence"": ""사이즈가 넉넉하게 나와서 오래입힐수 있어서 좋아요!!"",
+      ""span"": ""사이즈가 넉넉하게 나와서"",
+  "
+nikluge-sa-2022-train-01689,valid,unknown,proposed,gpt-4.1-mini,274,112,0.0060999999999999995,22667,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""맑고 환하게 가꿔줘요"",
+      ""evidence"": ""피부를 맑고 환하게 가꿔줘요~"",
+      ""span"": ""0-13"",
+      ""confidence"": 0."
+nikluge-sa-2022-train-00644,valid,unknown,proposed,gpt-4.1-mini,281,211,0.00914,21852,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사용감"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋은"",
+      ""evidence"": ""여전히 사용감은 너무 좋은데"",
+      ""span"": ""여전히 사용감은 너무 좋은데"",
+      ""confidence"": "
+nikluge-sa-2022-train-02944,valid,unknown,proposed,gpt-4.1-mini,285,240,0.01005,21661,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""바르고 난 직후"",
+      ""polarity"": ""neutral"",
+      ""opinion_term"": ""맨들거리지만"",
+      ""evidence"": ""바르고 난 직후에는 이렇게 맨들거리지만 금방 바로 흡수되어 버린답니다"",
+      ""span"": ""바르고 난 직"
+nikluge-sa-2022-train-01961,valid,unknown,proposed,gpt-4.1-mini,267,110,0.00597,20558,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""번들거림"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""없어요"",
+      ""evidence"": ""번들거림이없어요"",
+      ""span"": ""번들거림이없어요"",
+      ""confidence"": 0.95,
+      "
+nikluge-sa-2022-train-00987,valid,unknown,proposed,gpt-4.1-mini,278,127,0.00659,20554,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아이립밤"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""안성맞춤"",
+      ""evidence"": ""엄마따라하기를 좋아하는 아이들에게 안성맞춤 #아이립밤"",
+      ""span"": ""안성맞춤 #아이립밤"",
+      ""c"
+nikluge-sa-2022-train-01804,valid,unknown,proposed,gpt-4.1-mini,274,112,0.0060999999999999995,20387,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사용감"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""부드러운"",
+      ""evidence"": ""피부에 착 밀착되어 부드러운 사용감 최고네요"",
+      ""span"": ""부드러운 사용감 최고네요"",
+      ""conf"

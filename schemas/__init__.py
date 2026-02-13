@@ -1,4 +1,6 @@
 from .agent_outputs import (
+    canonicalize_polarity,
+    canonicalize_polarity_with_repair,
     ATEOutput,
     ATSAOutput,
     ArbiterFlags,
@@ -7,6 +9,7 @@ from .agent_outputs import (
     DebateRound,
     DebateSummary,
     DebateTurn,
+    ProposedEdit,
     ModeratorOutput,
     Span,
     ValidatorOutput,
@@ -30,8 +33,16 @@ from .agent_outputs import (
 from .final_output import AnalysisFlags, FinalOutputSchema, FinalResult
 from .metric_trace import ProcessTrace
 from .baselines import BL2Aspect, BL2OutputSchema
+from .protocol_conflict_review import (
+    ASTETripletItem,
+    PerspectiveASTEStage1Schema,
+    ReviewActionItem,
+    ReviewOutputSchema,
+)
 
 __all__ = [
+    "canonicalize_polarity",
+    "canonicalize_polarity_with_repair",
     "ATEOutput",
     "ATSAOutput",
     "ArbiterFlags",
@@ -40,6 +51,7 @@ __all__ = [
     "DebateRound",
     "DebateSummary",
     "DebateTurn",
+    "ProposedEdit",
     "ModeratorOutput",
     "Span",
     "ValidatorOutput",
@@ -65,4 +77,8 @@ __all__ = [
     "ProcessTrace",
     "BL2Aspect",
     "BL2OutputSchema",
+    "ASTETripletItem",
+    "PerspectiveASTEStage1Schema",
+    "ReviewActionItem",
+    "ReviewOutputSchema",
 ]

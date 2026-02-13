@@ -1,0 +1,156 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,352,1156,0.0382,35560,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""얼음정수기 기능"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""있어야 할 기본적인 기능은 물론이고"",
+      ""evidence"": ""얼음정수기 기능 이외에도 냉장고가 갖고 있어야 할 기본적인 기능은 물론이고"",
+     "
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,302,350,0.01352,33232,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""캐비아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""고가"",
+      ""evidence"": ""고가의 캐비아를 저렴한 가격에 마스크팩으로 피부관리를 할 수 있으니"",
+      ""span"": ""고가의 캐비아를 저렴한 가격에"
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,308,249,0.01055,27868,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""두피활력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""촉진"",
+      ""evidence"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"",
+      ""span"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"","
+nikluge-sa-2022-train-00986,valid,unknown,proposed,gpt-4.1-mini,265,60,0.00445,27766,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{""triplets"":[{""aspect_term"":""엄마"",""polarity"":""positive"",""opinion_term"":""기대돼"",""evidence"":""엄마도 기대돼^^"",""span"":""엄마도 기대돼"",""confidence"":0.9,""rationale"":""Expression of positive anticipation towards 엄마""}]}"
+nikluge-sa-2022-train-00987,valid,unknown,proposed,gpt-4.1-mini,278,123,0.00647,26599,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아이립밤"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""안성맞춤"",
+      ""evidence"": ""엄마따라하기를 좋아하는 아이들에게 안성맞춤"",
+      ""span"": ""안성맞춤 #아이립밤"",
+      ""confide"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,331,176,0.00859,26194,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""음식물쓰레기통"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""냄새없이 위생적으로 관리할수있어요"",
+      ""evidence"": ""음식물쓰레기봉투에 바로 밀봉해서 #음식물쓰레기통 에 버리면 돼서 냄새없이 위생적으로 관리할수"
+nikluge-sa-2022-train-00258,valid,unknown,proposed,gpt-4.1-mini,276,114,0.00618,26096,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""디자인"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""예쁜"",
+      ""evidence"": ""디자인이 #예쁜치약 이라 선물로도 제격"",
+      ""span"": ""디자인이 #예쁜치약"",
+      ""confidence"":"
+nikluge-sa-2022-train-00107,valid,unknown,proposed,gpt-4.1-mini,310,368,0.01414,24297,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""말이 안되고"",
+      ""evidence"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것도 말이 안되고"",
+ "
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,316,369,0.01423,24050,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부결"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""중요한"",
+      ""evidence"": ""그만큼 피부결이 중요한데"",
+      ""span"": ""그만큼 피부결이 중요한데"",
+      ""confidence"": 0.9"
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,307,269,0.011139999999999999,21032,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""작은사이즈의 #스틱비누"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋고"",
+      ""evidence"": ""작은사이즈의 #스틱비누 휴대하며 사용중인데 가지고 다니며 사용하니 아이들 손씻길때도 좋고"",
+      ""spa"
+nikluge-sa-2022-train-00336,valid,unknown,proposed,gpt-4.1-mini,306,251,0.010589999999999999,20941,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 치약"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""입이 얼얼할정도로 강한"",
+      ""evidence"": ""입이 얼얼할정도로 강한 치약들은 코가찡 맵고 몸이 안좋은 기분인데"",
+      ""span"": ""입이 얼얼"
+nikluge-sa-2022-train-02608,valid,unknown,proposed,gpt-4.1-mini,287,352,0.01343,20560,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""끈적이지 않게"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""않게"",
+      ""evidence"": ""끈적이지 않게 촉촉하게 스며들면서 피부 깊숙히 쫀쫀해지는 느낌"",
+      ""span"": ""끈적이지 않게"",
+     "
+nikluge-sa-2022-train-02941,valid,unknown,proposed,gpt-4.1-mini,277,115,0.00622,20150,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""흡수"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""싹 되더라구요"",
+      ""evidence"": ""한 오분 정도가 지나면 흡수가 싹 되더라구요"",
+      ""span"": ""흡수가 싹 되더라구요"",
+      ""conf"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,283,289,0.0115,19900,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아담한사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""아담한"",
+      ""evidence"": ""아담한사이즈"",
+      ""span"": [0, 6],
+      ""confidence"": 0.9,
+      ""rati"
+nikluge-sa-2022-train-01121,valid,unknown,proposed,gpt-4.1-mini,281,171,0.00794,18849,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""좋아해서"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""&name&가 보자마자 좋아해서"",
+      ""span"": ""보자마자 좋아해서"",
+      ""confidence"": 0.9,
+      ""rationale"": ""Direct"
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,289,8,0.00313,18699,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": []
+}"
+nikluge-sa-2022-train-01287,valid,unknown,proposed,gpt-4.1-mini,297,249,0.01044,18421,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""수분보충"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""보충해 주는"",
+      ""evidence"": ""수분보충과 동시에 탄력까지 보충해 주는 에센스에요"",
+      ""span"": ""수분보충과 동시에 탄력까지 보충해 주는"
+nikluge-sa-2022-train-02562,valid,unknown,proposed,gpt-4.1-mini,327,248,0.01071,17949,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 화장품"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""찾지 않게 되더라구요"",
+      ""evidence"": ""강한 #화장품을 찾지 않게 되더라구요"",
+      ""span"": ""강한 #화장품을 찾지 않게 되더라구요"""
+nikluge-sa-2022-train-00320,valid,unknown,proposed,gpt-4.1-mini,306,202,0.00912,17499,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""건조함"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""건조하지도 않고"",
+      ""evidence"": ""건조하지도 않고 너무 좋아서"",
+      ""span"": ""건조하지도 않고"",
+      ""confidence"": 0"
+nikluge-sa-2022-train-00237,valid,unknown,proposed,gpt-4.1-mini,291,165,0.007859999999999999,17357,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""프라젠트라 벨리크림"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""예방과 개선이 가능한"",
+      ""evidence"": ""인체 적용 시험으로 확인된 예방과 개선이 가능한 바디케어 제품이 바로 프라젠트라 벨리크림이랍니다~"""

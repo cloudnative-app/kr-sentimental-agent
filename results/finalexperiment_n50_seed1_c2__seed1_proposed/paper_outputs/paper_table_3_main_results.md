@@ -1,0 +1,3 @@
+| runner_name | backbone_model_id | timestamp_utc | pass_rate | valid_aspect_rate | polarity_conflict_rate | unanchored_rate | self_consistency_exact | parse_failure_rate | generate_failure_rate | fallback_used_rate | cost_usd_mean | cost_usd_std | latency_ms_mean | latency_ms_std | tokens_in_mean | tokens_in_std | tokens_out_mean | tokens_out_std |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| proposed | gpt-4.1-mini | 2026-02-10T06:56:36.869673Z | 0.640 | 1.000 | 0.940 | 0.000 | None | 0.000 | 0.000 | 0.000 | 0.010 | 0.004 | 33721.080 | 13050.463 | 345.100 | 13.580 | 221.220 | 124.886 |

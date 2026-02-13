@@ -1,0 +1,50 @@
+{"uid": "nikluge-sa-2022-train-00149", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "레몬그라스 향", "polarity": "positive", "span": {"start": 31, "end": 38}}]}
+{"uid": "nikluge-sa-2022-train-02879", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "EWG 1등급 보습제", "polarity": "positive", "span": {"start": 42, "end": 53}}]}
+{"uid": "nikluge-sa-2022-train-01089", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02651", "gold_tuples": [{"aspect_ref": "본품#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00192", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "대용량", "polarity": "positive", "span": {"start": 0, "end": 3}}]}
+{"uid": "nikluge-sa-2022-train-01398", "gold_tuples": [{"aspect_ref": "제품 전체#편의성", "aspect_term": "트라이탄오보틀텀블러", "polarity": "positive", "span": {"start": 20, "end": 30}}]}
+{"uid": "nikluge-sa-2022-train-00465", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02326", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "마스크팩", "polarity": "positive", "span": {"start": 9, "end": 13}}]}
+{"uid": "nikluge-sa-2022-train-02645", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "브링그린 #시트마스크", "polarity": "positive", "span": {"start": 0, "end": 11}}]}
+{"uid": "nikluge-sa-2022-train-00987", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "아이립밤", "polarity": "positive", "span": {"start": 25, "end": 29}}]}
+{"uid": "nikluge-sa-2022-train-00945", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "망고버터", "polarity": "positive", "span": {"start": 0, "end": 4}}]}
+{"uid": "nikluge-sa-2022-train-00152", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01767", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "아이릴리프 #블랙미라클마스크", "polarity": "positive", "span": {"start": 27, "end": 42}}]}
+{"uid": "nikluge-sa-2022-train-01235", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "마이스 음식물쓰레기봉투", "polarity": "positive", "span": {"start": 41, "end": 53}}]}
+{"uid": "nikluge-sa-2022-train-00028", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "", "polarity": "negative", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01239", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "핑크터치", "polarity": "positive", "span": {"start": 20, "end": 24}}]}
+{"uid": "nikluge-sa-2022-train-00672", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "앰플", "polarity": "positive", "span": {"start": 38, "end": 40}}]}
+{"uid": "nikluge-sa-2022-train-02395", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "스타일 프리미엄", "polarity": "positive", "span": {"start": 17, "end": 25}}]}
+{"uid": "nikluge-sa-2022-train-02430", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "라네이처", "polarity": "positive", "span": {"start": 28, "end": 32}}]}
+{"uid": "nikluge-sa-2022-train-01525", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00325", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "향", "polarity": "positive", "span": {"start": 0, "end": 1}}]}
+{"uid": "nikluge-sa-2022-train-00817", "gold_tuples": [{"aspect_ref": "본품#편의성", "aspect_term": "2 in 1", "polarity": "positive", "span": {"start": 0, "end": 6}}]}
+{"uid": "nikluge-sa-2022-train-02622", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01109", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01469", "gold_tuples": [{"aspect_ref": "제품 전체#편의성", "aspect_term": "마스크팩", "polarity": "positive", "span": {"start": 25, "end": 29}}]}
+{"uid": "nikluge-sa-2022-train-02024", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "런던스위트", "polarity": "positive", "span": {"start": 6, "end": 11}}]}
+{"uid": "nikluge-sa-2022-train-02515", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "세이지폴 멀티바운서", "polarity": "positive", "span": {"start": 18, "end": 28}}]}
+{"uid": "nikluge-sa-2022-train-02691", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02365", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01339", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "보습감", "polarity": "positive", "span": {"start": 61, "end": 64}}]}
+{"uid": "nikluge-sa-2022-train-02557", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00320", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "아토클리닉 #유아세안제", "polarity": "positive", "span": {"start": 42, "end": 54}}]}
+{"uid": "nikluge-sa-2022-train-01660", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "다시마추출물", "polarity": "positive", "span": {"start": 0, "end": 6}}]}
+{"uid": "nikluge-sa-2022-train-01583", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "1종세척제", "polarity": "positive", "span": {"start": 1, "end": 6}}]}
+{"uid": "nikluge-sa-2022-train-00274", "gold_tuples": [{"aspect_ref": "브랜드#일반", "aspect_term": "마마포레스트", "polarity": "positive", "span": {"start": 12, "end": 18}}]}
+{"uid": "nikluge-sa-2022-train-02808", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "24k골드입자성분", "polarity": "positive", "span": {"start": 0, "end": 9}}]}
+{"uid": "nikluge-sa-2022-train-01749", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "리프팅", "polarity": "positive", "span": {"start": 0, "end": 3}}]}
+{"uid": "nikluge-sa-2022-train-00307", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "재생크림", "polarity": "positive", "span": {"start": 12, "end": 16}}]}
+{"uid": "nikluge-sa-2022-train-01128", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}, {"aspect_ref": "본품#품질", "aspect_term": "선케어", "polarity": "positive", "span": {"start": 24, "end": 27}}]}
+{"uid": "nikluge-sa-2022-train-01428", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "친환경세제", "polarity": "positive", "span": {"start": 1, "end": 6}}]}
+{"uid": "nikluge-sa-2022-train-02581", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "68%이상 에센스", "polarity": "positive", "span": {"start": 28, "end": 37}}]}
+{"uid": "nikluge-sa-2022-train-00828", "gold_tuples": [{"aspect_ref": "브랜드#일반", "aspect_term": "록시땅", "polarity": "positive", "span": {"start": 19, "end": 22}}]}
+{"uid": "nikluge-sa-2022-train-02518", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01431", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "데이크림", "polarity": "positive", "span": {"start": 16, "end": 20}}]}
+{"uid": "nikluge-sa-2022-train-01840", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "AC클리어크림", "polarity": "positive", "span": {"start": 15, "end": 22}}]}
+{"uid": "nikluge-sa-2022-train-00145", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00735", "gold_tuples": [{"aspect_ref": "제품 전체#품질", "aspect_term": "마더케이 물티슈", "polarity": "positive", "span": {"start": 1, "end": 9}}]}
+{"uid": "nikluge-sa-2022-train-00702", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01634", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "포켓에센스", "polarity": "positive", "span": {"start": 14, "end": 19}}]}
+{"uid": "nikluge-sa-2022-train-01645", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}

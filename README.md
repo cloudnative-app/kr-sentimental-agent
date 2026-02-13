@@ -28,7 +28,7 @@
 
 ```bash
 git clone https://github.com/cloudnative-app/kr-sentimental-agent.git
-cd kr-sentiment-agent
+cd kr-sentimental-agent
 pip install -r requirements.txt
 ```
 
@@ -123,7 +123,8 @@ python scripts/run_debate_override_ablation.py --run-id debate_override_ablation
 
 - **단일 실행**: `results/<run_id>_<mode>/`, `reports/<run_id>_<mode>/`
 - **시드 반복**: `results/<run_id>__seed<N>_<mode>/` (덮어쓰기 없음)
-- **머징 후**: `results/<run_id>_aggregated/` (merged_scorecards.jsonl, merged_metrics/), 머지 리포트는 `reports/merged_run_<run_id>/metric_report.html` (실험별로 디렉터리 분리되어 덮어쓰기 방지)
+- **머징 후**: `results/<run_id>_aggregated/` (merged_scorecards.jsonl, merged_metrics/), 머지 리포트는 `reports/merged_run_<run_id>/metric_report.html`
+- **Scorecard 덮어쓰기 금지**: `results/<run_id>/scorecards.jsonl`은 **원본(run_experiments)** 전용. smoke 재생성 시 반드시 `--out results/<run_id>/derived/scorecards/scorecards.smoke.jsonl` (또는 `scorecards.smoke.gold.jsonl`) 사용. 상세: `docs/scorecard_path_and_consistency_checklist.md`
 
 ## 📂 결과를 읽는 방법
 
@@ -210,20 +211,50 @@ Stage1(ATE·ATSA·Validator 각 1회) **3** + Debate(라운드 2× 발언자 3�
 ## 📁 프로젝트 구조
 
 ```
-kr-sentiment-agent/
+kr-sentimental-agent/
 ├── agents/                          # 에이전트 시스템
 │   ├── supervisor_agent.py         # 통합 오케스트레이터
-│   ├── debate_orchestrator.py      # 토론 레이어
-│   └── specialized_agents/         # ATE/ATSA/Validator/Moderator
-├── tools/                          # 도구들
-│   ├── classifier_wrapper.py       # HuggingFace 모델 래퍼
-│   └── data_tools/                 # 데이터 처리 도구들
-├── experiments/                    # 실험 관련
-│   ├── configs/
-│   ├── results/
-│   └── scripts/                    # 실험 스크립트들
-├── evaluation/                     # 평가 도구들
-└── scripts/                        # 리포트/메트릭/유틸
+│   ├── prompts/                    # ATE/ATSA/Validator/Debate/Moderator 프롬프트
+│   └── specialized_agents/         # ATE, ATSA, Validator, Moderator
+├── tools/                           # LLM·데이터·데모
+│   ├── backbone_client.py          # LLM 백본
+│   ├── llm_runner.py                # 구조화 출력·재시도
+│   ├── data_tools/                  # CSV/JSONL 로더, 라벨 스키마
+│   └── demo_sampler.py              # 데모 샘플링
+├── data/                            # 데이터 로더
+│   └── datasets/                    # load_datasets, 경로 해석
+├── memory/                          # 에피소딕 메모리 (C1/C2/C3)
+│   ├── episodic_orchestrator.py    # 검색·주입
+│   ├── retriever.py                 # 시그니처·유사도
+│   └── advisory_builder.py         # 어드바이저 텍스트
+├── metrics/                         # Tuple 평가
+│   └── eval_tuple.py                # gold_tuples, tuples_to_pairs, F1
+├── schemas/                         # 에이전트 출력 스키마
+│   └── agent_outputs.py            # AspectExtraction, Sentiment, Validator
+├── evaluation/                      # 베이스라인·평가
+│   └── baselines.py                 # make_runner, resolve_run_mode
+├── experiments/                     # 실험 설정·실행
+│   ├── configs/                     # YAML 설정 (mini, real, real_n100_seed1_c1/c2/c3, abl_*)
+│   │   └── datasets/                # mini, mini2, mini3, real_n100_seed1, valid/ 폴드 등
+│   └── scripts/
+│       └── run_experiments.py       # 실험 루프, scorecards(원본), gold 주입
+├── scripts/                         # 파이프라인·메트릭·진단
+│   ├── run_pipeline.py             # 통합 CLI (실험 → 스냅샷 → 리포트 → 메트릭)
+│   ├── scorecard_from_smoke.py       # outputs → scorecards (--out 필수로 원본 덮어쓰기 방지)
+│   ├── structural_error_aggregator.py  # structural_metrics, triptych, inconsistency_flags
+│   ├── build_metric_report.py       # metric_report.html
+│   ├── aggregate_seed_metrics.py    # 시드 머징, 평균±표준편차
+│   ├── consistency_checklist.py    # GO/NO-GO 정합성 체크리스트
+│   └── run_real_n100_c1_c2_c3.ps1   # real n100 C1→C2→C3 순차 + 머지
+├── analysis/                        # 메모리 성장·플롯
+├── docs/                            # 실행·평가·정책 문서
+├── results/                         # 런별 산출물 (run_id별 디렉터리)
+│   └── <run_id>_<mode>/
+│       ├── manifest.json, outputs.jsonl, scorecards.jsonl, traces.jsonl
+│       ├── derived/                 # metrics, diagnostics, tables, scorecards(smoke 재생성)
+│       ├── paper_outputs/
+│       └── ops_outputs/
+└── reports/                         # HTML 리포트 (run_id별)
 ```
 
 ## 🤝 기여하기
@@ -245,8 +276,10 @@ kr-sentiment-agent/
 
 ## 📚 관련 문서
 
-- **실행·설정**: `docs/how_to_run.md` (run_pipeline, 시드 반복, 머징·경로)
+- **실행·설정**: `docs/how_to_run.md` (run_pipeline, 시드 반복, 머징·경로, real n100 C1/C2/C3)
 - **Tuple 평가**: `docs/absa_tuple_eval.md` (gold_tuples, tuple_f1)
+- **Scorecard 경로·정합성**: `docs/scorecard_path_and_consistency_checklist.md` (덮어쓰기 금지, meta.source, consistency_checklist)
+- **실제 런 명령어 (real n100)**: `docs/run_real_n100_c1_c2_c3_commands.md`
 - **mini2/mini3**: `docs/experiment_mini2_two_seeds_two_runs.md`, `experiments/configs/experiment_mini3.yaml`
 - **origin vs 로컬 차이**: `docs/github_vs_local_diff.md`
 

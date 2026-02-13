@@ -1,0 +1,76 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-02913,valid,unknown,proposed,gpt-4.1-mini,298,239,0.01015,28023,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""터치 한번으로 밝게 비출 수 있음"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""유용하게 사용"",
+      ""evidence"": ""터치 한번으로 밝게 비출 수 있어서 책볼때, 메이크업할때 유용하게 사용하거나"",
+      "
+nikluge-sa-2022-train-02491,valid,unknown,proposed,gpt-4.1-mini,297,192,0.00873,25425,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""귀요미 스티커들"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""잼난데"",
+      ""evidence"": ""귀요미 스티커들 내맘대로 붙일수 있어 잼난데"",
+      ""confidence"": 0.9,
+      ""ration"
+nikluge-sa-2022-train-02858,valid,unknown,proposed,gpt-4.1-mini,303,153,0.00762,24508,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""정제수"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""깨끗한"",
+      ""evidence"": ""6단계 정수과정을 거친 깨끗한 정제수만 사용했다니 믿고 안심하고 사용할 수 있네요"",
+      ""span"": ""6단계 정수과"
+nikluge-sa-2022-train-02283,valid,unknown,proposed,gpt-4.1-mini,284,187,0.00845,20995,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""편하다"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""넘 편하다"",
+      ""evidence"": ""똥손인 친구가 여기꺼 넘 편하다며 추천하길래"",
+      ""span"": ""여기꺼 넘 편하다"",
+      ""confide"
+nikluge-sa-2022-train-00472,valid,unknown,proposed,gpt-4.1-mini,291,106,0.00609,20478,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋아졌단"",
+      ""evidence"": ""그만큼 제 피부가 좋아졌단 말이겠죠?"",
+      ""span"": ""제 피부가 좋아졌단 말이겠죠?"",
+      ""confid"
+nikluge-sa-2022-train-02327,valid,unknown,proposed,gpt-4.1-mini,266,89,0.00533,19535,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""예쁘다"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""예쁘다"",
+      ""evidence"": ""#예쁘다 💎"",
+      ""span"": [1, 4],
+      ""confidence"": 0.9,
+      ""rationa"
+nikluge-sa-2022-train-00089,valid,unknown,proposed,gpt-4.1-mini,287,246,0.01025,19164,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""삼성"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋다"",
+      ""evidence"": ""난 실용주의자라 군말없이 AS해주는 삼성이나 엘지가 좋긴 좋다"",
+      ""span"": ""삼성이나 엘지가 좋긴 좋다"",
+   "
+nikluge-sa-2022-train-01393,valid,unknown,proposed,gpt-4.1-mini,270,5,0.00285,18445,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{""triplets"":[]}"
+nikluge-sa-2022-train-01804,valid,unknown,proposed,gpt-4.1-mini,274,112,0.0060999999999999995,17846,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사용감"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""부드러운"",
+      ""evidence"": ""피부에 착 밀착되어 부드러운 사용감 최고네요"",
+      ""span"": ""부드러운 사용감 최고네요"",
+      ""conf"
+nikluge-sa-2022-train-02352,valid,unknown,proposed,gpt-4.1-mini,275,8,0.0029900000000000005,14264,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": []
+}"

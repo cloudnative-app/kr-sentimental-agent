@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import List, Optional, Dict, Any, Literal
+from typing import List, Optional, Dict, Any, Literal, Tuple
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class Span(BaseModel):
@@ -45,13 +45,128 @@ class AspectTerm(BaseModel):
     span: Span = Field(default_factory=lambda: Span(start=0, end=0), description="문장 내 문자 구간")
 
 
+# Canonical polarity values; raw LLM may use pos/neg/neu.
+POLARITY_VALID = frozenset({"positive", "negative", "neutral"})
+# Targets for edit-distance repair (only these; whitelist is pos/neg/neu + these)
+POLARITY_CANONICAL_TARGETS = ("positive", "negative", "neutral")
+
+# Whitelist: exact match only (no repair)
+POLARITY_WHITELIST = frozenset({"pos", "neg", "neu", "positive", "negative", "neutral"})
+
+
+def _levenshtein(a: str, b: str) -> int:
+    """Levenshtein distance between two strings (for typo repair within 1~2)."""
+    if not a:
+        return len(b)
+    if not b:
+        return len(a)
+    n, m = len(a), len(b)
+    prev = list(range(m + 1))
+    for i in range(1, n + 1):
+        curr = [i]
+        for j in range(1, m + 1):
+            cost = 0 if a[i - 1] == b[j - 1] else 1
+            curr.append(min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost))
+        prev = curr
+    return prev[m]
+
+
+def canonicalize_polarity_with_repair(s: str | None) -> Tuple[Optional[str], bool]:
+    """
+    Map raw polarity to canonical (positive/negative/neutral). Returns (canonical, was_repaired).
+
+    Strict typo policy:
+    - Whitelist: pos/neg/neu, positive/negative/neutral (exact, case-insensitive) → (canon, False).
+    - Repair: edit distance 1 or 2 to exactly one of positive/negative/neutral → (canon, True).
+    - Otherwise → (None, False) (invalid; do not repair).
+    """
+    if s is None or (isinstance(s, str) and not s.strip()):
+        return (None, False)
+    raw = (s if isinstance(s, str) else str(s)).strip().lower()
+    if raw in ("pos", "positive"):
+        return ("positive", False)
+    if raw in ("neg", "negative"):
+        return ("negative", False)
+    if raw in ("neu", "neutral"):
+        return ("neutral", False)
+    if raw in POLARITY_VALID:
+        return (raw, False)
+    # Edit-distance 1~2 repair: only if unique minimum in [1, 2]
+    best_target: Optional[str] = None
+    best_d = 10
+    for t in POLARITY_CANONICAL_TARGETS:
+        d = _levenshtein(raw, t)
+        if 1 <= d <= 2 and d < best_d:
+            best_d = d
+            best_target = t
+        elif 1 <= d <= 2 and d == best_d:
+            best_target = None  # tie → ambiguous, do not repair
+    if best_target is not None:
+        return (best_target, True)
+    return (None, False)
+
+
+def canonicalize_polarity(s: str | None) -> Optional[str]:
+    """
+    Map raw polarity to canonical (positive/negative/neutral). Returns None if unmappable.
+
+    Policy: whitelist exact + repair only when edit distance 1~2 (see canonicalize_polarity_with_repair).
+    Use for override gate (invalid dropped and counted) and ATSA (invalid → None, run continues).
+    """
+    canon, _ = canonicalize_polarity_with_repair(s)
+    return canon
+
+
+def _normalize_polarity_value(v: str | None) -> Optional[str]:
+    """
+    Same policy as canonicalize_polarity_with_repair. Invalid/missing → None (no raise).
+    ATSA: invalid polarity → sample marked invalid, run continues (no retry/abort).
+    """
+    if v is None or (isinstance(v, str) and not v.strip()):
+        return None
+    canon, _ = canonicalize_polarity_with_repair(v)
+    return canon
+
+
+def normalize_polarity_distribution(raw: Dict[str, float] | None) -> Dict[str, float]:
+    """Normalize polarity_distribution keys: pos->positive, neg->negative, neu->neutral."""
+    if not raw:
+        return {}
+    out: Dict[str, float] = {}
+    for k, val in raw.items():
+        key = (k or "").strip().lower()
+        if key in ("pos", "positive"):
+            out["positive"] = out.get("positive", 0) + float(val)
+        elif key in ("neg", "negative"):
+            out["negative"] = out.get("negative", 0) + float(val)
+        elif key in ("neu", "neutral"):
+            out["neutral"] = out.get("neutral", 0) + float(val)
+        elif key in POLARITY_VALID:
+            out[k] = out.get(k, 0) + float(val)
+    return out
+
+
 class AspectSentimentItem(BaseModel):
+    """
+    neutral ≠ missing: polarity=None means missing; use polarity=\"neutral\" only when text has no explicit pos/neg.
+    Backfill/placeholder should set is_backfilled=True and neutral_reason so eval can separate.
+    """
     aspect_term: Optional[AspectTerm] = Field(default=None, description="문장 내 관점 표면형(term+span). 암시적이면 None.")
-    polarity: str = Field(default="neutral")
+    polarity: Optional[str] = Field(default=None, description="positive/negative/neutral. None = missing (do not treat as neutral).")
     evidence: str = Field(default="")
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     polarity_distribution: Dict[str, float] = Field(default_factory=dict)
     is_implicit: bool = Field(default=False)
+    is_backfilled: bool = Field(default=False, description="True when sentiment was filled for missing ATSA (ATE-only aspect).")
+    neutral_reason: Optional[str] = Field(default=None, description="When polarity=neutral, reason e.g. missing_atsa_for_aspect, backfill_no_opinion.")
+
+    @field_validator("polarity", mode="before")
+    @classmethod
+    def _polarity_canonical(cls, v: Any) -> Optional[str]:
+        """Allow None (missing/invalid); whitelist or edit-distance 1~2 repair when present. Invalid → None, run continues."""
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return None
+        return _normalize_polarity_value(v)
 
 
 class SentimentReviewItem(BaseModel):
@@ -162,6 +277,11 @@ class ArbiterFlags(BaseModel):
     stage2_rejected_due_to_confidence: bool = Field(default=False)
     validator_override_applied: bool = Field(default=False)
     confidence_margin_used: float = Field(default=0.0, ge=0.0, le=1.0)
+    # S0/S3: Rule E and Rule B vs E order logging
+    rule_e_fired: bool = Field(default=False, description="True when Rule E actually changed final_label.")
+    rule_e_block_reason: Optional[str] = Field(default=None, description="Why Rule E did not apply (e.g. confidence_too_high, label_unchanged).")
+    rule_b_applied: bool = Field(default=False, description="True when Rule B was evaluated (stage2 preference).")
+    rule_e_attempted_after_b: bool = Field(default=False, description="True when Rule E was evaluated after Rule B (order log).")
 
 
 class ModeratorOutput(BaseModel):
@@ -177,22 +297,35 @@ class ModeratorOutput(BaseModel):
     arbiter_flags: ArbiterFlags = Field(default_factory=ArbiterFlags)
 
 
-# Debate layer (cross-agent argumentation)
+# Debate layer (EPM/TAN/CJ annotation correctors — patch-only, no pro/con battle)
+class ProposedEdit(BaseModel):
+    """Single patch operation: set_polarity, set_aspect_ref, merge_tuples, drop_tuple, confirm_tuple, etc. S2: target should use aspect_ref for mapping."""
+    op: str = Field(default="", description="set_polarity | set_aspect_ref | merge_tuples | drop_tuple | confirm_tuple")
+    target: Dict[str, Any] = Field(default_factory=dict, description="Must include aspect_ref (Stage1 term key for mapping). Optional aspect_term, polarity. e.g. {aspect_ref: str, aspect_term?: str, polarity?: str}")
+    value: Optional[str] = Field(default=None, description="e.g. polarity or aspect_ref value")
+    evidence: Optional[str] = Field(default=None, description="text span or citation for EPM")
+    confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+
+
 class DebatePersona(BaseModel):
-    name: str = Field(default="")
-    stance: str = Field(default="pro", description="pro|con|neutral")
-    role: str = Field(default="", description="persona role description")
-    style: str = Field(default="", description="tone/style guidance")
-    goal: str = Field(default="", description="debate goal for this persona")
+    """EPM / TAN / CJ: role and goal only. stance/style deprecated (no pro/con)."""
+    name: str = Field(default="", description="agent display name (e.g. EPM, TAN, CJ)")
+    role: str = Field(default="", description="Evidence–Polarity Mapper | Target–Aspect Normalizer | Consistency Judge")
+    goal: str = Field(default="", description="annotation corrector goal for this agent")
+    stance: str = Field(default="", description="deprecated; unused (no pro/con)")
+    style: str = Field(default="", description="optional; unused in patch-only flow")
 
 
 class DebateTurn(BaseModel):
-    speaker: str = Field(default="", description="Persona name")
-    stance: str = Field(default="pro", description="pro|con|neutral")
-    planning: str = Field(default="", description="Plan before speaking")
-    reflection: str = Field(default="", description="Self-check for logic/consistency")
-    message: str = Field(default="", description="Final utterance delivered to the debate")
-    key_points: List[str] = Field(default_factory=list, description="Atomic claims or rebuttals")
+    """EPM/TAN output: agent + proposed_edits only. Legacy speaker/message kept for backward compat."""
+    agent: str = Field(default="", description="EPM | TAN | CJ")
+    proposed_edits: List[ProposedEdit] = Field(default_factory=list, description="patch actions only")
+    speaker: str = Field(default="", description="legacy; use agent")
+    stance: str = Field(default="", description="legacy; unused")
+    planning: str = Field(default="", description="optional")
+    reflection: str = Field(default="", description="optional")
+    message: str = Field(default="", description="optional; prefer proposed_edits")
+    key_points: List[str] = Field(default_factory=list, description="optional")
 
 
 class DebateRound(BaseModel):
@@ -201,11 +334,19 @@ class DebateRound(BaseModel):
 
 
 class DebateSummary(BaseModel):
-    winner: Optional[str] = Field(default=None, description="Winner persona name or None")
-    consensus: Optional[str] = Field(default=None, description="Consensus statement if any")
-    key_agreements: List[str] = Field(default_factory=list)
-    key_disagreements: List[str] = Field(default_factory=list)
-    rationale: str = Field(default="", description="Why this summary was chosen")
+    """CJ output: final_patch + final_tuples + unresolved_conflicts. winner/consensus deprecated. S1: sentence-level conclusion/evidence."""
+    final_patch: List[Dict[str, Any]] = Field(default_factory=list, description="drop_tuple, confirm_tuple, etc. Stage2-ready.")
+    final_tuples: List[Dict[str, Any]] = Field(default_factory=list, description="single consistent set; each item {aspect_ref, aspect_term?, polarity} for mapping_direct_rate.")
+    unresolved_conflicts: List[str] = Field(default_factory=list, description="empty when converged")
+    # S1: sentence-level conclusion and evidence spans (Rule E can use these instead of inferring from tuples only)
+    sentence_polarity: Optional[str] = Field(default=None, description="Sentence-level overall polarity from Judge (positive/negative/neutral/mixed).")
+    sentence_evidence_spans: List[str] = Field(default_factory=list, description="1+ exact substrings from the source text that support the conclusion.")
+    aspect_evidence: Optional[Dict[str, str]] = Field(default=None, description="Optional map aspect_ref -> evidence span substring.")
+    winner: Optional[str] = Field(default=None, description="deprecated; unused")
+    consensus: Optional[str] = Field(default=None, description="deprecated; use final_tuples")
+    key_agreements: List[str] = Field(default_factory=list, description="deprecated")
+    key_disagreements: List[str] = Field(default_factory=list, description="deprecated")
+    rationale: str = Field(default="", description="optional CJ rationale")
 
 
 class DebateOutput(BaseModel):

@@ -1,0 +1,60 @@
+# Pretest C2_1: n50, 조건 C2, seed1. A–D 검토용 (메모리 접근·조건 의미·저장 정책·메트릭 무결성).
+# 데이터 규칙: finalexperiment와 동일 (real_n50_seed1: train.csv, valid.csv, valid.gold.jsonl).
+run_purpose: paper
+run_id: pretest_c2_1
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 0.6
+    min_margin: 0.3
+    min_target_conf: 0.55
+    l3_conservative: false
+    ev_threshold: 0.5
+
+episodic_memory:
+  condition: C2
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real_n50_seed1/train.csv
+  valid_file: real_n50_seed1/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real_n50_seed1/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 1
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [1]
+  concurrency: 1

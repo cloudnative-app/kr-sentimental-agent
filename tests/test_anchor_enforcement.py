@@ -42,7 +42,7 @@ def test_stage2_mapping_to_ate_term():
     ate_review = AspectExtractionStage2Schema()
     atsa_review = AspectSentimentStage2Schema(sentiment_review=[SentimentReviewItem(aspect_term="미국 방문", action="maintain")])
 
-    patched_ate, patched_atsa, issues = agent._apply_stage2_reviews(ate, atsa, ate_review, atsa_review)
+    patched_ate, patched_atsa, issues, _ = agent._apply_stage2_reviews(ate, atsa, ate_review, atsa_review)
 
     assert patched_ate.aspects[0].term == "미국"
     assert patched_atsa.aspect_sentiments[0].aspect_term and patched_atsa.aspect_sentiments[0].aspect_term.term == "미국"

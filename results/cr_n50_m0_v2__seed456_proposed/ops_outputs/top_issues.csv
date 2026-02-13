@@ -1,0 +1,166 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,352,1173,0.03871,53682,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""얼음정수기 기능"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""기능"",
+      ""evidence"": ""얼음정수기 기능 이외에도 냉장고가 갖고 있어야 할 기본적인 기능은 물론이고"",
+      ""span"": ""얼음정수기 기"
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,308,332,0.01304,27333,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""두피활력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""촉진"",
+      ""evidence"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"",
+      ""span"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"","
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,287,234,0.00989,26966,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""자외선 차단"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""물론이고"",
+      ""evidence"": ""자외선 차단은 물론이고 자연스러운 톤업되는 선케어를 찾으시면 요거 추천해요"",
+      ""span"": ""자외선 차단은"
+nikluge-sa-2022-train-00336,valid,unknown,proposed,gpt-4.1-mini,306,251,0.010589999999999999,26144,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 치약"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""입이 얼얼할정도로 강한"",
+      ""evidence"": ""입이 얼얼할정도로 강한 치약들은 코가찡 맵고 몸이 안좋은 기분인데"",
+      ""span"": ""입이 얼얼"
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,289,208,0.00913,25533,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""주름"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9,
+      ""rationale"": ""Listed as a benefit of the product without negation or contrast""
+    },
+  "
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,307,269,0.011139999999999999,24416,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""작은사이즈의 #스틱비누"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋고"",
+      ""evidence"": ""작은사이즈의 #스틱비누 휴대하며 사용중인데 가지고 다니며 사용하니 아이들 손씻길때도 좋고"",
+      ""spa"
+nikluge-sa-2022-train-02941,valid,unknown,proposed,gpt-4.1-mini,277,128,0.0066099999999999996,23881,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""흡수"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""싹 되더라구요"",
+      ""evidence"": ""한 오분 정도가 지나면 흡수가 싹 되더라구요"",
+      ""span"": ""한 오분 정도가 지나면 흡수가 싹 되더라구요"""
+nikluge-sa-2022-train-01121,valid,unknown,proposed,gpt-4.1-mini,281,171,0.00794,23216,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""좋아해서"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""&name&가 보자마자 좋아해서"",
+      ""span"": ""보자마자 좋아해서"",
+      ""confidence"": 0.9,
+      ""rationale"": ""Direct"
+nikluge-sa-2022-train-01800,valid,unknown,proposed,gpt-4.1-mini,299,256,0.010669999999999999,23082,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""컴퓨터 하는곳"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""덥고 답답했는데"",
+      ""evidence"": ""컴퓨터 하는곳이 막혀 있어 벌써부터 일하다 보면 덥고 답답했는데"",
+      ""span"": ""컴퓨터 하는곳이"
+nikluge-sa-2022-train-01287,valid,unknown,proposed,gpt-4.1-mini,297,229,0.00984,22649,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""수분보충"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""보충해 주는"",
+      ""evidence"": ""수분보충과 동시에 탄력까지 보충해 주는 에센스에요"",
+      ""span"": ""수분보충과 동시에 탄력까지 보충해 주는"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,302,359,0.01379,22414,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""캐비아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""고가"",
+      ""evidence"": ""고가의 캐비아를 저렴한 가격에 마스크팩으로 피부관리를 할 수 있으니"",
+      ""span"": ""고가의 캐비아를 저렴한 가격에"
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,316,257,0.010870000000000001,21433,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""로지사틴크림"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""쫀쫀해지고"",
+      ""evidence"": ""로지사틴크림은 소량만 발라도 메이크업이 쫀쫀해지고"",
+      ""span"": ""로지사틴크림은 소량만 발라도 메이크업"
+nikluge-sa-2022-train-00817,valid,unknown,proposed,gpt-4.1-mini,271,116,0.006189999999999999,21083,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""2 in 1"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""완전 편하다"",
+      ""evidence"": ""2 in 1 이라 완전 편하다~!"",
+      ""span"": ""2 in 1 이라 완전 편하다~!"",
+      """
+nikluge-sa-2022-train-02608,valid,unknown,proposed,gpt-4.1-mini,287,352,0.01343,21033,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""끈적이지 않게"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""끈적이지 않게"",
+      ""evidence"": ""끈적이지 않게 촉촉하게 스며들면서 피부 깊숙히 쫀쫀해지는 느낌"",
+      ""span"": ""끈적이지 않게"",
+"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,283,399,0.0148,20954,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아담한사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""넘 사랑스런"",
+      ""evidence"": ""아담한사이즈 그리고 #프릴장식 까지 넘 사랑스런 #토끼인형"",
+      ""span"": ""아담한사이즈 그리고 #프릴"
+nikluge-sa-2022-train-00107,valid,unknown,proposed,gpt-4.1-mini,310,365,0.01405,20216,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""말이 안되고"",
+      ""evidence"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것도 말이 안되고"",
+ "
+nikluge-sa-2022-train-02562,valid,unknown,proposed,gpt-4.1-mini,327,245,0.01062,19848,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 화장품"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""찾지 않게 되더라구요"",
+      ""evidence"": ""강한 #화장품을 찾지 않게 되더라구요"",
+      ""span"": ""강한 #화장품을 찾지 않게 되더라구요"""
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,289,241,0.01012,18714,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""성분"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""착한"",
+      ""evidence"": ""99.9% 자연유래의 착한 성분들이라서 안심하고 사용할 수 있는"",
+      ""span"": ""99.9% 자연유래의 착한 성분들이"
+nikluge-sa-2022-train-02944,valid,unknown,proposed,gpt-4.1-mini,285,250,0.01035,18701,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""바르고 난 직후"",
+      ""polarity"": ""neutral"",
+      ""opinion_term"": ""맨들거리지만"",
+      ""evidence"": ""바르고 난 직후에는 이렇게 맨들거리지만 금방 바로 흡수되어 버린답니다."",
+      ""span"": ""바르고 난 "
+nikluge-sa-2022-train-01241,valid,unknown,proposed,gpt-4.1-mini,280,115,0.0062499999999999995,18449,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""1+1 행사"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""하니"",
+      ""evidence"": ""지금 1+1 행사도 하니 또 쟁여놔야지~~😁"",
+      ""span"": ""1+1 행사도 하니"",
+      ""confid"

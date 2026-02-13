@@ -1,0 +1,11 @@
+text_id,kappa_ab,kappa_ac,kappa_bc,kappa_mean,fleiss_kappa,agreement_perfect,agreement_majority,agreement_none,has_conflict,memory_mode
+nikluge-sa-2022-train-01393,1.0,0.0,0.0,0.3333333333333333,,0,2,0,False,unknown
+nikluge-sa-2022-train-02913,0.0,0.0,0.08695652173913038,0.02898550724637679,,1,2,4,False,unknown
+nikluge-sa-2022-train-00089,0.0,0.0,0.11764705882352944,0.03921568627450981,,2,2,1,False,unknown
+nikluge-sa-2022-train-02491,0.0,-0.11111111111111116,0.0,-0.037037037037037056,,0,3,2,False,unknown
+nikluge-sa-2022-train-02327,0.0,0.0,0.0,0.0,,0,1,2,False,unknown
+nikluge-sa-2022-train-00472,0.1428571428571429,0.6,-0.06666666666666665,0.2253968253968254,,0,4,0,False,unknown
+nikluge-sa-2022-train-02352,1.0,1.0,1.0,1.0,,1,0,0,False,unknown
+nikluge-sa-2022-train-02858,0.0,0.0,0.0625,0.020833333333333332,,2,2,1,False,unknown
+nikluge-sa-2022-train-01804,0.0,0.1428571428571429,0.0,0.04761904761904764,,1,1,2,False,unknown
+nikluge-sa-2022-train-02283,0.0,0.0,0.13043478260869557,0.04347826086956519,,0,4,1,False,unknown

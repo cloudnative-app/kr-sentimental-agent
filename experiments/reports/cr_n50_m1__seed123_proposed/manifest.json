@@ -1,0 +1,121 @@
+{
+  "manifest_version": 2,
+  "run_id": "cr_n50_m1__seed123_proposed",
+  "timestamp_utc": "2026-02-12T13:07:00.637473Z",
+  "git_commit": "e74082c1a48ee3672f21dcb0159fb24f13844aa7",
+  "config_path": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\results\\.run_pipeline_temp\\cr_n50_m1_seed123.yaml",
+  "cfg_hash": "1d2f8b4a720f0ce5eac2a9c928a6d5d2f92f28ff001601b9269600dccdd30c56",
+  "cfg_canonical": "{\"backbone\": {\"model\": \"gpt-4.1-mini\", \"provider\": \"openai\"}, \"data\": {\"allowed_roots\": [\"experiments/configs/datasets\"], \"dataset_root\": \"experiments/configs/datasets\", \"input_format\": \"csv\", \"label_column\": null, \"max_length\": 192, \"target_column\": null, \"text_column\": \"text\", \"train_file\": \"beta_n50/train.csv\", \"valid_file\": \"beta_n50/valid.csv\"}, \"data_roles\": {\"blind_set\": [], \"demo_pool\": [\"train\"], \"report_set\": [\"valid\"], \"report_sources\": [\"valid_file\"], \"tuning_pool\": []}, \"demo\": {\"enabled_for\": [], \"force_for_proposed\": false, \"hash_filter\": false, \"k\": 0, \"seed\": 123}, \"episodic_memory\": {\"condition\": \"M1\"}, \"eval\": {\"gold_valid_jsonl\": \"beta_n50/valid.gold.jsonl\"}, \"experiment\": {\"concurrency\": 3, \"repeat\": {\"mode\": \"seed\", \"seeds\": [42, 123, 456, 789, 101]}}, \"pipeline\": {\"enable_debate\": false, \"enable_debate_override\": false, \"enable_stage2\": true, \"enable_validator\": true, \"protocol_mode\": \"conflict_review_v1\", \"temperature\": 0}, \"run_id\": \"cr_n50_m1__seed123\", \"run_mode\": \"proposed\", \"run_purpose\": \"paper\"}",
+  "purpose": "paper",
+  "backbone": {
+    "provider": "openai",
+    "model": "gpt-4.1-mini",
+    "temperature": 0,
+    "max_tokens": null,
+    "seed": null
+  },
+  "prompt_versions": {
+    "ate_stage1": "375910d969806fc91734eaebab8d4acaf2574d84e1e74ff74f8df06749faf2b0",
+    "ate_stage2": "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "atsa_stage1": "ea9918abbeadee43c90c8641ec4f8bb67c65148240509edbbc229b7d004c498a",
+    "atsa_stage2": "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "bl1": "0a2ba169f1e7ba4c5ff4fd67da7c05fd37528f652e80809d6b8fa963523426db",
+    "bl2": "c89825940e65936476714aada778b9bc3fdc3dd27be7ec194a7640b9e367d0b4",
+    "debate_judge": "348d6a243c0f66e64fa11180e4feddadbd491d460c62f2a42e26634c268cbd14",
+    "debate_speaker": "841f5c136466b14150c37000fc7d89b731d9af3fc728b5a257f57d0d3b02c766",
+    "moderator": "171832608d7193335fb39e224bf522f460e980445f95a7a21ab15e32a3b7c899",
+    "perspective_pimp_stage1": "41a51e832d694c6f68066004b6007de73c671613f27a6726e7c9665a29bca554",
+    "perspective_plit_stage1": "978de4331057aa4ca09770c8c9bae013483289ad209e41f6ba84c6e959e26102",
+    "perspective_pneg_stage1": "d64ccb128d8485b40b1a078ff9f87088be0bf9a6637db697a49958de11506666",
+    "review_arbiter_action": "4fa405c79ae1df2fdfe656b24d06175a8981decd4f5a5ab54725cf6fbcdd24e0",
+    "review_pimp_action": "0a68f83beaeb46e995d96d2e02dc39f02a0b8b3c5624054e30f9922167b160e0",
+    "review_plit_action": "17caa3dd989f642880bbc92ecffc62b8b96788fc7e8bf52c408efc1831e1ef06",
+    "review_pneg_action": "a1713c8f2f622f37b0931a2406c373b9dd9b381f782f4d1a548c8ca9a932d5fe",
+    "validator_stage1": "55362e6c538d843df727a5c6c46ccf47ccd1557942b4060a427d64a542a9e8a2",
+    "validator_stage2": "b84d9e881d31c005fe23ae0ee4fc53309de58a6df1d1dac0bd5c5b385b8a5c49"
+  },
+  "patterns": {
+    "unknown": {
+      "path": "resources\\patterns\\en.json",
+      "sha256": "26e19a07ffaaae3d919e13f256e36853b69f5e965d52adbb92ca0ccbc121204b"
+    }
+  },
+  "languages": [
+    "unknown"
+  ],
+  "allowlist": {
+    "path": null,
+    "sha256": null,
+    "version_id": null
+  },
+  "merging_rule": {
+    "path": null,
+    "sha256": null
+  },
+  "dataset": {
+    "input_format": "csv",
+    "paths": {
+      "train_file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\train.csv",
+      "valid_file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\valid.csv"
+    },
+    "split_counts": {
+      "train": 0,
+      "valid": 50,
+      "test": 0
+    },
+    "resolved_paths": {
+      "train_file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\train.csv",
+      "valid_file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\valid.csv"
+    },
+    "allowed_roots": [
+      "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets"
+    ],
+    "split_files": {
+      "train": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\train.csv",
+      "valid": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\valid.csv",
+      "test": null
+    },
+    "split_files_all_same": false,
+    "processing_splits": [
+      "valid"
+    ],
+    "processing_count": 50,
+    "splits_loaded": [
+      "valid"
+    ]
+  },
+  "mode": "proposed",
+  "blocked_path_error": null,
+  "integrity": {
+    "demo_overlap_removed": 0,
+    "demo_hash_filter_enabled": true,
+    "missing_label_count": 0,
+    "forbid_hashes_source": {
+      "report_sources": [
+        "valid_file"
+      ],
+      "blind_sources": null
+    }
+  },
+  "eval": {
+    "gold_valid_jsonl": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\experiments\\configs\\datasets\\beta_n50\\valid.gold.jsonl"
+  },
+  "data_roles": {
+    "demo_pool": [
+      "train"
+    ],
+    "tuning_pool": [],
+    "report_set": [
+      "valid"
+    ],
+    "blind_set": [],
+    "report_sources": [
+      "valid_file"
+    ],
+    "blind_sources": null
+  },
+  "episodic_memory": {
+    "condition": "M1",
+    "store_path": "results\\cr_n50_m1__seed123_proposed\\episodic_store.jsonl"
+  }
+}

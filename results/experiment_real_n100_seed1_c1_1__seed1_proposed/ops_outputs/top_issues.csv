@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00746,valid,unknown,proposed,gpt-4.1-mini,377,465,0.01772,111646,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""샤워"",
+      ""span"": {""start"": 11, ""end"": 13},
+      ""normalized"": ""샤워"",
+      ""syntactic_head"": ""사용하는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '하루 사용하는"
+nikluge-sa-2022-train-00735,valid,unknown,proposed,gpt-4.1-mini,382,710,0.02512,100539,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마더케이 물티슈"",
+      ""span"": {""start"": 1, ""end"": 9},
+      ""normalized"": ""마더케이 물티슈"",
+      ""syntactic_head"": ""뽑혀"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 "
+nikluge-sa-2022-train-00173,valid,unknown,proposed,gpt-4.1-mini,372,398,0.01566,95894,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#신생아아기띠"",
+      ""span"": {""start"": 4, ""end"": 11},
+      ""normalized"": ""신생아 아기띠"",
+      ""syntactic_head"": ""벗어나나"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00603,valid,unknown,proposed,gpt-4.1-mini,357,288,0.01221,86203,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""컬러"",
+      ""span"": {""start"": 11, ""end"": 13},
+      ""normalized"": ""컬러"",
+      ""syntactic_head"": ""다양하고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '컬러도 다양하"
+nikluge-sa-2022-train-01914,valid,unknown,proposed,gpt-4.1-mini,359,649,0.023059999999999997,84294,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""세럼"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""세럼"",
+      ""syntactic_head"": ""담아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 명시적으로 나열된 "
+nikluge-sa-2022-train-00477,valid,unknown,proposed,gpt-4.1-mini,337,185,0.00892,82602,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""케이스"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""케이스"",
+      ""syntactic_head"": ""예쁘고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에 명시된 명"
+nikluge-sa-2022-train-02335,valid,unknown,proposed,gpt-4.1-mini,344,202,0.009500000000000001,82448,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""가꿔주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '생기 있는 피부로"
+nikluge-sa-2022-train-01105,valid,unknown,proposed,gpt-4.1-mini,362,422,0.016280000000000003,81474,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모기나 벌레"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""모기, 벌레"",
+      ""syntactic_head"": ""알러지반응"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-01266,valid,unknown,proposed,gpt-4.1-mini,369,462,0.01755,80484,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""수박추출물"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""수박추출물"",
+      ""syntactic_head"": ""함유로"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에서 "
+nikluge-sa-2022-train-02960,valid,unknown,proposed,gpt-4.1-mini,344,100,0.00644,80230,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""도구"",
+      ""span"": {""start"": 13, ""end"": 15},
+      ""normalized"": ""도구"",
+      ""syntactic_head"": ""써야"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '도구를 써야'라는"
+nikluge-sa-2022-train-01013,valid,unknown,proposed,gpt-4.1-mini,345,283,0.01194,79897,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""필립스"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""필립스"",
+      ""syntactic_head"": ""아니다"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '필립스같은 유명 "
+nikluge-sa-2022-train-02342,valid,unknown,proposed,gpt-4.1-mini,349,190,0.00919,79590,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""구름같이 가벼운 보송보송한 텍스쳐"",
+      ""span"": {""start"": 0, ""end"": 15},
+      ""normalized"": ""텍스쳐"",
+      ""syntactic_head"": ""라"",
+      ""confidence"": 0.95,
+      ""rationale"": """
+nikluge-sa-2022-train-01761,valid,unknown,proposed,gpt-4.1-mini,362,276,0.011899999999999999,79545,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""아이라인 문신"",
+      ""span"": {""start"": 1, ""end"": 7},
+      ""normalized"": ""아이라인 문신"",
+      ""syntactic_head"": ""있어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 '아이라"
+nikluge-sa-2022-train-00037,valid,unknown,proposed,gpt-4.1-mini,341,285,0.01196,78503,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""배색"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""배색"",
+      ""syntactic_head"": ""무난하다"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '배색'이 '무난하"
+nikluge-sa-2022-train-00770,valid,unknown,proposed,gpt-4.1-mini,363,304,0.01275,78493,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부관리"",
+      ""span"": {""start"": 15, ""end"": 18},
+      ""normalized"": ""피부 관리"",
+      ""syntactic_head"": ""하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '피부관리"
+nikluge-sa-2022-train-02384,valid,unknown,proposed,gpt-4.1-mini,340,279,0.011770000000000001,78187,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""욕실"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""욕실"",
+      ""syntactic_head"": ""사용가능하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '욕실'이 '사"
+nikluge-sa-2022-train-01320,valid,unknown,proposed,gpt-4.1-mini,366,413,0.016050000000000002,77035,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""pH 밸런스"",
+      ""span"": {""start"": 4, ""end"": 10},
+      ""normalized"": ""pH 밸런스"",
+      ""syntactic_head"": ""유지시켜주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,362,461,0.01745,76408,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부 단백질 구조"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""피부 단백질 구조"",
+      ""syntactic_head"": ""흡사한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문"
+nikluge-sa-2022-train-00772,valid,unknown,proposed,gpt-4.1-mini,348,197,0.009389999999999999,75885,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""명품칫솔"",
+      ""span"": {""start"": 1, ""end"": 6},
+      ""normalized"": ""명품 칫솔"",
+      ""syntactic_head"": ""달라도"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반에 명시적으로"
+nikluge-sa-2022-train-00672,valid,unknown,proposed,gpt-4.1-mini,356,433,0.01655,73976,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""에스테틱"",
+      ""span"": {""start"": 3, ""end"": 7},
+      ""normalized"": ""에스테틱"",
+      ""syntactic_head"": ""가지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""에스테틱이 피부과 가지 않"

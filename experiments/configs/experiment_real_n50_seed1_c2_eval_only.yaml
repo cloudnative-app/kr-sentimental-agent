@@ -1,0 +1,61 @@
+# C2_eval_only: real 규칙, N=50 valid, seed=1. 평가 전용(주입 마스킹, 저장 안 함).
+# C3와 동일 동작, conditions_memory_v1_2 사용. ablation용.
+# 데이터: scripts/run_real_n50_c1_c2_c3_c2_eval_only.ps1 1단계로 real_n50_seed1 생성 후 사용.
+run_purpose: paper
+run_id: experiment_real_n50_seed1_c2_eval_only
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 1.6
+    min_margin: 0.8
+    min_target_conf: 0.7
+
+# C2_eval_only: v1_2 조건 사용 (retrieval 실행, 주입 마스킹, store_write: false)
+episodic_memory:
+  condition: C2_eval_only
+  conditions_path: experiments/configs/conditions_memory_v1_2.yaml
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real_n50_seed1/train.csv
+  valid_file: real_n50_seed1/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real_n50_seed1/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 1
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [1]
+  concurrency: 1

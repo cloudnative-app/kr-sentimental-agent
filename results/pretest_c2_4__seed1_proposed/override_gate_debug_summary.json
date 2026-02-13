@@ -1,0 +1,347 @@
+{
+  "n_aspects": 165,
+  "decision_applied_n": 3,
+  "decision_skip_n": 112,
+  "skipped_neutral_only_n": 103,
+  "low_signal_breakdown": {
+    "neutral_only": 103,
+    "low_signal": 1
+  },
+  "skip_reason_count": {
+    "neutral_only": 103,
+    "max_one_override_per_sample": 8,
+    "low_signal": 1
+  },
+  "skip_reason_rate": {
+    "neutral_only": 0.6242,
+    "max_one_override_per_sample": 0.0485,
+    "low_signal": 0.0061
+  },
+  "override_hint_invalid_total": 284,
+  "override_hint_repair_total": 0,
+  "override_hint_invalid_rate": 0.9221,
+  "by_sample": {
+    "nikluge-sa-2022-train-02669": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02211": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01786": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02482": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01939": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00565": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01721": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02384": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00536": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01823": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01707": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02651": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02131": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01813": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00356": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "ev_below_threshold",
+      "ev_score": 0.4,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02916": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00546": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00016": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02850": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00037": {
+      "adopt_decision": "adopted",
+      "adopt_reason": "debate_action",
+      "ev_score": 0.5,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01941": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01613": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02228": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01546": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00203": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02325": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01649": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00630": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01699": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02909": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01108": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01743": {
+      "adopt_decision": "adopted",
+      "adopt_reason": "debate_action",
+      "ev_score": 0.5,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00448": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01811": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02973": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00969": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02944": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "ev_below_threshold",
+      "ev_score": 0.4,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02208": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00643": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00617": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01914": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "ev_below_threshold",
+      "ev_score": 0.4,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01320": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01495": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-01919": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02707": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "ev_below_threshold",
+      "ev_score": 0.4,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-02270": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00578": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00244": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00829": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    },
+    "nikluge-sa-2022-train-00489": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    }
+  },
+  "total_dist": {
+    "min": 0.0,
+    "mean": 0.167,
+    "median": 0.0,
+    "p90": 0.0,
+    "p95": 1.6,
+    "max": 2.4
+  },
+  "margin_dist": {
+    "min": 0.0,
+    "mean": 0.167,
+    "median": 0.0,
+    "p90": 0.0,
+    "p95": 1.6,
+    "max": 2.4
+  },
+  "threshold_near_rate": {
+    "total_in_min_total_minus_0_2_to_min_total_n": 1,
+    "total_near_rate": 0.0061,
+    "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+    "margin_near_rate": 0.0
+  }
+}

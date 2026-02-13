@@ -1,5 +1,6 @@
-# C3 (silent-memory): memory retrieval 수행, debate prompt에는 노출하지 않음.
+# C3 (retrieval-only): 메모리 검색은 수행(비용/지연/컨텍스트 길이 영향 유지)하되 프롬프트에 넣지 않음.
 # memory.enable=true, memory.mode=silent → episodic_memory.condition=C2_silent
+# retrieval 경로는 C2와 동일하게 실행(store.load, retriever.retrieve) → 비용·지연 유지, debate context에는 미병합.
 # retrieval 자체 효과 vs advisory exposure 효과 분리용.
 run_purpose: paper
 run_id: experiment_mini4_c3_silent

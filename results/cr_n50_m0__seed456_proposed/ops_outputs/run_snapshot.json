@@ -1,0 +1,76 @@
+{
+  "run_id": "cr_n50_m0__seed456_proposed",
+  "timestamp_utc": "2026-02-12T11:58:36.366247Z",
+  "cfg_hash": "25f68628e3ddfe18ecc21149ea2609c179a45a2bae099af967ba6228c141f52c",
+  "backbone_model_id": "gpt-4.1-mini",
+  "prompt_hashes": [
+    "375910d969806fc91734eaebab8d4acaf2574d84e1e74ff74f8df06749faf2b0",
+    "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "ea9918abbeadee43c90c8641ec4f8bb67c65148240509edbbc229b7d004c498a",
+    "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "0a2ba169f1e7ba4c5ff4fd67da7c05fd37528f652e80809d6b8fa963523426db",
+    "c89825940e65936476714aada778b9bc3fdc3dd27be7ec194a7640b9e367d0b4",
+    "348d6a243c0f66e64fa11180e4feddadbd491d460c62f2a42e26634c268cbd14",
+    "841f5c136466b14150c37000fc7d89b731d9af3fc728b5a257f57d0d3b02c766",
+    "171832608d7193335fb39e224bf522f460e980445f95a7a21ab15e32a3b7c899",
+    "41a51e832d694c6f68066004b6007de73c671613f27a6726e7c9665a29bca554",
+    "978de4331057aa4ca09770c8c9bae013483289ad209e41f6ba84c6e959e26102",
+    "d64ccb128d8485b40b1a078ff9f87088be0bf9a6637db697a49958de11506666",
+    "4fa405c79ae1df2fdfe656b24d06175a8981decd4f5a5ab54725cf6fbcdd24e0",
+    "0a68f83beaeb46e995d96d2e02dc39f02a0b8b3c5624054e30f9922167b160e0",
+    "17caa3dd989f642880bbc92ecffc62b8b96788fc7e8bf52c408efc1831e1ef06",
+    "a1713c8f2f622f37b0931a2406c373b9dd9b381f782f4d1a548c8ca9a932d5fe",
+    "55362e6c538d843df727a5c6c46ccf47ccd1557942b4060a427d64a542a9e8a2",
+    "b84d9e881d31c005fe23ae0ee4fc53309de58a6df1d1dac0bd5c5b385b8a5c49"
+  ],
+  "purpose": "paper",
+  "artifacts": {
+    "manifest": true,
+    "scorecards": true,
+    "traces": true,
+    "smoke_outputs": false,
+    "manifest_bytes": 5899,
+    "scorecards_bytes": 1545048,
+    "traces_bytes": 1327118,
+    "smoke_outputs_bytes": null
+  },
+  "volume": {
+    "total_rows": 50,
+    "rows_by_split": {
+      "valid": 50
+    },
+    "rows_by_case_type": {
+      "unknown": 50
+    }
+  },
+  "reliability": {
+    "generate_failed_rate": 0.0,
+    "parse_failed_rate": 0.0,
+    "fallback_used_rate": 0.0,
+    "empty_output_rate": 1.0,
+    "avg_aspect_count": 0
+  },
+  "usage": {
+    "tokens_in_total": 14337,
+    "tokens_out_total": 9688,
+    "cost_usd_total": 0.43401,
+    "latency_ms_mean": 23477.7,
+    "latency_ms_p50": 22416.0,
+    "latency_ms_p95": 33898.0,
+    "retries_mean": 0
+  },
+  "integrity": {
+    "split_overlap_pairs": {
+      "train_valid": 0.0,
+      "train_test": 0.0,
+      "valid_test": 0.0
+    },
+    "split_overlap_any_rate": 0.0,
+    "split_overlap_notes": null,
+    "split_hash_counts": {
+      "train": 0,
+      "valid": 50,
+      "test": 0
+    }
+  }
+}

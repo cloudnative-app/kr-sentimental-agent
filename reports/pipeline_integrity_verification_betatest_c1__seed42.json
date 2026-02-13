@@ -1,0 +1,253 @@
+{
+  "run_id": "betatest_c1__seed42_proposed",
+  "expected_count": 50,
+  "e2e_record_count": {
+    "outputs": 50,
+    "scorecards": 50,
+    "traces": 50,
+    "pass": true
+  },
+  "invariant_s1_expected": [
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "debate_summary_n": 4,
+      "final_result_n": 4,
+      "symdiff": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01235",
+      "debate_summary_n": 4,
+      "final_result_n": 6,
+      "symdiff": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02395",
+      "debate_summary_n": 2,
+      "final_result_n": 2,
+      "symdiff": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01525",
+      "debate_summary_n": 1,
+      "final_result_n": 0,
+      "symdiff": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02024",
+      "debate_summary_n": 1,
+      "final_result_n": 1,
+      "symdiff": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02691",
+      "debate_summary_n": 1,
+      "final_result_n": 0,
+      "symdiff": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02557",
+      "debate_summary_n": 1,
+      "final_result_n": 2,
+      "symdiff": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01431",
+      "debate_summary_n": 1,
+      "final_result_n": 2,
+      "symdiff": 3
+    }
+  ],
+  "invariant_s2_expected": [],
+  "aggregator_source_fallback": [
+    {
+      "text_id": "nikluge-sa-2022-train-01525",
+      "source": "inputs.aspect_sentiments"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02691",
+      "source": "inputs.aspect_sentiments"
+    }
+  ],
+  "invariant_s3_fail": [],
+  "invariant_pj1_aspect_not_substring": [],
+  "override_applied_hint_evidence": [
+    {
+      "text_id": "nikluge-sa-2022-train-01469",
+      "aspect_term": "주 1회 사용",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02557",
+      "aspect_term": "날씨",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    }
+  ],
+  "neutral_only_breakdown": [
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "모기기피제",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "야외활동 속 피부",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "레몬그라스 향",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "#일리윤",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "#바디미스트추천",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00149",
+      "aspect_term": "신상제품",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02879",
+      "aspect_term": "민감한 아기 피부",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02879",
+      "aspect_term": "잘못된 물티슈",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02879",
+      "aspect_term": "EWG 1등급 보습제",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "피부속",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "화이트 베이스",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "블루 에센스",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "자외선 차단효과",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02651",
+      "aspect_term": "각질제거",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02651",
+      "aspect_term": "피지제거",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "_truncated": true,
+      "total_neutral_only": 117
+    }
+  ],
+  "neutral_only_and_source_final_tuples": [
+    {
+      "text_id": "nikluge-sa-2022-train-01431",
+      "n_tuples": 2,
+      "source": "final_tuples"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01840",
+      "n_tuples": 2,
+      "source": "final_tuples"
+    }
+  ],
+  "memory_samples": [],
+  "metrics_pred_consistency": {
+    "pass": true,
+    "mismatches": [],
+    "scorecards_n": 50,
+    "triptych_n": 0
+  },
+  "debate_persona_memory": {
+    "pass": true,
+    "violations": []
+  },
+  "stage2_memory_injection": {
+    "pass": true,
+    "violations": []
+  },
+  "selective_storage_mix": {
+    "pass": false,
+    "store_decision_counts": {
+      "skipped": 50
+    },
+    "note": "store_write=True run must have both stored and skipped (no 100% store)."
+  }
+}

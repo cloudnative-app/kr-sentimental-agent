@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00735,valid,unknown,proposed,gpt-4.1-mini,382,580,0.02122,38739,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마더케이 물티슈"",
+      ""span"": {""start"": 1, ""end"": 9},
+      ""normalized"": ""마더케이 물티슈"",
+      ""syntactic_head"": ""뽑혀"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 "
+nikluge-sa-2022-train-00672,valid,unknown,proposed,gpt-4.1-mini,356,527,0.019370000000000002,37887,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""에스테틱"",
+      ""span"": {""start"": 3, ""end"": 7},
+      ""normalized"": ""에스테틱"",
+      ""syntactic_head"": ""가지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '에스테틱'이 피"
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,347,463,0.01736,37520,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""각진 인생"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""각진 인생"",
+      ""syntactic_head"": ""좋고"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반에 명시적으로"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,391,681,0.02434,36254,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""음식물쓰레기"",
+      ""span"": {""start"": 7, ""end"": 13},
+      ""normalized"": ""음식물쓰레기"",
+      ""syntactic_head"": ""고민인데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-02581,valid,unknown,proposed,gpt-4.1-mini,365,581,0.02108,34799,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""지성"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""지성 피부"",
+      ""syntactic_head"": ""그런지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반 '지성이라 그런"
+nikluge-sa-2022-train-00149,valid,unknown,proposed,gpt-4.1-mini,373,527,0.019540000000000002,34389,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모기기피제"",
+      ""span"": {""start"": 19, ""end"": 23},
+      ""normalized"": ""모기기피제"",
+      ""syntactic_head"": ""쓰는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '모기기"
+nikluge-sa-2022-train-02879,valid,unknown,proposed,gpt-4.1-mini,375,355,0.0144,32153,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""민감한 아기 피부"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""아기 피부"",
+      ""syntactic_head"": ""사용하여"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 "
+nikluge-sa-2022-train-01428,valid,unknown,proposed,gpt-4.1-mini,348,378,0.014820000000000002,31007,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""친환경세제"",
+      ""span"": {""start"": 1, ""end"": 6},
+      ""normalized"": ""친환경 세제"",
+      ""syntactic_head"": ""인증받아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트에서 '친"
+nikluge-sa-2022-train-01089,valid,unknown,proposed,gpt-4.1-mini,356,418,0.0161,29094,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""화이트 베이스"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""화이트 베이스"",
+      ""syntactic_head"": ""높이구"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에"
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,348,303,0.01257,28147,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선 차단"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""자외선 차단"",
+      ""syntactic_head"": ""찾으시면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 "
+nikluge-sa-2022-train-02808,valid,unknown,proposed,gpt-4.1-mini,349,314,0.01291,27159,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""24k골드입자성분"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""24k 골드 입자 성분"",
+      ""syntactic_head"": ""들어가있는데"",
+      ""confidence"": 0.95,
+      ""rationale"
+nikluge-sa-2022-train-01660,valid,unknown,proposed,gpt-4.1-mini,344,307,0.01265,26325,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""다시마추출물"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""다시마추출물"",
+      ""syntactic_head"": ""함유되어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '다"
+nikluge-sa-2022-train-02651,valid,unknown,proposed,gpt-4.1-mini,337,186,0.00895,25872,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""각질제거"",
+      ""span"": {""start"": 1, ""end"": 5},
+      ""normalized"": ""각질 제거"",
+      ""syntactic_head"": ""바르기만 하면 끝"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트 내"
+nikluge-sa-2022-train-01339,valid,unknown,proposed,gpt-4.1-mini,367,402,0.01573,25625,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 15, ""end"": 17},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""거칠어진"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '거칠어진 피부"
+nikluge-sa-2022-train-01398,valid,unknown,proposed,gpt-4.1-mini,344,358,0.01418,25344,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""삶기"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""삶기"",
+      ""syntactic_head"": ""되는"",
+      ""confidence"": 0.9,
+      ""rationale"": ""삶기라는 명사가 '되는'이라는 서"
+nikluge-sa-2022-train-00325,valid,unknown,proposed,gpt-4.1-mini,339,272,0.011550000000000001,25108,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""향"",
+      ""span"": {""start"": 0, ""end"": 1},
+      ""normalized"": ""향"",
+      ""syntactic_head"": ""우선"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 첫 부분에 명시적으로 등장하는 "
+nikluge-sa-2022-train-00945,valid,unknown,proposed,gpt-4.1-mini,341,284,0.01193,23833,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""망고버터"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""망고버터"",
+      ""syntactic_head"": ""공급해주고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '망고버터"
+nikluge-sa-2022-train-00320,valid,unknown,proposed,gpt-4.1-mini,366,276,0.01194,23829,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""버블폼"",
+      ""span"": {""start"": 8, ""end"": 12},
+      ""normalized"": ""버블폼"",
+      ""syntactic_head"": ""있어서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '#버블폼 있어"
+nikluge-sa-2022-train-01583,valid,unknown,proposed,gpt-4.1-mini,339,265,0.01134,23011,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""1종세척제"",
+      ""span"": {""start"": 1, ""end"": 6},
+      ""normalized"": ""1종 세척제"",
+      ""syntactic_head"": ""씻을 수 있어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 "
+nikluge-sa-2022-train-02622,valid,unknown,proposed,gpt-4.1-mini,330,193,0.00909,22951,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""전방보기"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""전방 보기"",
+      ""syntactic_head"": ""Ok"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 내에서 '전방보기'"

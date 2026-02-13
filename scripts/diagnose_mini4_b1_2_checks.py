@@ -236,7 +236,7 @@ def run_checks(scorecards_path: Path, csv_path: Path, out_md: Path) -> None:
         # Gold 원본 정규화 전/후
         inputs = r.get("inputs") or {}
         raw_gold = inputs.get("gold_tuples") or r.get("gold_tuples") or []
-        norm_gold = gold_row_to_tuples({"gold_tuples": raw_gold}) if raw_gold else []
+        norm_gold, _ = gold_row_to_tuples({"gold_tuples": raw_gold}) if raw_gold else ([], False)
         lines.append(f"**샘플**: index={f1_sample_idx}, text_id={text_id}")
         lines.append("")
         lines.append("**gold 원본 정규화 전/후 (1개):**")

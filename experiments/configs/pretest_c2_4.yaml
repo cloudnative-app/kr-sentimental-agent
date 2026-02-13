@@ -1,0 +1,57 @@
+# Pretest C2_4: n50, 조건 C2, seed1. Override T1 프로파일 (min_total=1.0, min_margin=0.5, l3_conservative=true).
+# 데이터 규칙: finalexperiment와 동일 (real_n50_seed1: train.csv, valid.csv, valid.gold.jsonl).
+run_purpose: paper
+run_id: pretest_c2_4
+run_mode: proposed
+
+# Override: debate_override_thresholds.json의 t1 프로파일 사용 (YAML 인라인 없음 → manifest source: json_profile)
+override_profile: t1
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+
+episodic_memory:
+  condition: C2
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real_n50_seed1/train.csv
+  valid_file: real_n50_seed1/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real_n50_seed1/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 1
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [1]
+  concurrency: 1

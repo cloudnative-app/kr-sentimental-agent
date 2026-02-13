@@ -1,0 +1,57 @@
+{
+  "text_id": "nikluge-sa-2022-train-02829",
+  "aspect_term": "피부톤",
+  "run_id": "experiment_mini4_validation_c2_t1_proposed",
+  "override_gate_debug_APPLY_record": {
+    "text_id": "nikluge-sa-2022-train-02829",
+    "sample_idx": 0,
+    "aspect_term": "피부톤",
+    "aspect_key": "피부톤",
+    "valid_hint_count": 2,
+    "pos_score": 0,
+    "neg_score": 1.6,
+    "total": 1.6,
+    "margin": 1.6,
+    "target_pol": "negative",
+    "current_pol": "neutral",
+    "current_conf": 0.5,
+    "decision": "APPLY",
+    "skip_reason": null,
+    "override_action": "flip neutral->negative, conf=0.6"
+  },
+  "snapshots_aspect_pairs": {
+    "S0_override_직전_pairs_해당_aspect만": [
+      {"aspect_term": "피부톤", "polarity": "neutral"}
+    ],
+    "S1_override_직후_stage2_tuples_해당_aspect만": [
+      {"aspect_term": "피부톤", "polarity": "positive"},
+      {"aspect_term": "피부톤", "polarity": "negative"}
+    ],
+    "S2_moderator_이후_final_tuples_해당_aspect만": [
+      {"aspect_term": "피부톤", "polarity": "neutral"}
+    ]
+  },
+  "interpretation": "S0 has one pair (피부톤, neutral). After override, patched_stage2 has (피부톤, positive) from the null-aspect item mapped to 피부톤 and (피부톤, negative) from override → raw conflict. adopt_stage2=False so S2 uses stage1 path → (피부톤, neutral).",
+  "conflict_blocked_code": {
+    "file": "agents/supervisor_agent.py",
+    "function": "_adopt_stage2_decision",
+    "line": 1311,
+    "condition_full": "debate_explicit and self._stage2_introduces_new_conflict(stage1_atsa, patched_stage2_atsa)",
+    "condition_breakdown": {
+      "debate_explicit": "True (final_patch has drop_tuple != confirm_tuple)",
+      "_stage2_introduces_new_conflict": "True (patched_stage2 has aspect '피부톤' with >1 polarity where stage1 had <=1)"
+    },
+    "variable_values_02829": {
+      "debate_explicit": true,
+      "stage1_atsa_aspect_polarity_sets": {"": ["positive"], "피부톤": ["neutral"]},
+      "patched_stage2_atsa_aspect_polarity_sets": {"피부톤": ["positive", "negative"]},
+      "explanation": "Null-aspect sentiment (positive) is mapped to term '피부톤' by _map_aspect_term_to_ate_terms; override added (피부톤, negative). So patched_stage2 has 피부톤 with {positive, negative} → len(s2_pols)>1, len(s1_pols) for 피부톤 is 1 → returns True."
+    },
+    "_stage2_introduces_new_conflict_definition": "True if for any term, stage2 has >1 polarity and stage1 had <=1 for that term. File agents/supervisor_agent.py lines 1234-1247."
+  },
+  "moderator_final": {
+    "final_label": "positive",
+    "confidence": 0.95,
+    "selected_stage": "stage2"
+  }
+}

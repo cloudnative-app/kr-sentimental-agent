@@ -1,0 +1,634 @@
+{
+  "run_id": "pretest_c2_4__seed1_proposed",
+  "expected_count": 50,
+  "e2e_record_count": {
+    "outputs": 50,
+    "scorecards": 50,
+    "traces": 50,
+    "pass": true
+  },
+  "invariant_s1_expected": [
+    {
+      "text_id": "nikluge-sa-2022-train-01613",
+      "debate_summary_n": 1,
+      "final_result_n": 0,
+      "symdiff": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02208",
+      "debate_summary_n": 2,
+      "final_result_n": 2,
+      "symdiff": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00829",
+      "debate_summary_n": 1,
+      "final_result_n": 0,
+      "symdiff": 1
+    }
+  ],
+  "invariant_s2_expected": [],
+  "aggregator_source_fallback": [
+    {
+      "text_id": "nikluge-sa-2022-train-01613",
+      "source": "inputs.aspect_sentiments"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00829",
+      "source": "inputs.aspect_sentiments"
+    }
+  ],
+  "invariant_s3_fail": [],
+  "invariant_pj1_aspect_not_substring": [],
+  "override_applied_hint_evidence": [
+    {
+      "text_id": "nikluge-sa-2022-train-00037",
+      "aspect_term": "핑크",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01743",
+      "aspect_term": "관심사",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01914",
+      "aspect_term": "세럼",
+      "valid_hint_count": 3,
+      "pos_score": 0,
+      "neg_score": 2.4,
+      "total": 2.4,
+      "margin": 2.4
+    }
+  ],
+  "neutral_only_breakdown": [
+    {
+      "text_id": "nikluge-sa-2022-train-02669",
+      "aspect_term": "컨실러",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02211",
+      "aspect_term": "라임리치향",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01786",
+      "aspect_term": "파우치",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "aspect_term": "피부",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "aspect_term": "산뜻한느낌",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "aspect_term": "젤제형",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "aspect_term": "발림성",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01939",
+      "aspect_term": "머리부터 발끝까지 향기로운 여자",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01939",
+      "aspect_term": "잔향",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00565",
+      "aspect_term": "신세계",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "aspect_term": "게임",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "aspect_term": "지들만의 방식",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "aspect_term": "룰",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "aspect_term": "방식",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "aspect_term": "역할",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "_truncated": true,
+      "total_neutral_only": 103
+    }
+  ],
+  "neutral_only_and_source_final_tuples": [
+    {
+      "text_id": "nikluge-sa-2022-train-01786",
+      "n_tuples": 1,
+      "source": "final_tuples"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00630",
+      "n_tuples": 1,
+      "source": "final_tuples"
+    }
+  ],
+  "memory_samples": [
+    {
+      "text_id": "nikluge-sa-2022-train-02669",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02211",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01786",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01939",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00565",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01721",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02384",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00536",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01823",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01707",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02651",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02131",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01813",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00356",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02916",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00546",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00016",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02850",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00037",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01941",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01613",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02228",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01546",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00203",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02325",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01649",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00630",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01699",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02909",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01108",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01743",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00448",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01811",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02973",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00969",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02944",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02208",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00643",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00617",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01914",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01320",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01495",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01919",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02707",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02270",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00578",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00244",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00829",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00489",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    }
+  ],
+  "metrics_pred_consistency": {
+    "pass": true,
+    "mismatches": [],
+    "scorecards_n": 50,
+    "triptych_n": 0
+  },
+  "debate_persona_memory": {
+    "pass": true,
+    "violations": []
+  },
+  "stage2_memory_injection": {
+    "pass": true,
+    "violations": []
+  },
+  "selective_storage_mix": {
+    "pass": true,
+    "store_decision_counts": {
+      "skipped": 43,
+      "stored": 7
+    },
+    "note": ""
+  }
+}

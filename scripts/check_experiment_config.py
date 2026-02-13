@@ -58,6 +58,20 @@ def check_paper_demo_inactive(cfg: dict) -> tuple[bool, str]:
     return True, "paper demo inactive (k=0, enabled_for=[], force_for_proposed=false)"
 
 
+def _eval_splits_from_roles(roles: dict) -> set:
+    """Derive eval split names from data_roles (report_sources/blind_sources or report_set/blind_set)."""
+    report = roles.get("report_sources") or roles.get("report_set") or []
+    blind = roles.get("blind_sources") or roles.get("blind_set") or []
+    combined = set(report) | set(blind)
+
+    def _norm(s):
+        if isinstance(s, str) and s.endswith("_file"):
+            return s[:-5]
+        return s
+
+    return {_norm(s) for s in combined if s}
+
+
 def check_paper_valid_only(cfg: dict) -> tuple[bool, str]:
     """Paper: valid_file 필수, report_sources=[valid_file], test_file/blind 미사용."""
     if cfg.get("run_purpose") != "paper":

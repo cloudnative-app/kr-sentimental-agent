@@ -1,0 +1,164 @@
+{
+  "eval_policy_hash": "a64a7ec38e040a34",
+  "eval_semver": "1.0",
+  "sample_n": 5,
+  "samples": [
+    {
+      "text_id": "nikluge-sa-2022-train-02669",
+      "gold_tuples": [
+        {
+          "aspect_term": "쉬드엘아티스트웨어스킨핏듀얼컨실러",
+          "polarity": "positive"
+        }
+      ],
+      "stage1_tuples": [
+        {
+          "aspect_term": "컨실러",
+          "polarity": "neutral"
+        }
+      ],
+      "final_tuples": [
+        {
+          "aspect_term": "컨실러",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "컨실러",
+          "polarity": "positive"
+        }
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02211",
+      "gold_tuples": [
+        {
+          "aspect_term": "라임리치향",
+          "polarity": "positive"
+        }
+      ],
+      "stage1_tuples": [
+        {
+          "aspect_term": "라임리치향",
+          "polarity": "neutral"
+        }
+      ],
+      "final_tuples": [
+        {
+          "aspect_term": "라임리치향",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "라임리치향",
+          "polarity": "positive"
+        }
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01786",
+      "gold_tuples": [
+        {
+          "aspect_term": "",
+          "polarity": "positive"
+        }
+      ],
+      "stage1_tuples": [
+        {
+          "aspect_term": "파우치",
+          "polarity": "neutral"
+        }
+      ],
+      "final_tuples": [
+        {
+          "aspect_term": "파우치",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "파우치",
+          "polarity": "positive"
+        }
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02482",
+      "gold_tuples": [
+        {
+          "aspect_term": "",
+          "polarity": "positive"
+        },
+        {
+          "aspect_term": "젤제형",
+          "polarity": "positive"
+        }
+      ],
+      "stage1_tuples": [
+        {
+          "aspect_term": "발림성",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "산뜻한느낌",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "젤제형",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "피부",
+          "polarity": "neutral"
+        }
+      ],
+      "final_tuples": [
+        {
+          "aspect_term": "발림성",
+          "polarity": "positive"
+        },
+        {
+          "aspect_term": "산뜻한느낌",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "젤제형",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "피부",
+          "polarity": "neutral"
+        }
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01939",
+      "gold_tuples": [
+        {
+          "aspect_term": "",
+          "polarity": "positive"
+        }
+      ],
+      "stage1_tuples": [
+        {
+          "aspect_term": "머리부터 발끝까지 향기로운 여자",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "잔향",
+          "polarity": "neutral"
+        }
+      ],
+      "final_tuples": [
+        {
+          "aspect_term": "머리부터 발끝까지 향기로운 여자",
+          "polarity": "negative"
+        },
+        {
+          "aspect_term": "잔향",
+          "polarity": "neutral"
+        },
+        {
+          "aspect_term": "잔향",
+          "polarity": "positive"
+        }
+      ]
+    }
+  ]
+}

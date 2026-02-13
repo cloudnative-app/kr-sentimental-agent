@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,413,672,0.02429,78696,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""얼음정수기 기능"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""얼음정수기 기능"",
+      ""syntactic_head"": ""갖고 있어야"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문"
+nikluge-sa-2022-train-02562,valid,unknown,proposed,gpt-4.1-mini,388,646,0.023259999999999996,74128,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""여드름용"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""여드름용"",
+      ""syntactic_head"": ""쳐발쳐발"",
+      ""confidence"": 0.9,
+      ""rationale"": ""텍스트 초반에 명사형 "
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,349,506,0.01867,59353,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""주름"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""주름"",
+      ""syntactic_head"": ""관리"",
+      ""confidence"": 0.9,
+      ""rationale"": ""텍스트 첫 부분에 명시된 피부 관"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,391,602,0.02197,56604,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""음식물쓰레기"",
+      ""span"": {""start"": 7, ""end"": 13},
+      ""normalized"": ""음식물쓰레기"",
+      ""syntactic_head"": ""고민인데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""음식물쓰레기"
+nikluge-sa-2022-train-00336,valid,unknown,proposed,gpt-4.1-mini,367,508,0.01891,52498,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""입"",
+      ""span"": {""start"": 0, ""end"": 1},
+      ""normalized"": ""입"",
+      ""syntactic_head"": ""얼얼할정도로 강한 치약들은"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '입이"
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,369,624,0.02241,52174,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""인삼"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""인삼"",
+      ""syntactic_head"": ""촉진하고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '인삼과 강황 발효"
+nikluge-sa-2022-train-00107,valid,unknown,proposed,gpt-4.1-mini,371,483,0.0182,48429,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""블루투스 제품"",
+      ""span"": {""start"": 10, ""end"": 16},
+      ""normalized"": ""블루투스 제품"",
+      ""syntactic_head"": ""감안하면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에"
+nikluge-sa-2022-train-00320,valid,unknown,proposed,gpt-4.1-mini,366,300,0.01266,45057,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#버블폼"",
+      ""span"": {""start"": 7, ""end"": 11},
+      ""normalized"": ""버블폼"",
+      ""syntactic_head"": ""있어서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트에 '#버블폼'이"
+nikluge-sa-2022-train-00237,valid,unknown,proposed,gpt-4.1-mini,352,444,0.01684,44621,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""인체 적용 시험"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""인체 적용 시험"",
+      ""syntactic_head"": ""확인된"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,347,473,0.01766,44487,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""각진 인생"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""각진 인생"",
+      ""syntactic_head"": ""좋고"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반에 명시적으로"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,362,476,0.0179,42447,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부 단백질 구조"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""피부 단백질 구조"",
+      ""syntactic_head"": ""흡사한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문"
+nikluge-sa-2022-train-01800,valid,unknown,proposed,gpt-4.1-mini,360,201,0.009630000000000001,35972,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""컴퓨터 하는곳"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""컴퓨터 하는 곳"",
+      ""syntactic_head"": ""막혀"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-00077,valid,unknown,proposed,gpt-4.1-mini,339,284,0.01191,35835,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""일류 기업"",
+      ""span"": {""start"": 3, ""end"": 7},
+      ""normalized"": ""일류 기업"",
+      ""syntactic_head"": ""못하지"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장에서 '일류 기업"
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,368,329,0.01355,35417,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""작은사이즈의 #스틱비누"",
+      ""span"": {""start"": 5, ""end"": 17},
+      ""normalized"": ""스틱비누"",
+      ""syntactic_head"": ""사용중인데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문"
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,376,387,0.015369999999999998,35107,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부결"",
+      ""span"": {""start"": 5, ""end"": 8},
+      ""normalized"": ""피부결"",
+      ""syntactic_head"": ""중요한데"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장에서 '피부결이 중요한"
+nikluge-sa-2022-train-01287,valid,unknown,proposed,gpt-4.1-mini,358,359,0.01435,34685,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""수용성 저분자 어류콜라겐성분"",
+      ""span"": {""start"": 0, ""end"": 14},
+      ""normalized"": ""수용성 저분자 어류 콜라겐 성분"",
+      ""syntactic_head"": ""베이스로"",
+      ""confidence"": 0.95,
+      "
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,348,303,0.01257,32966,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선 차단"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""자외선 차단"",
+      ""syntactic_head"": ""찾으시면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 "
+nikluge-sa-2022-train-01751,valid,unknown,proposed,gpt-4.1-mini,338,201,0.00941,32370,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""발색력"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""발색력"",
+      ""syntactic_head"": ""좋은"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 시작 부분에 명확히 명"
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,349,220,0.01009,30493,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""99.9% 자연유래의 착한 성분들"",
+      ""span"": {""start"": 0, ""end"": 17},
+      ""normalized"": ""자연유래 성분"",
+      ""syntactic_head"": ""안심하고 사용할 수 있다"",
+      ""confidence"": 0.95,
+    "
+nikluge-sa-2022-train-02964,valid,unknown,proposed,gpt-4.1-mini,353,284,0.01205,28770,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""머리색"",
+      ""span"": {""start"": 3, ""end"": 6},
+      ""normalized"": ""머리색"",
+      ""syntactic_head"": ""찰떡같아서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '내 머리색이"

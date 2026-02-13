@@ -1,0 +1,3 @@
+| run_id | timestamp_utc | cfg_hash | backbone_model_id | backbone_provider | prompt_version_count | report_split | split_train | split_valid | split_test | dataset_paths |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| beta_n50_c2__seed123_proposed | 2026-02-11T09:59:21.623300Z | d16cc5355e345eea843bef22ad38b1181ced985d2ea0cc560901f8a6f5a1afb4 | gpt-4.1-mini | openai | 11 | valid | 0 | 50 | 0 | C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\beta_n50\train.csv;C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\beta_n50\valid.csv |

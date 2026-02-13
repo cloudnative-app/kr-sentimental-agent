@@ -58,7 +58,7 @@ def test_build_html_with_empty_struct_metrics_succeeds():
         assert out_path.exists()
         html = out_path.read_text(encoding="utf-8")
         # RQ3 table: Risk Resolution Rate, Guided Change Rate, Unguided Drift Rate → N/A
-        assert "Risk Resolution Rate" in html
+        assert "Validator Clear Rate" in html or "Outcome Residual Risk Rate" in html
         assert "Guided Change Rate" in html
         assert "Unguided Drift Rate" in html
         # All three cells should show N/A when struct_metrics is empty
@@ -68,7 +68,7 @@ def test_build_html_with_empty_struct_metrics_succeeds():
 
 
 def test_csv_report_terminology_consistent():
-    """CSV key risk_resolution_rate vs report label 'Risk Resolution Rate': same concept (no conflict)."""
-    # structural_metrics.csv uses risk_resolution_rate; HTML table uses "Risk Resolution Rate".
-    kpi_row = next(r for r in bmr.KPI_LIST if r[1] == "risk_resolution_rate")
-    assert kpi_row[0] == "Risk Resolution Rate"
+    """CSV key validator_clear_rate vs report label 'Validator Clear Rate': same concept (no conflict)."""
+    # structural_metrics.csv uses validator_clear_rate (and deprecated risk_resolution_rate); HTML uses "Validator Clear Rate".
+    kpi_row = next(r for r in bmr.KPI_LIST if r[1] == "validator_clear_rate")
+    assert kpi_row[0] == "Validator Clear Rate"

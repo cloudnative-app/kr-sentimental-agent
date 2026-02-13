@@ -1,0 +1,56 @@
+# Beta N50 C2: n=50, episodic memory ON (advisory).
+# clear_store_at_run_start 미설정(off). 스토어 run_id별 분리(자동).
+run_purpose: paper
+run_id: beta_n50_c2
+run_mode: proposed
+
+override_profile: t1
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+
+episodic_memory:
+  condition: C2
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: beta_n50/train.csv
+  valid_file: beta_n50/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: beta_n50/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456]
+  concurrency: 3

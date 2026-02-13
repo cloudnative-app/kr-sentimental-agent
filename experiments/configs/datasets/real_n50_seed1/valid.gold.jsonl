@@ -1,0 +1,50 @@
+{"uid": "nikluge-sa-2022-train-02669", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "쉬드엘아티스트웨어스킨핏듀얼컨실러", "polarity": "positive", "span": {"start": 1, "end": 18}}]}
+{"uid": "nikluge-sa-2022-train-02211", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "라임리치향", "polarity": "positive", "span": {"start": 0, "end": 5}}]}
+{"uid": "nikluge-sa-2022-train-01786", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02482", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "젤제형", "polarity": "positive", "span": {"start": 12, "end": 15}}, {"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01939", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00565", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01721", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "게임", "polarity": "positive", "span": {"start": 66, "end": 68}}]}
+{"uid": "nikluge-sa-2022-train-02384", "gold_tuples": [{"aspect_ref": "제품 전체#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00536", "gold_tuples": [{"aspect_ref": "제품 전체#가격", "aspect_term": "마스크팩", "polarity": "positive", "span": {"start": 35, "end": 39}}]}
+{"uid": "nikluge-sa-2022-train-01823", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01707", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02651", "gold_tuples": [{"aspect_ref": "본품#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02131", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "북유럽풍", "polarity": "positive", "span": {"start": 5, "end": 9}}]}
+{"uid": "nikluge-sa-2022-train-01813", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00356", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "사진찍기놀이 소품", "polarity": "positive", "span": {"start": 0, "end": 9}}]}
+{"uid": "nikluge-sa-2022-train-02916", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "담크림 2종", "polarity": "positive", "span": {"start": 42, "end": 48}}]}
+{"uid": "nikluge-sa-2022-train-00546", "gold_tuples": [{"aspect_ref": "패키지/구성품#편의성", "aspect_term": "부피", "polarity": "positive", "span": {"start": 5, "end": 7}}]}
+{"uid": "nikluge-sa-2022-train-00016", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "negative", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02850", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "냄새", "polarity": "neutral", "span": {"start": 57, "end": 59}}]}
+{"uid": "nikluge-sa-2022-train-00037", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "배색", "polarity": "positive", "span": {"start": 0, "end": 2}}]}
+{"uid": "nikluge-sa-2022-train-01941", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "크림", "polarity": "positive", "span": {"start": 24, "end": 26}}]}
+{"uid": "nikluge-sa-2022-train-01613", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02228", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01546", "gold_tuples": [{"aspect_ref": "제품 전체#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00203", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "샴푸", "polarity": "positive", "span": {"start": 20, "end": 22}}]}
+{"uid": "nikluge-sa-2022-train-02325", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "수분에센스겔타입", "polarity": "positive", "span": {"start": 0, "end": 8}}]}
+{"uid": "nikluge-sa-2022-train-01649", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00630", "gold_tuples": [{"aspect_ref": "본품#다양성", "aspect_term": "아이라이너 색", "polarity": "positive", "span": {"start": 10, "end": 17}}]}
+{"uid": "nikluge-sa-2022-train-01699", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "블러셔", "polarity": "positive", "span": {"start": 19, "end": 22}}]}
+{"uid": "nikluge-sa-2022-train-02909", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01108", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "실내복", "polarity": "positive", "span": {"start": 10, "end": 13}}]}
+{"uid": "nikluge-sa-2022-train-01743", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00448", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01811", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02973", "gold_tuples": [{"aspect_ref": "제품 전체#편의성", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00969", "gold_tuples": [{"aspect_ref": "제품 전체#디자인", "aspect_term": "프릴장식", "polarity": "positive", "span": {"start": 12, "end": 16}}]}
+{"uid": "nikluge-sa-2022-train-02944", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-02208", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00643", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00617", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "더블유드레스룸]드레스퍼퓸 양양서핑향", "polarity": "positive", "span": {"start": 42, "end": 61}}]}
+{"uid": "nikluge-sa-2022-train-01914", "gold_tuples": [{"aspect_ref": "본품#일반", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-01320", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "여성청결제", "polarity": "positive", "span": {"start": 28, "end": 33}}]}
+{"uid": "nikluge-sa-2022-train-01495", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "보습폼클렌저", "polarity": "positive", "span": {"start": 43, "end": 49}}]}
+{"uid": "nikluge-sa-2022-train-01919", "gold_tuples": [{"aspect_ref": "본품#다양성", "aspect_term": "마스크팩", "polarity": "positive", "span": {"start": 15, "end": 19}}]}
+{"uid": "nikluge-sa-2022-train-02707", "gold_tuples": [{"aspect_ref": "제품 전체#인지도", "aspect_term": "씹는치약", "polarity": "positive", "span": {"start": 7, "end": 11}}]}
+{"uid": "nikluge-sa-2022-train-02270", "gold_tuples": [{"aspect_ref": "제품 전체#일반", "aspect_term": "페이즐리 쉬폰블라우스", "polarity": "positive", "span": {"start": 0, "end": 11}}]}
+{"uid": "nikluge-sa-2022-train-00578", "gold_tuples": [{"aspect_ref": "제품 전체#인지도", "aspect_term": "758레드 컬러", "polarity": "positive", "span": {"start": 28, "end": 36}}]}
+{"uid": "nikluge-sa-2022-train-00244", "gold_tuples": [{"aspect_ref": "패키지/구성품#편의성", "aspect_term": "앰플캡", "polarity": "positive", "span": {"start": 31, "end": 34}}]}
+{"uid": "nikluge-sa-2022-train-00829", "gold_tuples": [{"aspect_ref": "패키지/구성품#디자인", "aspect_term": "", "polarity": "positive", "span": {"start": 0, "end": 0}}]}
+{"uid": "nikluge-sa-2022-train-00489", "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "스포트라이트 조명", "polarity": "positive", "span": {"start": 13, "end": 22}}]}

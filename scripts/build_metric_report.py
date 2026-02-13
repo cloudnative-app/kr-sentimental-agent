@@ -34,33 +34,42 @@ if str(PROJECT_ROOT) not in sys.path:
 TupleAspectPolarity = Tuple[str, str, str]
 SCHEMA_VERSION = "scorecard_v2"
 
-# Fixed KPI list (10 cards). Source: struct_metrics key or memory_growth last row key.
+# KPI list: Outcome (RQ) first (paper-claimable), then Process (validator-level diagnostic).
+# Process metrics: "Validator-level diagnostic. Not an outcome metric."
 # (label, struct_key, mg_key, tip)
 KPI_LIST = [
-    ("Risk-Flagged Rate", "risk_flagged_rate", None, "case_trace.risk.flagged==true 평균. Validator가 risk를 잡은 비율."),
-    ("Residual Risk Rate", "residual_risk_rate", None, "case_trace.risk.residual==true 평균. Stage2에 risk가 남아 있는 비율."),
-    ("Risk Resolution Rate", "risk_resolution_rate", None, "flagged 중 residual false 비율. (stage1_risks - stage2_risks) / stage1_risks."),
-    ("Self-Consistency", "self_consistency_exact", None, "trial별 final tuple agreement. 단일 run이면 N/A (eligible=False, n_trials=1). trials≥2에서만 산출."),
-    ("Flip-flop Rate", "flip_flop_rate", None, "trial 간 final 변경 빈도. variance proxy."),
-    ("Override Applied Rate", "override_applied_rate", None, "eligible 대비 accepted_changes 존재 비율. 적용된 샘플 비율."),
-    ("Override Success Rate", "override_success_rate", None, "applied 중 delta_risk<0 & harm==false. 적용된 케이스 중 risk 개선 비율."),
-    ("Store Size", None, "store_size", "memory_growth_metrics.store_size (마지막 윈도우). 메모리 off 시 N/A."),
-    ("Retrieval Hit Rate@k", None, "retrieval_hit_k", "retrieval.hit 평균 (memory_growth_metrics.retrieval_hit_k). 메모리 off 시 N/A."),
-    ("Tuple F1 (Final)", "tuple_f1_s2", None, "scorer output (gold subset). tuple_f1_s2 / triplet_f1_s2."),
+    # Outcome (RQ)
+    ("Severe Polarity Error (L3)", "severe_polarity_error_L3_rate", None, "Aspect matches gold, polarity mismatch only (L4/L5 excluded). Outcome (RQ)."),
+    ("Polarity Conflict Rate", "polarity_conflict_rate", None, "Same-aspect polarity conflict after representative. Outcome (RQ)."),
+    ("generalized F1@0.95", "generalized_f1_theta", None, "Neveditsin et al. variant (θ=0.95). Outcome (RQ). N/A if embedding not run."),
+    ("Tuple Agreement Rate", "tuple_agreement_rate", None, "Final tuple sets identical across runs (n_trials≥2). Outcome (RQ2)."),
+    ("Tuple F1 (Final)", "tuple_f1_s2", None, "Explicit-only tuple F1 (primary). Implicit cases = different inference task. Outcome (RQ)."),
+    # Process (internal)
+    ("Validator Clear Rate", "validator_clear_rate", None, "Validator-level diagnostic. Not an outcome metric. Stage1 structural risk → Stage2 cleared."),
+    ("Validator Residual Risk Rate", "validator_residual_risk_rate", None, "Validator-level diagnostic. Not an outcome metric. Stage2 Validator risks>0."),
+    ("Self-Consistency", "self_consistency_exact", None, "Trial별 final label agreement. N/A if single run."),
+    ("Flip-flop Rate", "flip_flop_rate", None, "Trial 간 final 변경 빈도. variance proxy."),
+    ("Override Applied Rate", "override_applied_rate", None, "Eligible 대비 applied 비율."),
+    ("Override Success Rate", "override_success_rate", None, "Applied 중 risk 개선 비율."),
+    ("Store Size", None, "store_size", "memory_growth_metrics.store_size. 메모리 off 시 N/A."),
+    ("Retrieval Hit Rate@k", None, "retrieval_hit_k", "retrieval.hit 평균. 메모리 off 시 N/A."),
 ]
 
-# KPI ↔ log field mapping for reviewer traceability (Task E)
+# KPI ↔ log field mapping (Task E). Outcome (RQ) vs Process.
 KPI_FIELD_MAPPING = [
-    ("Risk-Flagged Rate", "case_trace.risk.flagged==true 평균"),
-    ("Residual Risk Rate", "case_trace.risk.residual==true 평균 (또는 final.risk.residual_count/n)"),
-    ("Risk Resolution Rate", "flagged 중 residual false 비율"),
-    ("Self-Consistency", "trial별 final tuple agreement. 단일 run이면 N/A; trials≥2에서만 산출."),
-    ("Flip-flop Rate", "trial 간 final 변경 빈도 (variance proxy)"),
-    ("Override Applied Rate", "eligible 대비 accepted_changes 존재 비율"),
-    ("Override Success Rate", "mean(applied & delta_risk<0 & !harm)"),
+    ("Severe Polarity Error (L3)", "severe_polarity_error_L3_rate (aspect match, polarity mismatch)"),
+    ("Polarity Conflict Rate", "polarity_conflict_rate (same-aspect after representative)"),
+    ("generalized F1@0.95", "generalized_f1_theta (Neveditsin variant θ=0.95)"),
+    ("Tuple Agreement Rate", "tuple_agreement_rate (n_trials≥2, final tuple sets equal)"),
+    ("Tuple F1 (Final)", "tuple_f1_s2_explicit_only / tuple_f1_s2 (primary: explicit-only)"),
+    ("Validator Clear Rate", "Process. validator_clear_rate (Validator-level diagnostic)"),
+    ("Validator Residual Risk Rate", "Process. validator_residual_risk_rate (internal diagnostic)"),
+    ("Self-Consistency", "self_consistency_exact (trial label agreement)"),
+    ("Flip-flop Rate", "flip_flop_rate (variance proxy)"),
+    ("Override Applied Rate", "override_applied_rate"),
+    ("Override Success Rate", "override_success_rate"),
     ("Store Size", "memory_growth_metrics.store_size"),
-    ("Retrieval Hit Rate@k", "mean(retrieval.hit) 또는 memory_growth_metrics.retrieval_hit_k"),
-    ("Tuple F1 (Final)", "scorer output (gold subset), tuple_f1_s2"),
+    ("Retrieval Hit Rate@k", "memory_growth_metrics.retrieval_hit_k"),
 ]
 
 from metrics.eval_tuple import (
@@ -512,7 +521,7 @@ def generate_conclusion_3lines(metrics: Dict[str, Any], struct: Dict[str, Any]) 
         return ["No samples in this run.", "", ""]
 
     pass_rate = metrics.get("structural_pass_rate")
-    rr = _to_float(struct.get("risk_resolution_rate"))
+    rr = _to_float(struct.get("validator_clear_rate")) or _to_float(struct.get("risk_resolution_rate"))
     gcr = _to_float(struct.get("guided_change_rate"))
     udr = _to_float(struct.get("unguided_drift_rate"))
     stage2 = metrics.get("stage2_adoption_rate")
@@ -587,16 +596,31 @@ def build_html(
 
     conclusion_lines = generate_conclusion_3lines(computed, struct_metrics)
 
-    # KPI: exactly 10 cards from KPI_LIST (struct_metrics + memory_growth last row)
+    # KPI: cards from KPI_LIST (struct_metrics + memory_growth last row). Prefer new keys; fallback to deprecated.
     memory_growth_last = (memory_growth_rows or [])[-1] if memory_growth_rows else {}
     kpi_cards: List[Tuple[str, Optional[float], Optional[float], str]] = []
+    _struct_fallback = {
+        "validator_residual_risk_rate": "residual_risk_rate",
+        "validator_clear_rate": "risk_resolution_rate",
+        "severe_polarity_error_L3_rate": None,
+        "generalized_f1_theta": None,
+        "tuple_agreement_rate": None,
+    }
     for label, struct_key, mg_key, tip in KPI_LIST:
         val: Optional[float] = None
         max_v: Optional[float] = 1.0
         if struct_key:
             val = _to_float(struct_metrics.get(struct_key))
-            if val is None and struct_key == "tuple_f1_s2":
-                val = _to_float(struct_metrics.get("triplet_f1_s2")) or _to_float(stage2_correction.get("tuple_f1_s2")) or _to_float(stage2_correction.get("triplet_f1_s2"))
+            if val is None and struct_key in _struct_fallback and _struct_fallback[struct_key]:
+                val = _to_float(struct_metrics.get(_struct_fallback[struct_key]))
+            # Primary F1: explicit-only (implicit is a different inference task)
+            if struct_key == "tuple_f1_s2":
+                val = (_to_float(struct_metrics.get("tuple_f1_s2_explicit_only"))
+                    or _to_float(struct_metrics.get("tuple_f1_s2"))
+                    or _to_float(struct_metrics.get("triplet_f1_s2"))
+                    or _to_float(stage2_correction.get("tuple_f1_s2_explicit_only"))
+                    or _to_float(stage2_correction.get("tuple_f1_s2"))
+                    or _to_float(stage2_correction.get("triplet_f1_s2")))
         if mg_key and val is None:
             raw = memory_growth_last.get(mg_key)
             if raw is not None:
@@ -617,11 +641,17 @@ def build_html(
     def _kpi_class_and_tip(label: str, value: Optional[float], tip: str) -> Tuple[str, str]:
         if value is None:
             return "kpi-neutral", tip or "N/A"
-        if label == "Risk-Flagged Rate":
-            return ("kpi-warn", tip) if (value and value > 0.5) else ("kpi-ok", tip)
-        if label == "Residual Risk Rate":
+        if label == "Severe Polarity Error (L3)":
+            return ("kpi-warn", tip) if (value and value > 0.2) else ("kpi-ok", tip)
+        if label == "Polarity Conflict Rate":
             return ("kpi-warn", tip) if (value and value > 0.3) else ("kpi-ok", tip)
-        if label == "Risk Resolution Rate":
+        if label == "generalized F1@0.95":
+            return ("kpi-warn", tip) if (value is not None and value < 0.7) else ("kpi-ok", tip)
+        if label == "Tuple Agreement Rate":
+            return ("kpi-warn", tip) if (value is not None and value < 0.8) else ("kpi-ok", tip)
+        if label == "Validator Residual Risk Rate":
+            return ("kpi-warn", tip) if (value and value > 0.3) else ("kpi-ok", tip)
+        if label == "Validator Clear Rate":
             return ("kpi-warn", tip) if (value is not None and value < 0.3) else ("kpi-ok", tip)
         if label == "Override Success Rate":
             return ("kpi-warn", tip) if (value is not None and value < 0.5) else ("kpi-ok", tip)
@@ -710,19 +740,28 @@ def build_html(
     hf_metrics_table += "</tbody></table>"
     hf_metrics_note = "<p class=\"header-meta\">Above: values from structural_metrics.csv (structural_error_aggregator). HF is an external reference signal, not a correctness criterion.</p>"
 
-    # Overall: prefer struct_metrics so Overall column is never N/A when CSV has values (e.g. risk_resolution_rate when risk_s1=0 from scorecards)
+    # Overall: prefer struct_metrics so Overall column is never N/A when CSV has values
     hf_split_table = '<table class="data-table"><thead><tr><th>Metric</th><th>Overall</th><th>HF-agree</th><th>HF-disagree</th></tr></thead><tbody>'
-    for metric_key, metric_name in [
-        ("risk_resolution_rate", "Risk Resolution Rate"),
+    _overall_metric_keys = [
+        ("validator_clear_rate", "Validator Clear Rate (Risk Resolution)"),
         ("stage2_adoption_rate", "Stage2 Adoption Rate"),
         ("polarity_conflict_rate", "Polarity Conflict Rate (same-aspect only)"),
         ("stage_mismatch_rate", "Stage Mismatch Rate (RQ2: RuleM / S1≠S2)"),
-    ]:
+    ]
+    for metric_key, metric_name in _overall_metric_keys:
         o = overall_rates.get(metric_key)
+        if o is None and metric_key == "validator_clear_rate":
+            o = overall_rates.get("risk_resolution_rate")
         if o is None:
             o = _to_float(struct_metrics.get(metric_key))
+        if o is None and metric_key == "validator_clear_rate":
+            o = _to_float(struct_metrics.get("risk_resolution_rate"))
         a = hf_agree_rates.get(metric_key) if hf_agree_rates else None
+        if a is None and metric_key == "validator_clear_rate":
+            a = hf_agree_rates.get("risk_resolution_rate") if hf_agree_rates else None
         d = hf_disagree_rates.get(metric_key) if hf_disagree_rates else None
+        if d is None and metric_key == "validator_clear_rate":
+            d = hf_disagree_rates.get("risk_resolution_rate") if hf_disagree_rates else None
         hf_split_table += f'<tr><td>{metric_name}</td><td>{_fmt_rate(o)}</td><td>{_fmt_rate(a)}</td><td>{_fmt_rate(d)}</td></tr>'
     hf_split_table += "</tbody></table>"
     if not (hf_agree_rows or hf_disagree_rows):
@@ -743,41 +782,89 @@ def build_html(
     hard_table += f"<tr><td>Unsupported Polarity Rate</td><td>{_pct(_to_float(struct_metrics.get('unsupported_polarity_rate')))}</td></tr>"
     hard_table += "</tbody></table>"
 
-    # RQ1 Primary: risk_flagged_rate, residual_risk_rate, risk_resolution_rate (risk/residual/conflict 중심)
-    residual_risk_r = _to_float(struct_metrics.get("residual_risk_rate"))
-    # RQ3: Risk decomposition, Stage1 vs Stage2, Table 2 (ΔF1 / FixRate / BreakRate / NetGain when gold), Rule A~D
+    # Outcome (RQ) vs Process (internal) — paper-claimable only vs validator-level diagnostic
+    severe_L3_r = _to_float(struct_metrics.get("severe_polarity_error_L3_rate"))
+    pol_conf_raw_r = _to_float(struct_metrics.get("polarity_conflict_rate_raw"))
+    pol_conf_r = _to_float(struct_metrics.get("polarity_conflict_rate"))
+    pol_conf_after_rep_r = _to_float(struct_metrics.get("polarity_conflict_rate_after_rep"))
+    gen_f1_theta = _to_float(struct_metrics.get("generalized_f1_theta"))
+    tuple_agree_r = _to_float(struct_metrics.get("tuple_agreement_rate"))
+    validator_residual_r = _to_float(struct_metrics.get("validator_residual_risk_rate")) or _to_float(struct_metrics.get("residual_risk_rate"))
+    outcome_residual_r = _to_float(struct_metrics.get("outcome_residual_risk_rate"))
     risk_flagged_r = _to_float(struct_metrics.get("risk_flagged_rate"))
     risk_affected = _to_float(struct_metrics.get("risk_affected_change_rate"))
     risk_res_with_ch = _to_float(struct_metrics.get("risk_resolved_with_change_rate"))
     risk_res_without_ch = _to_float(struct_metrics.get("risk_resolved_without_change_rate"))
     ignored_prop = _to_float(struct_metrics.get("ignored_proposal_rate"))
     rq3_risk_decomp = "<table class=\"data-table\"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>"
-    rq3_risk_decomp += f"<tr><td>Risk-Flagged Rate (RQ1)</td><td>{_pct(risk_flagged_r)}</td></tr>"
-    rq3_risk_decomp += f"<tr><td>Residual Risk Rate (RQ1)</td><td>{_pct(residual_risk_r) if residual_risk_r is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += "<tr><td colspan=\"2\"><strong>Outcome Metrics (RQ)</strong> — paper-claimable</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Severe Polarity Error (L3) Rate</td><td>{_pct(severe_L3_r) if severe_L3_r is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Polarity Conflict Rate (raw)</td><td>{_pct(pol_conf_raw_r) if pol_conf_raw_r is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Polarity Conflict Rate (after representative)</td><td>{_pct(pol_conf_r if pol_conf_r is not None else pol_conf_after_rep_r) if (pol_conf_r is not None or pol_conf_after_rep_r is not None) else 'N/A'}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>generalized F1@0.95</td><td>{_pct(gen_f1_theta) if gen_f1_theta is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Tuple Agreement Rate (RQ2)</td><td>{_pct(tuple_agree_r) if tuple_agree_r is not None else 'N/A'}</td></tr>"
+    stage_mismatch_r = _to_float(struct_metrics.get("stage_mismatch_rate"))
+    rq3_risk_decomp += f"<tr><td>Stage Mismatch Rate (RQ2)</td><td>{_pct(stage_mismatch_r) if stage_mismatch_r is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += "<tr><td colspan=\"2\"><strong>Process Control Metrics (Internal)</strong> — Validator-level diagnostic; not an outcome metric</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Risk-Flagged Rate</td><td>{_pct(risk_flagged_r)}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Validator Residual Risk Rate</td><td>{_pct(validator_residual_r) if validator_residual_r is not None else 'N/A'}</td></tr>"
+    rq3_risk_decomp += f"<tr><td>Outcome Residual Risk Rate (internal)</td><td>{_pct(outcome_residual_r) if outcome_residual_r is not None else 'N/A'}</td></tr>"
     rq3_risk_decomp += f"<tr><td>Risk-Affected Change Rate</td><td>{_pct(risk_affected)}</td></tr>"
     rq3_risk_decomp += f"<tr><td>Risk-Resolved-with-Change (rate)</td><td>{_pct(risk_res_with_ch)}</td></tr>"
     rq3_risk_decomp += f"<tr><td>Risk-Resolved-without-Change (rate)</td><td>{_pct(risk_res_without_ch)}</td></tr>"
     rq3_risk_decomp += f"<tr><td>Ignored Proposal Rate</td><td>{_pct(ignored_prop)}</td></tr>"
-    pol_conf_r = _to_float(struct_metrics.get("polarity_conflict_rate"))
-    stage_mismatch_r = _to_float(struct_metrics.get("stage_mismatch_rate"))
-    rq3_risk_decomp += f"<tr><td>Polarity Conflict Rate (RQ1, same-aspect)</td><td>{_pct(pol_conf_r) if pol_conf_r is not None else 'N/A'}</td></tr>"
-    rq3_risk_decomp += f"<tr><td>Stage Mismatch Rate (RQ2)</td><td>{_pct(stage_mismatch_r) if stage_mismatch_r is not None else 'N/A'}</td></tr>"
     rq3_risk_decomp += "</tbody></table>"
 
-    risk_res = _to_float(struct_metrics.get("risk_resolution_rate"))
+    validator_clear_r = _to_float(struct_metrics.get("validator_clear_rate")) or _to_float(struct_metrics.get("risk_resolution_rate"))
     guided = _to_float(struct_metrics.get("guided_change_rate"))
     unguided = _to_float(struct_metrics.get("unguided_drift_rate"))
     stage2_adopt = _to_float(computed.get("stage2_adoption_rate"))
     rq3_table = "<table class=\"data-table\"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>"
-    rq3_table += f"<tr><td>Risk Resolution Rate</td><td>{_pct(risk_res) if risk_res is not None else 'N/A'}</td></tr>"
+    rq3_table += f"<tr><td title=\"Validator-level diagnostic. Not an outcome metric.\">Validator Clear Rate (Risk Resolution)</td><td>{_pct(validator_clear_r) if validator_clear_r is not None else 'N/A'}</td></tr>"
     rq3_table += f"<tr><td>Guided Change Rate</td><td>{_pct(guided) if guided is not None else 'N/A'}</td></tr>"
     rq3_table += f"<tr><td>Unguided Drift Rate</td><td>{_pct(unguided) if unguided is not None else 'N/A'}</td></tr>"
     rq3_table += f"<tr><td>Stage2 Adoption Rate</td><td>{_pct(stage2_adopt) if stage2_adopt is not None else 'N/A'}</td></tr>"
     rq3_table += "</tbody></table>"
+    # CR (conflict_review_v1) process metrics
+    protocol_mode = (scorecards[0].get("meta") or {}).get("protocol_mode") if scorecards else ""
+    if not protocol_mode and manifest:
+        pipeline = manifest.get("pipeline") or {}
+        protocol_mode = pipeline.get("protocol_mode") or ""
+    if not protocol_mode and manifest:
+        try:
+            import json as _json
+            cfg = _json.loads(manifest.get("cfg_canonical") or "{}")
+            protocol_mode = (cfg.get("pipeline") or {}).get("protocol_mode") or ""
+        except Exception:
+            pass
+    cr_table = ""
+    if (protocol_mode or "").strip() == "conflict_review_v1":
+        pre_post = _to_float(struct_metrics.get("pre_to_post_change_rate"))
+        review_action = _to_float(struct_metrics.get("review_action_rate"))
+        arb_intervention = _to_float(struct_metrics.get("arb_intervention_rate"))
+        guided_by_review = _to_float(struct_metrics.get("guided_by_review_rate"))
+        cr_table = "<h4>Conflict-Review (CR) Process Metrics</h4><table class=\"data-table\"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>"
+        cr_table += f"<tr><td>Pre-to-Post Change Rate</td><td>{_pct(pre_post) if pre_post is not None else 'N/A'}</td></tr>"
+        cr_table += f"<tr><td>Review Action Rate</td><td>{_pct(review_action) if review_action is not None else 'N/A'}</td></tr>"
+        cr_table += f"<tr><td>Arb Intervention Rate</td><td>{_pct(arb_intervention) if arb_intervention is not None else 'N/A'}</td></tr>"
+        cr_table += f"<tr><td>Guided-by-Review Rate</td><td>{_pct(guided_by_review) if guided_by_review is not None else 'N/A'}</td></tr>"
+        cr_table += "</tbody></table>"
     rq3_note = (
         "<p class=\"header-meta\">N/A: 키 결측 또는 미계산(구버전 results 등). "
-        "RQ3(risk_resolution_rate, guided_change_rate, unguided_drift_rate)는 단일 run에서도 계산 가능.</p>"
+        "Validator 기준(validator_clear_rate, validator_residual_risk_rate) vs Outcome 기준(outcome_residual_risk_rate) 구분: docs/structural_risk_definition.md. "
+        "RQ3(validator_clear_rate, guided_change_rate, unguided_drift_rate)는 단일 run에서도 계산 가능.</p>"
     )
+    eval_semver = struct_metrics.get("eval_semver")
+    eval_policy_hash = struct_metrics.get("eval_policy_hash")
+    if eval_semver or eval_policy_hash:
+        metric_continuity_note = (
+            "<p class=\"header-meta\"><strong>Metric continuity:</strong> "
+            f"eval_semver={eval_semver or 'N/A'}, eval_policy_hash={eval_policy_hash or 'N/A'}. "
+            "이 값이 바뀌면 gold empty 처리·정규화·추출 경로 등 평가 정책이 변경된 run입니다. "
+            "EVAL_SEMVER 환경 변수로 버전을 올리면 리포트에 자동 반영됩니다.</p>"
+        )
+    else:
+        metric_continuity_note = ""
 
     debate_cov = _to_float(struct_metrics.get("debate_mapping_coverage"))
     debate_direct = _to_float(struct_metrics.get("debate_mapping_direct_rate"))
@@ -835,6 +922,17 @@ def build_html(
         "<p class=\"header-meta\">Applied에서 ΔF1이 플러스이고 오류율이 낮으면: override는 유익. "
         "Conflict subset에서 오류율이 높으면: 토론 신호가 갈리는 문장(대조/부정)에선 보수적 스킵이 합리적.</p>"
     )
+    # Skip reason granularity (Discussion: why conflict skip?)
+    skip_action_ambiguity = _num(struct_metrics.get("override_skipped_conflict_action_ambiguity"))
+    skip_L3_conservative = _num(struct_metrics.get("override_skipped_conflict_L3_conservative"))
+    skip_implicit_soft = _num(struct_metrics.get("override_skipped_conflict_implicit_soft_only"))
+    skip_low_conf = _num(struct_metrics.get("override_skipped_conflict_low_confidence"))
+    skip_contradictory = _num(struct_metrics.get("override_skipped_conflict_contradictory_memory"))
+    override_conditional_table += (
+        "<p class=\"header-meta\"><strong>Skipped conflict reasons (counts):</strong> "
+        f"action_ambiguity={skip_action_ambiguity}, L3_conservative={skip_L3_conservative}, "
+        f"implicit_soft_only={skip_implicit_soft}, low_confidence={skip_low_conf}, contradictory_memory={skip_contradictory}</p>"
+    )
 
     # Table 2 (RQ1+RQ3): Tuple F1, ΔF1, FixRate, BreakRate, NetGain (when gold)
     # Mean tuple counts from final_result (stage1_tuples, stage2_tuples, final_tuples) — recorded by supervisor.
@@ -873,28 +971,48 @@ def build_html(
             return v2
         t2_f1_s1 = _first(struct_metrics.get("tuple_f1_s1"), _first(struct_metrics.get("triplet_f1_s1"), stage2_correction.get("tuple_f1_s1") or stage2_correction.get("triplet_f1_s1")))
         t2_f1_s2 = _first(struct_metrics.get("tuple_f1_s2"), _first(struct_metrics.get("triplet_f1_s2"), stage2_correction.get("tuple_f1_s2") or stage2_correction.get("triplet_f1_s2")))
+        t2_f1_s2_explicit = _first(struct_metrics.get("tuple_f1_s2_explicit_only"), None)
+        t2_f1_s2_overall = _first(struct_metrics.get("tuple_f1_s2_overall"), t2_f1_s2)
         t2_delta = _first(struct_metrics.get("delta_f1"), stage2_correction.get("delta_f1"))
         t2_fix = _first(struct_metrics.get("fix_rate"), stage2_correction.get("fix_rate"))
         t2_break = _first(struct_metrics.get("break_rate"), stage2_correction.get("break_rate"))
         t2_net = _first(struct_metrics.get("net_gain"), stage2_correction.get("net_gain"))
         n_gold_display = int(n_gold_struct) if n_gold_struct else (n_gold_corr or 0)
+        n_gold_total = _to_float(struct_metrics.get("N_gold_total")) or n_gold_display
+        n_gold_explicit = _to_float(struct_metrics.get("N_gold_explicit"))
+        n_gold_implicit = _to_float(struct_metrics.get("N_gold_implicit"))
         table2_html = "<table class=\"data-table\"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>"
-        table2_html += f"<tr><td>N (with gold)</td><td>{n_gold_display}</td></tr>"
+        table2_html += f"<tr><td>N (with gold)</td><td>{int(n_gold_total) if n_gold_total else n_gold_display}</td></tr>"
+        if n_gold_explicit is not None or n_gold_implicit is not None:
+            table2_html += f"<tr><td>N_gold_explicit</td><td>{int(n_gold_explicit) if n_gold_explicit is not None else 'N/A'}</td></tr>"
+            table2_html += f"<tr><td>N_gold_implicit</td><td>{int(n_gold_implicit) if n_gold_implicit is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Stage1 tuples (mean/sample)</td><td>{_num(mean_stage1_tuples_n) if mean_stage1_tuples_n is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Stage2 tuples (mean/sample)</td><td>{_num(mean_stage2_tuples_n) if mean_stage2_tuples_n is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Final tuples (mean/sample)</td><td>{_num(mean_final_tuples_n) if mean_final_tuples_n is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Tuple F1 (Stage1)</td><td>{_num(t2_f1_s1)}</td></tr>"
-        table2_html += f"<tr><td>Tuple F1 (Stage2+Moderator)</td><td>{_num(t2_f1_s2)}</td></tr>"
+        if t2_f1_s2_explicit is not None:
+            table2_html += f"<tr><td>Tuple F1 (Stage2+Moderator, explicit-only) <em>primary</em></td><td>{_num(t2_f1_s2_explicit)}</td></tr>"
+            table2_html += f"<tr><td>Tuple F1 (Stage2+Moderator, overall)</td><td>{_num(t2_f1_s2_overall)}</td></tr>"
+        else:
+            table2_html += f"<tr><td>Tuple F1 (Stage2+Moderator)</td><td>{_num(t2_f1_s2)}</td></tr>"
         table2_html += f"<tr><td>ΔF1 (S2−S1)</td><td>{_num(t2_delta)}</td></tr>"
         table2_html += f"<tr><td>Fix Rate ↑</td><td>{_pct(t2_fix) if t2_fix is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Break Rate ↓</td><td>{_pct(t2_break) if t2_break is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Net Gain ↑</td><td>{_num(t2_net) if t2_net is not None else 'N/A'}</td></tr>"
+        t2_f1_s2_implicit = _first(struct_metrics.get("tuple_f1_s2_implicit_only"), stage2_correction.get("tuple_f1_s2_implicit_only"))
+        t2_implicit_invalid_r = _first(struct_metrics.get("implicit_invalid_pred_rate"), stage2_correction.get("implicit_invalid_pred_rate"))
+        n_implicit_gold = _to_float(struct_metrics.get("implicit_gold_sample_n")) or _to_float(stage2_correction.get("implicit_gold_sample_n"))
+        n_implicit_invalid = _to_float(struct_metrics.get("implicit_invalid_sample_n")) or _to_float(stage2_correction.get("implicit_invalid_sample_n"))
+        table2_html += f"<tr><td>Tuple F1 (Stage2+Moderator, implicit-only)</td><td>{_num(t2_f1_s2_implicit) if t2_f1_s2_implicit is not None else ('N/A' if n_implicit_gold == 0 else '0')}</td></tr>"
+        table2_html += f"<tr><td>Implicit invalid pred rate</td><td>{_pct(t2_implicit_invalid_r) if t2_implicit_invalid_r is not None else ('N/A' if n_implicit_gold == 0 else '0')}</td></tr>"
+        table2_html += f"<tr><td>Implicit gold sample n</td><td>{int(n_implicit_gold) if n_implicit_gold is not None else 'N/A'}</td></tr>"
+        table2_html += f"<tr><td>Implicit invalid sample n</td><td>{int(n_implicit_invalid) if n_implicit_invalid is not None else 'N/A'}</td></tr>"
         corr_prec = stage2_correction.get("correction_precision")
         cis = stage2_correction.get("conservative_improvement_score")
         table2_html += f"<tr><td>Correction Precision</td><td>{_pct(corr_prec) if corr_prec is not None else 'N/A'}</td></tr>"
         table2_html += f"<tr><td>Conservative Improvement Score (λ=2)</td><td>{_num(cis) if cis is not None else 'N/A'}</td></tr>"
         table2_html += "</tbody></table>"
-        table2_html += "<p class=\"header-meta\">F1 matches on (aspect_term, polarity) only. Gold-present samples only. Values from structural_metrics.csv when available.</p>"
+        table2_html += "<p class=\"header-meta\">F1 matches on (aspect_term, polarity) only. Gold-present samples only. Primary: explicit-only tuple F1 (implicit cases are a different inference task). Values from structural_metrics.csv when available.</p>"
     else:
         # When no gold: still report the 3 tuple counts (from final_result) if available.
         if mean_stage1_tuples_n is not None or mean_stage2_tuples_n is not None or mean_final_tuples_n is not None:
@@ -1131,6 +1249,8 @@ h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 <h3>Stage1 vs Stage2 요약</h3>
 {rq3_table}
 {rq3_note}
+{cr_table}
+{metric_continuity_note}
 <h3>Debate mapping metrics</h3>
 {debate_table}
 {debate_thresholds_note}

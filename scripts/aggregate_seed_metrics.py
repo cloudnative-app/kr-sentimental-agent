@@ -243,7 +243,7 @@ def main() -> None:
             em = m.get("episodic_memory")
             if isinstance(em, dict):
                 c = em.get("condition") or ""
-                memory_note = f"- **Episodic memory**: {c} (on)" if c == "C2" else (f"- **Episodic memory**: {c} (off)" if c == "C1" else (f"- **Episodic memory**: {c} (silent)" if c == "C2_silent" else f"- **Episodic memory**: {c}")
+                memory_note = f"- **Episodic memory**: {c} (on)" if c == "C2" else (f"- **Episodic memory**: {c} (off)" if c == "C1" else (f"- **Episodic memory**: {c} (silent)" if c == "C2_silent" else f"- **Episodic memory**: {c}"))
             elif em is not None:
                 memory_note = f"- **Episodic memory**: {em}"
         except Exception:

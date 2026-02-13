@@ -72,11 +72,49 @@ class Moderator:
     def _infer_label_from_debate(self, summary: Optional[DebateSummary]) -> Optional[str]:
         if summary is None:
             return None
+        # S1: Prefer sentence-level conclusion when Judge provided it (stronger than tuple inference)
+        sent_pol = getattr(summary, "sentence_polarity", None)
+        if sent_pol and isinstance(sent_pol, str) and sent_pol.strip():
+            s = sent_pol.strip().lower()
+            if s in ("positive", "negative", "neutral", "mixed"):
+                return s
+            if s in ("pos",): return "positive"
+            if s in ("neg",): return "negative"
+            if s in ("neu",): return "neutral"
+        # Fallback: CJ final_tuples (EPM/TAN/CJ flow)
+        final_tuples = getattr(summary, "final_tuples", None) or []
+        if final_tuples:
+            pols = []
+            for t in final_tuples:
+                if isinstance(t, dict):
+                    p = (t.get("polarity") or "").strip().lower()
+                    if p:
+                        pols.append(p)
+            if pols:
+                if all(p in ("positive", "pos") for p in pols):
+                    return "positive"
+                if all(p in ("negative", "neg") for p in pols):
+                    return "negative"
+                if all(p in ("neutral", "neu") for p in pols):
+                    return "neutral"
+                if len(set(pols)) > 1:
+                    return "mixed"
+                p0 = pols[0]
+                if p0 in ("positive", "negative", "neutral", "mixed"):
+                    return p0
+                if p0 in ("pos",):
+                    return "positive"
+                if p0 in ("neg",):
+                    return "negative"
+                if p0 in ("neu",):
+                    return "neutral"
+                return None
+        # Fallback: deprecated consensus/rationale/key_*
         parts = [
-            summary.consensus or "",
-            summary.rationale or "",
-            " ".join(summary.key_agreements or []),
-            " ".join(summary.key_disagreements or []),
+            getattr(summary, "consensus", None) or "",
+            getattr(summary, "rationale", None) or "",
+            " ".join(getattr(summary, "key_agreements", None) or []),
+            " ".join(getattr(summary, "key_disagreements", None) or []),
         ]
         text = " ".join(p for p in parts if p).lower()
         if any(tok in text for tok in ["혼합", "mixed", "엇갈", "양면"]):
@@ -113,10 +151,11 @@ class Moderator:
                 arbiter_flags=ArbiterFlags(stage2_rejected_due_to_confidence=False, validator_override_applied=False, confidence_margin_used=0.0),
             )
 
-        # Rule B
+        # Rule B (S3: always "applied" in the sense we evaluated it)
         candidate_ate, drop_guard, confidence_margin, rationale_b = self._rule_b_stage2_preference(stage1_ate, stage2_ate)
         rationale_parts.append(rationale_b)
         applied_rules.append("RuleB")
+        rule_b_applied = True
 
         candidate_atsa = stage2_atsa or stage1_atsa
         final_label = candidate_ate.label
@@ -152,12 +191,26 @@ class Moderator:
             rationale_parts.append(rationale_d)
             applied_rules.append("RuleD")
 
-        # Rule E: Debate consensus hint (low-confidence override)
+        # Rule E: Debate consensus hint (low-confidence override). S0/S3: log fired vs block reason and that E was attempted after B.
+        rule_e_fired = False
+        rule_e_block_reason: Optional[str] = None
+        rule_e_attempted_after_b = False
         inferred = self._infer_label_from_debate(debate_summary)
-        if inferred and inferred != final_label and (confidence < 0.55 or final_label == "mixed"):
-            rationale_parts.append(f"RuleE: debate consensus -> {inferred}.")
-            applied_rules.append("RuleE")
-            final_label = inferred
+        if inferred is not None:
+            rule_e_attempted_after_b = True
+            if inferred == final_label:
+                rule_e_block_reason = "label_unchanged"
+            elif confidence >= 0.55 and final_label != "mixed":
+                rule_e_block_reason = "confidence_too_high"
+            else:
+                rationale_parts.append(f"RuleE: debate consensus -> {inferred}.")
+                applied_rules.append("RuleE")
+                final_label = inferred
+                rule_e_fired = True
+        else:
+            if debate_summary is not None:
+                rule_e_attempted_after_b = True
+                rule_e_block_reason = "inferred_empty"
 
         if not rationale_parts:
             rationale_parts.append("Rule default: no change.")
@@ -167,6 +220,10 @@ class Moderator:
             stage2_rejected_due_to_confidence=drop_guard,
             validator_override_applied=validator_override,
             confidence_margin_used=confidence_margin,
+            rule_e_fired=rule_e_fired,
+            rule_e_block_reason=rule_e_block_reason,
+            rule_b_applied=rule_b_applied,
+            rule_e_attempted_after_b=rule_e_attempted_after_b,
         )
         return ModeratorOutput(
             final_label=final_label,

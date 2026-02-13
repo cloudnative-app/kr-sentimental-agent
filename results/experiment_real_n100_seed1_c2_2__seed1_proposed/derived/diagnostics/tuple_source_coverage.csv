@@ -1,0 +1,2 @@
+run_id,n_total,final_fallback_aspect_sentiments_rate,stage1_fallback_trace_atsa_rate,gold_missing_rate,final_fallback_aspect_sentiments_count,stage1_fallback_trace_atsa_count,gold_missing_count
+experiment_real_n100_seed1_c2_2__seed1_proposed,20,0.0,0.0,0.0,0,0,0

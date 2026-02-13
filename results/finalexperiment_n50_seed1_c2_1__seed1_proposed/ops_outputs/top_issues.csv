@@ -1,0 +1,178 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00489,valid,unknown,proposed,gpt-4.1-mini,380,381,0.01523,58317,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""스포트라이트 조명"",
+      ""span"": {""start"": 11, ""end"": 18},
+      ""normalized"": ""스포트라이트 조명"",
+      ""syntactic_head"": ""쏴주는데"",
+      ""confidence"": 0.95,
+      ""rationale"": "
+nikluge-sa-2022-train-01495,valid,unknown,proposed,gpt-4.1-mini,360,378,0.014940000000000002,54898,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""쫀쫀한 미세버블"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""미세버블"",
+      ""syntactic_head"": ""제거해주고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-01914,valid,unknown,proposed,gpt-4.1-mini,359,544,0.01991,51989,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""세럼"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""세럼"",
+      ""syntactic_head"": ""담아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트에 명시적으로 '세럼'이 "
+nikluge-sa-2022-train-02482,valid,unknown,proposed,gpt-4.1-mini,366,376,0.01494,47300,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""젤제형"",
+      ""span"": {""start"": 11, ""end"": 14},
+      ""normalized"": ""젤 제형"",
+      ""syntactic_head"": ""사용하기"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '젤제형'"
+nikluge-sa-2022-train-01721,valid,unknown,proposed,gpt-4.1-mini,369,366,0.01467,46271,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""룰"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""룰"",
+      ""syntactic_head"": ""이해못해서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '&name&는 룰을"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,362,469,0.01769,43759,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부 단백질 구조"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""피부 단백질 구조"",
+      ""syntactic_head"": ""흡사한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,343,306,0.01261,43369,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""아담한사이즈"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""아담한 사이즈"",
+      ""syntactic_head"": ""사랑스런"",
+      ""confidence"": 0.9,
+      ""rationale"": ""텍스트 초반에"
+nikluge-sa-2022-train-02916,valid,unknown,proposed,gpt-4.1-mini,357,482,0.01803,42318,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""자외선"",
+      ""syntactic_head"": ""자극받은"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '자외선과 폭염"
+nikluge-sa-2022-train-00244,valid,unknown,proposed,gpt-4.1-mini,364,229,0.01051,41762,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마스킹 레이어링 앰플"",
+      ""span"": {""start"": 0, ""end"": 11},
+      ""normalized"": ""마스킹 레이어링 앰플"",
+      ""syntactic_head"": ""출시한"",
+      ""confidence"": 0.95,
+      ""rationale"""
+nikluge-sa-2022-train-01320,valid,unknown,proposed,gpt-4.1-mini,366,393,0.01545,40675,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""pH 밸런스"",
+      ""span"": {""start"": 4, ""end"": 10},
+      ""normalized"": ""pH 밸런스"",
+      ""syntactic_head"": ""유지시켜주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00578,valid,unknown,proposed,gpt-4.1-mini,362,200,0.00962,38258,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#디올선미레드"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""#디올선미레드"",
+      ""syntactic_head"": ""붙었"",
+      ""confidence"": 0.9,
+      ""rationale"": ""본문에서 '애칭"
+nikluge-sa-2022-train-01919,valid,unknown,proposed,gpt-4.1-mini,333,215,0.00978,36377,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""골라쓰기"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '피부에따라'라는 표"
+nikluge-sa-2022-train-02909,valid,unknown,proposed,gpt-4.1-mini,363,323,0.013319999999999999,36189,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""까무잡잡한 부위"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""까무잡잡한 부위"",
+      ""syntactic_head"": ""사용하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에"
+nikluge-sa-2022-train-02384,valid,unknown,proposed,gpt-4.1-mini,340,279,0.011770000000000001,35701,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""욕실"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""욕실"",
+      ""syntactic_head"": ""사용가능하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '욕실'이 '사"
+nikluge-sa-2022-train-02944,valid,unknown,proposed,gpt-4.1-mini,346,192,0.00922,32073,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""바르고 난 직후"",
+      ""span"": {""start"": 3, ""end"": 10},
+      ""normalized"": ""바른 직후"",
+      ""syntactic_head"": ""맨들거리지만"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-02270,valid,unknown,proposed,gpt-4.1-mini,337,131,0.007300000000000001,31944,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""페이즐리 쉬폰블라우스"",
+      ""span"": {""start"": 0, ""end"": 11},
+      ""normalized"": ""페이즐리 쉬폰 블라우스"",
+      ""syntactic_head"": ""내스타일이야"",
+      ""confidence"": 0.95,
+      ""ration"
+nikluge-sa-2022-train-00829,valid,unknown,proposed,gpt-4.1-mini,330,8,0.0035399999999999997,31335,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": []
+}"
+nikluge-sa-2022-train-01813,valid,unknown,proposed,gpt-4.1-mini,338,280,0.011779999999999999,30569,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""블루진"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""블루진"",
+      ""syntactic_head"": ""어울리지요"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '블루진'이 "
+nikluge-sa-2022-train-02707,valid,unknown,proposed,gpt-4.1-mini,330,126,0.0070799999999999995,29940,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""씹는치약"",
+      ""span"": {
+        ""start"": 7,
+        ""end"": 11
+      },
+      ""normalized"": ""씹는 치약"",
+      ""syntactic_head"": ""대세"",
+      ""confidence"": 0.9,
+      ""r"
+nikluge-sa-2022-train-00203,valid,unknown,proposed,gpt-4.1-mini,340,295,0.01225,29667,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""약산성"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""약산성"",
+      ""syntactic_head"": ""맞춰주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에 명시된 "

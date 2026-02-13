@@ -1,0 +1,11 @@
+text_id	stage1_tuple_source	N_stage1	final_tuple_source	N_final	gold_tuple_source	N_gold
+nikluge-sa-2022-train-02669	stage1_tuples	1	final_tuples	2	inputs.gold_tuples	1
+nikluge-sa-2022-train-02211	stage1_tuples	1	final_tuples	2	inputs.gold_tuples	1
+nikluge-sa-2022-train-01786	stage1_tuples	1	final_tuples	2	inputs.gold_tuples	1
+nikluge-sa-2022-train-02482	stage1_tuples	4	final_tuples	4	inputs.gold_tuples	2
+nikluge-sa-2022-train-01939	stage1_tuples	2	final_tuples	3	inputs.gold_tuples	1
+nikluge-sa-2022-train-00565	stage1_tuples	1	final_tuples	2	inputs.gold_tuples	1
+nikluge-sa-2022-train-01721	stage1_tuples	4	final_tuples	6	inputs.gold_tuples	1
+nikluge-sa-2022-train-02384	stage1_tuples	3	final_tuples	4	inputs.gold_tuples	1
+nikluge-sa-2022-train-00536	stage1_tuples	5	final_tuples	5	inputs.gold_tuples	1
+nikluge-sa-2022-train-01823	stage1_tuples	1	final_tuples	2	inputs.gold_tuples	1

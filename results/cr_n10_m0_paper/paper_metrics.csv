@@ -1,0 +1,2 @@
+run,tuple_f1_s1,tuple_f1_s2,delta_f1,fix_rate,break_rate,net_gain,implicit_invalid_pred_rate,polarity_conflict_rate,N_agg_fallback_used,tuple_agreement_rate,polarity_conflict_rate_repeat,conflict_detection_rate,review_intervention_rate,arb_intervention_rate,pre_to_post_change_rate
+cr_n10_m0__seed42_proposed,0.41500000000000004,0.5,0.08499999999999996,0.1111111111111111,0.0,0.1,0.0,0.0,0.0,,,0.0,0.0,0.0,0.4

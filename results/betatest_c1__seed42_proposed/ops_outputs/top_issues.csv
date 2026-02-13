@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00149,valid,unknown,proposed,gpt-4.1-mini,373,517,0.01924,73904,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모기기피제"",
+      ""span"": {""start"": 19, ""end"": 23},
+      ""normalized"": ""모기기피제"",
+      ""syntactic_head"": ""쓰는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '모기기"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,391,548,0.02035,69964,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""음식물쓰레기"",
+      ""span"": {""start"": 6, ""end"": 12},
+      ""normalized"": ""음식물쓰레기"",
+      ""syntactic_head"": ""고민인데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,347,452,0.01703,69835,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""각진 인생"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""각진 인생"",
+      ""syntactic_head"": ""좋고"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 초반에 명사구로 "
+nikluge-sa-2022-train-00672,valid,unknown,proposed,gpt-4.1-mini,356,429,0.01643,60527,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""에스테틱"",
+      ""span"": {""start"": 3, ""end"": 7},
+      ""normalized"": ""에스테틱"",
+      ""syntactic_head"": ""가지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '에스테틱'은 피"
+nikluge-sa-2022-train-01339,valid,unknown,proposed,gpt-4.1-mini,367,375,0.01492,53818,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부"",
+      ""span"": {""start"": 15, ""end"": 17},
+      ""normalized"": ""피부"",
+      ""syntactic_head"": ""거칠어진"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '거칠어진 피부"
+nikluge-sa-2022-train-02879,valid,unknown,proposed,gpt-4.1-mini,375,276,0.012029999999999999,53039,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""민감한 아기 피부"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""아기 피부"",
+      ""syntactic_head"": ""생기는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-00320,valid,unknown,proposed,gpt-4.1-mini,366,366,0.01464,51634,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#버블폼"",
+      ""span"": {""start"": 8, ""end"": 13},
+      ""normalized"": ""버블폼"",
+      ""syntactic_head"": ""있어서"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '#버블폼'이"
+nikluge-sa-2022-train-01089,valid,unknown,proposed,gpt-4.1-mini,356,411,0.01589,48343,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""화이트 베이스"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""화이트 베이스"",
+      ""syntactic_head"": ""높이구"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에"
+nikluge-sa-2022-train-01398,valid,unknown,proposed,gpt-4.1-mini,344,356,0.014119999999999999,47541,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""삶기"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""삶기"",
+      ""syntactic_head"": ""되는"",
+      ""confidence"": 0.9,
+      ""rationale"": ""삶기라는 명사가 '되는'이라는 서"
+nikluge-sa-2022-train-02808,valid,unknown,proposed,gpt-4.1-mini,349,301,0.01252,45271,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""24k골드입자성분"",
+      ""span"": {""start"": 0, ""end"": 10},
+      ""normalized"": ""24k 골드 입자 성분"",
+      ""syntactic_head"": ""들어가있는데"",
+      ""confidence"": 0.95,
+      ""rational"
+nikluge-sa-2022-train-01239,valid,unknown,proposed,gpt-4.1-mini,343,319,0.013000000000000001,44763,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""가벼운 화장"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""가벼운 화장"",
+      ""syntactic_head"": ""할"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '가벼운 "
+nikluge-sa-2022-train-02581,valid,unknown,proposed,gpt-4.1-mini,365,472,0.01781,40957,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""지성"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""지성 피부"",
+      ""syntactic_head"": ""그런지"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 첫 부분에서 '지성'"
+nikluge-sa-2022-train-01660,valid,unknown,proposed,gpt-4.1-mini,344,289,0.01211,40921,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""다시마추출물"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""다시마 추출물"",
+      ""syntactic_head"": ""함유되어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-02365,valid,unknown,proposed,gpt-4.1-mini,343,200,0.009430000000000001,39997,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""거북목"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""거북목"",
+      ""syntactic_head"": ""도움된다"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '거북목'이 '"
+nikluge-sa-2022-train-00465,valid,unknown,proposed,gpt-4.1-mini,348,211,0.009810000000000001,39371,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""한번 터치"",
+      ""span"": {""start"": 0, ""end"": 5},
+      ""normalized"": ""한번 터치"",
+      ""syntactic_head"": ""커버되니까"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '한번"
+nikluge-sa-2022-train-00735,valid,unknown,proposed,gpt-4.1-mini,382,676,0.0241,38570,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마더케이 물티슈"",
+      ""span"": {""start"": 1, ""end"": 9},
+      ""normalized"": ""마더케이 물티슈"",
+      ""syntactic_head"": ""뽑혀"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반"
+nikluge-sa-2022-train-02430,valid,unknown,proposed,gpt-4.1-mini,354,195,0.009389999999999999,38230,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""그날"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""생리 기간"",
+      ""syntactic_head"": ""민감하고 예민한"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '민감하"
+nikluge-sa-2022-train-00325,valid,unknown,proposed,gpt-4.1-mini,339,278,0.01173,38116,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""향"",
+      ""span"": {""start"": 0, ""end"": 1},
+      ""normalized"": ""향"",
+      ""syntactic_head"": ""우선"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장 첫 부분에 명시적으로 나타난 명"
+nikluge-sa-2022-train-01583,valid,unknown,proposed,gpt-4.1-mini,339,277,0.011699999999999999,37993,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""1종세척제"",
+      ""span"": {""start"": 1, ""end"": 6},
+      ""normalized"": ""1종 세척제"",
+      ""syntactic_head"": ""씻을 수 있어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 "
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,348,283,0.01197,37211,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선 차단"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""자외선 차단"",
+      ""syntactic_head"": ""찾으시면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 "

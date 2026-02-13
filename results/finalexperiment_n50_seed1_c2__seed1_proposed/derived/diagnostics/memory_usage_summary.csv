@@ -1,0 +1,2 @@
+run_id,n_total,retrieved_n_p50,retrieved_n_p90,memory_used_rate,memory_used_but_changed_zero_rate,memory_used_but_risk_resolution_zero_rate,memory_used_count,memory_used_changed_zero_count,memory_used_risk_resolution_zero_count
+finalexperiment_n50_seed1_c2__seed1_proposed,50,3.0,3.0,0.78,0.4358974358974359,0.358974358974359,39,17,14

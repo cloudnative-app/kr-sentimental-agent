@@ -1,0 +1,59 @@
+# Finalexperiment C1: real n50 seed1, T2(v2) 기본조건. debate+override 동일.
+# 데이터: real_n50_seed1 (표본규칙 동일). pipeline = T2 (min_total=0.6, min_margin=0.3, min_target_conf=0.55, l3_conservative=false).
+run_purpose: paper
+run_id: finalexperiment_n50_seed1_c1
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 0.6
+    min_margin: 0.3
+    min_target_conf: 0.55
+    l3_conservative: false
+
+episodic_memory:
+  condition: C1
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: real_n50_seed1/train.csv
+  valid_file: real_n50_seed1/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: real_n50_seed1/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 1
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [1]
+  concurrency: 1

@@ -1,0 +1,42 @@
+{
+  "n_aspects": 30,
+  "decision_applied_n": 10,
+  "decision_skip_n": 20,
+  "skipped_neutral_only_n": 17,
+  "low_signal_breakdown": {
+    "neutral_only": 17,
+    "low_signal": 2
+  },
+  "skip_reason_count": {
+    "l3_conservative": 1,
+    "low_signal": 2,
+    "neutral_only": 17
+  },
+  "skip_reason_rate": {
+    "l3_conservative": 0.0333,
+    "low_signal": 0.0667,
+    "neutral_only": 0.5667
+  },
+  "total_dist": {
+    "min": 0.0,
+    "mean": 0.64,
+    "median": 0.0,
+    "p90": 1.6,
+    "p95": 1.6,
+    "max": 1.6
+  },
+  "margin_dist": {
+    "min": 0.0,
+    "mean": 0.64,
+    "median": 0.0,
+    "p90": 1.6,
+    "p95": 1.6,
+    "max": 1.6
+  },
+  "threshold_near_rate": {
+    "total_in_min_total_minus_0_2_to_min_total_n": 0,
+    "total_near_rate": 0.0,
+    "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+    "margin_near_rate": 0.0
+  }
+}

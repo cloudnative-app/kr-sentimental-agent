@@ -1,0 +1,31 @@
+{
+  "n_aspects": 1,
+  "decision_applied_n": 0,
+  "decision_skip_n": 0,
+  "skipped_neutral_only_n": 0,
+  "low_signal_breakdown": {
+    "neutral_only": 0,
+    "low_signal": 0
+  },
+  "skip_reason_count": {},
+  "skip_reason_rate": {},
+  "override_hint_invalid_total": 0,
+  "override_hint_repair_total": 0,
+  "override_hint_invalid_rate": null,
+  "by_sample": {
+    "ex1": {
+      "adopt_decision": "not_adopted",
+      "adopt_reason": "low_signal",
+      "ev_score": 0.0,
+      "ev_threshold": 0.5
+    }
+  },
+  "total_dist": {},
+  "margin_dist": {},
+  "threshold_near_rate": {
+    "total_in_min_total_minus_0_2_to_min_total_n": 0,
+    "total_near_rate": 0.0,
+    "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+    "margin_near_rate": 0.0
+  }
+}

@@ -16,6 +16,19 @@ class AnalysisFlags(BaseModel):
         default=True,
         description="Whether Stage2 was actually executed (baselines set this to False).",
     )
+    # Conflict Review v1 SSOT: review/arb actions at top-level
+    review_actions: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Review agents A/B/C proposed actions (CR v1).",
+    )
+    arb_actions: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Arbiter final actions (CR v1).",
+    )
+    conflict_flags: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Conflict flags (polarity_mismatch etc.) for SSOT.",
+    )
 
 
 class FinalResult(BaseModel):
@@ -27,6 +40,15 @@ class FinalResult(BaseModel):
     stage1_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Stage1 (aspect_term, polarity) tuples for metrics.")
     stage2_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Stage2 tuples for metrics.")
     final_tuples: Optional[List[Dict[str, str]]] = Field(default=None, description="Final tuples (same as final_aspects in tuple form) for metrics.")
+    # Conflict Review v1 SSOT: pre/post review explicitly
+    final_tuples_pre_review: Optional[List[Dict[str, str]]] = Field(
+        default=None,
+        description="Tuples after merge, before review apply (CR v1).",
+    )
+    final_tuples_post_review: Optional[List[Dict[str, str]]] = Field(
+        default=None,
+        description="Tuples after Arbiter actions applied (CR v1).",
+    )
 
 
 class FinalOutputSchema(BaseModel):

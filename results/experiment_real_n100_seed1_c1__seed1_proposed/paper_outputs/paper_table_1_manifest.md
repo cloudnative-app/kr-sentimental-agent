@@ -1,0 +1,3 @@
+| run_id | timestamp_utc | cfg_hash | backbone_model_id | backbone_provider | prompt_version_count | report_split | split_train | split_valid | split_test | dataset_paths |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| experiment_real_n100_seed1_c1__seed1_proposed | 2026-02-09T01:16:40.123304Z | 27717d834ed463cf07292851a1e87f79edb024e66f0be4947e16d5770aaaaca1 | gpt-4.1-mini | openai | 11 | valid | 0 | 100 | 0 | C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\real_n100_seed1\train.csv;C:\Users\wisdo\Documents\kr-sentimental-agent\experiments\configs\datasets\real_n100_seed1\valid.csv |

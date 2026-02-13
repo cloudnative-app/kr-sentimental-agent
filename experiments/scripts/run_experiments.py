@@ -25,7 +25,7 @@ from tools.pattern_loader import load_patterns
 # Reuse existing scorecard generator to avoid metric drift
 from scripts.scorecard_from_smoke import make_scorecard
 from tools.aux_hf_runner import build_hf_signal
-from metrics.eval_tuple import gold_row_to_tuples
+from metrics.eval_tuple import final_aspects_from_final_tuples, gold_row_to_tuples
 
 
 # -------------- Hashing / utils --------------
@@ -400,7 +400,7 @@ def _load_eval_gold(
             uid = row.get("uid") or row.get("text_id") or row.get("id")
             if not uid:
                 continue
-            normalized = gold_row_to_tuples(row)
+            normalized, _ = gold_row_to_tuples(row)
             if normalized:
                 out[str(uid)] = normalized
     return out
@@ -466,6 +466,7 @@ def _write_manifest(
     processing_splits: Optional[Sequence[str]] = None,
     processing_count: Optional[int] = None,
     splits_loaded: Optional[Sequence[str]] = None,
+    debate_override_effective: Optional[Dict[str, Any]] = None,
 ) -> Path:
     # Compute split files info
     split_files_info = _compute_split_files(data_cfg, resolved_paths)
@@ -519,6 +520,8 @@ def _write_manifest(
         manifest["data_roles"] = data_roles
     if cfg.get("episodic_memory") is not None:
         manifest["episodic_memory"] = cfg["episodic_memory"]
+    if debate_override_effective is not None:
+        manifest["debate_override_effective"] = debate_override_effective
 
     last_path = None
     for p in manifest_paths:
@@ -535,16 +538,88 @@ def read_config(path: str) -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def _resolve_debate_override_effective(cfg: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """
+    Resolve effective debate override config for manifest (profile_id, thresholds, source).
+    Returns None if override is disabled or not configured.
+    """
+    pipeline = cfg.get("pipeline") or {}
+    if not pipeline.get("enable_debate_override", True):
+        return None
+    override_cfg = pipeline.get("debate_override")
+    override_profile = cfg.get("override_profile") or pipeline.get("override_profile")
+    if isinstance(override_cfg, dict) and override_cfg:
+        effective = {k: v for k, v in override_cfg.items() if k not in ("profiles", "default_profile")}
+        if not effective:
+            effective = {"min_total": 1.6, "min_margin": 0.8, "min_target_conf": 0.7, "l3_conservative": True, "ev_threshold": 0.5}
+        return {
+            "override_profile_id": override_profile,
+            "min_total": float(effective.get("min_total", 1.6)),
+            "min_margin": float(effective.get("min_margin", 0.8)),
+            "min_target_conf": float(effective.get("min_target_conf", 0.7)),
+            "l3_conservative": effective.get("l3_conservative", True),
+            "ev_threshold": float(effective.get("ev_threshold", 0.5)),
+            "source": "yaml_override",
+        }
+    cfg_path = Path("experiments") / "configs" / "debate_override_thresholds.json"
+    if not cfg_path.exists():
+        return {"override_profile_id": None, "min_total": 1.6, "min_margin": 0.8, "min_target_conf": 0.7, "l3_conservative": True, "ev_threshold": 0.5, "source": "code_default"}
+    try:
+        data = json.loads(cfg_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"override_profile_id": None, "min_total": 1.6, "min_margin": 0.8, "min_target_conf": 0.7, "l3_conservative": True, "ev_threshold": 0.5, "source": "code_default"}
+    if isinstance(data.get("profiles"), dict):
+        profile_id = override_profile or data.get("default_profile") or "t0"
+        profile = data["profiles"].get(profile_id) or data["profiles"].get("t0", {})
+        if isinstance(profile, dict):
+            return {
+                "override_profile_id": profile_id,
+                "min_total": float(profile.get("min_total", 1.6)),
+                "min_margin": float(profile.get("min_margin", 0.8)),
+                "min_target_conf": float(profile.get("min_target_conf", 0.7)),
+                "l3_conservative": profile.get("l3_conservative", True),
+                "ev_threshold": float(profile.get("ev_threshold", 0.5)),
+                "source": "json_profile",
+            }
+    if isinstance(data, dict) and any(k in data for k in ("min_total", "min_margin")):
+        flat = {k: v for k, v in data.items() if k not in ("profiles", "default_profile")}
+        return {
+            "override_profile_id": None,
+            "min_total": float(flat.get("min_total", 1.6)),
+            "min_margin": float(flat.get("min_margin", 0.8)),
+            "min_target_conf": float(flat.get("min_target_conf", 0.7)),
+            "l3_conservative": flat.get("l3_conservative", True),
+            "ev_threshold": float(flat.get("ev_threshold", 0.5)),
+            "source": "json_default",
+        }
+    return {"override_profile_id": None, "min_total": 1.6, "min_margin": 0.8, "min_target_conf": 0.7, "l3_conservative": True, "ev_threshold": 0.5, "source": "code_default"}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default="experiments/configs/default.yaml")
     parser.add_argument("--run-id", type=str, default=None)
     parser.add_argument("--mode", type=str, choices=["proposed", "bl1", "bl2", "bl3", "all"], default=None, help="Pipeline mode (CLI overrides config/env).")
+    parser.add_argument("--strict_config", action="store_true", help="Fail if pipeline.debate_override is set (YAML override); protects experiment reproducibility.")
     args = parser.parse_args()
 
     cfg_path = args.config
     cfg = read_config(cfg_path)
-    run_id = cfg.get("run_id") or args.run_id or "run"
+
+    # Optional: warn / fail when YAML override is in use (JSON default ignored)
+    pipeline = cfg.get("pipeline") or {}
+    yaml_override = isinstance(pipeline.get("debate_override"), dict) and bool(pipeline.get("debate_override"))
+    if yaml_override and pipeline.get("enable_debate_override", True):
+        print("\n" + "!" * 60, file=sys.stderr)
+        print("  [WARN] pipeline.debate_override is set: JSON default values are IGNORED.", file=sys.stderr)
+        print("  Effective thresholds come from YAML. For t0/t1/t2 comparison use override_profile instead.", file=sys.stderr)
+        print("!" * 60 + "\n", file=sys.stderr)
+        if getattr(args, "strict_config", False):
+            blocked_error = "strict_config: pipeline.debate_override is set; aborting for reproducibility. Use override_profile (t0/t1/t2) instead."
+            print(blocked_error, file=sys.stderr)
+            raise RuntimeError(blocked_error)
+    # CLI --run-id overrides config so distinct runs (e.g. v2) do not overwrite the same dir
+    run_id = args.run_id or cfg.get("run_id") or "run"
     mode = resolve_run_mode(args.mode, os.getenv("RUN_MODE"), cfg.get("run_mode") or cfg.get("mode"))
     backbone_cfg = cfg.get("backbone", {})
     backbone = BackboneClient(provider=backbone_cfg.get("provider"), model=backbone_cfg.get("model"))
@@ -664,6 +739,8 @@ def main():
     for m in modes:
         run_id_mode = f"{run_id}_{m}"
         pipeline_cfg = dict(cfg.get("pipeline") or {})
+        if cfg.get("override_profile") is not None:
+            pipeline_cfg["override_profile"] = cfg["override_profile"]
         # memory.enable + memory.mode (advisory|silent) → episodic_memory.condition (C1/C2/C2_silent)
         if cfg.get("memory") and isinstance(cfg.get("memory"), dict):
             enable = cfg["memory"].get("enable", False)
@@ -674,6 +751,18 @@ def main():
             cfg["episodic_memory"] = pipeline_cfg["episodic_memory"]  # for manifest/integrity
         elif "episodic_memory" in cfg:
             pipeline_cfg["episodic_memory"] = cfg["episodic_memory"]
+        # Run-scoped episodic store: store_path = results/<run_id_mode>/episodic_store.jsonl (SSOT, 메트릭 정합성 유지)
+        if pipeline_cfg.get("episodic_memory") and isinstance(pipeline_cfg["episodic_memory"], dict):
+            _base = cfg.get("output_dir")
+            _run_out = (Path(_base) / run_id_mode) if _base else Path("results") / run_id_mode
+            pipeline_cfg["episodic_memory"]["store_path"] = str(_run_out / "episodic_store.jsonl")
+            # 실행마다 스토어 비우기: clear_store_at_run_start=true 시 run 시작 시 파일 truncate
+            if pipeline_cfg["episodic_memory"].get("clear_store_at_run_start"):
+                _store_path = pipeline_cfg["episodic_memory"].get("store_path")
+                if _store_path:
+                    _p = Path(_store_path)
+                    _p.parent.mkdir(parents=True, exist_ok=True)
+                    _p.write_text("")
         runner = make_runner(run_mode=m, backbone=backbone, config=pipeline_cfg, run_id=run_id_mode)
 
         # Demo enable/disable per mode
@@ -728,6 +817,7 @@ def main():
             processing_splits=processing_splits,
             processing_count=len(examples),
             splits_loaded=list(splits_to_load) if splits_to_load else None,
+            debate_override_effective=_resolve_debate_override_effective(cfg),
         )
 
         if blocked_error:
@@ -744,6 +834,7 @@ def main():
 
         # Track demo exclusion stats for integrity logging
         total_demo_overlap_removed = 0
+        missing_label_count = 0  # neutral ≠ missing: count samples where label was missing (not defaulted to neutral)
 
         with output_path.open("w", encoding="utf-8", newline="\n") as f_out, trace_path.open(
             "w", encoding="utf-8", newline="\n"
@@ -806,8 +897,14 @@ def main():
                 aux_hf_enabled = pipeline_cfg.get("aux_hf_enabled", False)
                 aux_hf_checkpoint = pipeline_cfg.get("aux_hf_checkpoint") or ""
                 if aux_hf_enabled and aux_hf_checkpoint and not (aux_hf_checkpoint.strip().startswith("llm:")):
-                    stage1_final = (payload.get("stage1_ate") or {}).get("label") or "neutral"
-                    stage2_final = (payload.get("final_result") or {}).get("label") or (payload.get("moderator") or {}).get("final_label") or stage1_final or "neutral"
+                    _s1 = (payload.get("stage1_ate") or {}).get("label")
+                    _s2 = (payload.get("final_result") or {}).get("label") or (payload.get("moderator") or {}).get("final_label")
+                    _s1_missing = _s1 is None or (isinstance(_s1, str) and not _s1.strip())
+                    _s2_missing = _s2 is None or (isinstance(_s2, str) and not _s2.strip())
+                    if _s1_missing or _s2_missing:
+                        missing_label_count += 1
+                    stage1_final = _s1 if not _s1_missing else "missing"
+                    stage2_final = _s2 if not _s2_missing else (stage1_final if stage1_final != "missing" else "missing")
                     aux_hf_id2label = pipeline_cfg.get("aux_hf_id2label")
                     if isinstance(aux_hf_id2label, list):
                         aux_hf_id2label = {i: str(v) for i, v in enumerate(aux_hf_id2label)}
@@ -822,6 +919,10 @@ def main():
                     payload["aux_signals"] = {"hf": hf_signal} if hf_signal else {}
                 else:
                     payload.setdefault("aux_signals", {})
+                # Ensure final_aspects in both outputs.jsonl and scorecards: reconstruct from final_tuples when missing/empty
+                fr = payload.get("final_result") or {}
+                if fr.get("final_tuples") and not (fr.get("final_aspects") and len(fr.get("final_aspects") or [])):
+                    payload.setdefault("final_result", {})["final_aspects"] = final_aspects_from_final_tuples(fr["final_tuples"])
                 f_out.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
                 case_trace = _build_case_trace(
@@ -837,8 +938,16 @@ def main():
 
                 if isinstance(payload.get("meta"), dict) and "profile" not in payload["meta"]:
                     payload["meta"]["profile"] = "smoke" if run_purpose == "smoke" else ("paper_main" if run_purpose == "paper" else "regression")
-                scorecard = make_scorecard(payload, extra_allow=allow_terms)
-                if uid_to_gold and normalized.uid in uid_to_gold:
+                gold_injected = bool(uid_to_gold and normalized.uid in uid_to_gold)
+                gold_path_str = eval_paths_for_manifest.get("gold_valid_jsonl") or eval_paths_for_manifest.get("gold_test_jsonl") or None
+                meta_extra = {
+                    "scorecard_source": "run_experiments",
+                    "gold_injected": gold_injected,
+                    "gold_path": gold_path_str,
+                    "outputs_sha256": hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
+                }
+                scorecard = make_scorecard(payload, extra_allow=allow_terms, meta_extra=meta_extra)
+                if gold_injected:
                     scorecard.setdefault("inputs", {})["gold_tuples"] = uid_to_gold[normalized.uid]
                 meta = scorecard.get("meta", {})
                 meta.update(
@@ -872,8 +981,8 @@ def main():
         run_errors_path = cfg.get("pipeline", {}).get("errors_path") or default_errors_path(run_id_mode, m)
         print(f"Errors (if any) are logged to {run_errors_path}")
 
-        # Update manifest with final integrity info (demo overlap counts, forbid_hashes source)
-        if total_demo_overlap_removed > 0 or enable_demo_hash_filter or data_roles.get("report_sources") is not None or data_roles.get("blind_sources") is not None:
+        # Update manifest with final integrity info (demo overlap counts, missing_label_count, forbid_hashes source)
+        if total_demo_overlap_removed > 0 or enable_demo_hash_filter or missing_label_count > 0 or data_roles.get("report_sources") is not None or data_roles.get("blind_sources") is not None:
             try:
                 primary_manifest = outdir / "manifest.json"
                 if primary_manifest.exists():
@@ -881,6 +990,7 @@ def main():
                     manifest_data.setdefault("integrity", {})
                     manifest_data["integrity"]["demo_overlap_removed"] = total_demo_overlap_removed
                     manifest_data["integrity"]["demo_hash_filter_enabled"] = enable_demo_hash_filter
+                    manifest_data["integrity"]["missing_label_count"] = missing_label_count
                     if data_roles.get("report_sources") is not None or data_roles.get("blind_sources") is not None:
                         manifest_data["integrity"]["forbid_hashes_source"] = {
                             "report_sources": data_roles.get("report_sources"),
@@ -893,6 +1003,7 @@ def main():
                     backup_data.setdefault("integrity", {})
                     backup_data["integrity"]["demo_overlap_removed"] = total_demo_overlap_removed
                     backup_data["integrity"]["demo_hash_filter_enabled"] = enable_demo_hash_filter
+                    backup_data["integrity"]["missing_label_count"] = missing_label_count
                     if data_roles.get("report_sources") is not None or data_roles.get("blind_sources") is not None:
                         backup_data["integrity"]["forbid_hashes_source"] = {
                             "report_sources": data_roles.get("report_sources"),

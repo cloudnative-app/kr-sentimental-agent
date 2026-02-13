@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Dict, List, Optional
 
 from schemas import DebateOutput, DebatePersona, DebateRound, DebateSummary, DebateTurn, ProcessTrace
@@ -8,43 +9,50 @@ from tools.llm_runner import run_structured, StructuredResult
 from tools.prompt_spec import PromptSpec
 from agents.prompts import load_prompt
 
+# Role-based memory access: only CJ sees DEBATE_CONTEXT__MEMORY (noise reduction).
+DEFAULT_SLOT_MEMORY_NAME = "DEBATE_CONTEXT__MEMORY"
+MEMORY_SLOT_PRESENT_FOR = ["cj"]  # EPM/TAN get context without memory slot.
+
 
 class DebateOrchestrator:
     """
-    Orchestrates a pro/con debate with planning + reflection steps and a judge summary.
+    EPM → TAN → CJ annotation correctors. Patch-only output; no pro/con battle.
+    Goal: tuple set converges to one consistent answer. 1 round (EPM→TAN→CJ) by default.
+    Memory: DEBATE_CONTEXT__MEMORY is exposed only to CJ (epm/tan get context without it).
     """
 
     def __init__(self, backbone: Optional[BackboneClient] = None, config: Optional[Dict] = None):
         self.backbone = backbone or BackboneClient()
         cfg = config or {}
-        self.rounds = int(cfg.get("rounds", 2))
-        self.order = list(cfg.get("order") or ["analyst", "critic", "empath"])
+        self.rounds = int(cfg.get("rounds", 1))
+        self.order = list(cfg.get("order") or ["epm", "tan", "cj"])
         self.personas = self._build_personas(cfg.get("personas"))
+        self._slot_memory_name = str(cfg.get("slot_memory_name") or DEFAULT_SLOT_MEMORY_NAME)
 
     def _build_personas(self, override: Optional[Dict]) -> Dict[str, DebatePersona]:
         if isinstance(override, dict) and override:
             return {k: DebatePersona(**v) for k, v in override.items()}
         return {
-            "analyst": DebatePersona(
-                name="분석가 패널",
-                stance="neutral",
-                role="분석가",
-                style="건조하고 근거 중심",
-                goal="증거 기반으로 중립적 판단 제시",
+            "epm": DebatePersona(
+                name="EPM",
+                role="Evidence–Polarity Mapper",
+                goal="Determine polarity only when supported by explicit textual evidence",
+                stance="",
+                style="",
             ),
-            "empath": DebatePersona(
-                name="공감가 패널",
-                stance="pro",
-                role="공감가",
-                style="따뜻하고 감성적",
-                goal="긍정/지지적 맥락을 강화",
+            "tan": DebatePersona(
+                name="TAN",
+                role="Target–Aspect Normalizer",
+                goal="Resolve null, duplicate, or misaligned aspect targets",
+                stance="",
+                style="",
             ),
-            "critic": DebatePersona(
-                name="비평가 패널",
-                stance="con",
-                role="비평가",
-                style="날카롭고 논리적",
-                goal="부정/비판적 맥락을 강화",
+            "cj": DebatePersona(
+                name="CJ",
+                role="Consistency Judge",
+                goal="Produce a single, consistent set of aspect–polarity tuples",
+                stance="",
+                style="",
             ),
         }
 
@@ -53,15 +61,33 @@ class DebateOrchestrator:
             return "없음"
         lines = []
         for t in turns:
-            lines.append(f"- {t.speaker}({t.stance}): {t.message}")
+            agent = t.agent or t.speaker or "?"
+            if getattr(t, "proposed_edits", None):
+                for e in t.proposed_edits:
+                    lines.append(f"- {agent}: {e.op} target={e.target} value={getattr(e, 'value', None)} evidence={getattr(e, 'evidence', None)}")
+            else:
+                lines.append(f"- {agent}: {t.message or '(no proposed_edits)'}")
         return "\n".join(lines)
 
-    def _normalize_turn(self, turn: DebateTurn, persona: DebatePersona) -> DebateTurn:
+    def _normalize_turn(self, turn: DebateTurn, persona: DebatePersona, speaker_key: str) -> DebateTurn:
+        if not turn.agent:
+            turn.agent = persona.name or speaker_key.upper()
         if not turn.speaker:
-            turn.speaker = persona.name
-        if not turn.stance:
-            turn.stance = persona.stance
+            turn.speaker = persona.name or speaker_key.upper()
         return turn
+
+    def _context_json_for_persona(self, context_json: str, speaker_key: str) -> str:
+        """CJ-only memory: EPM/TAN get context without DEBATE_CONTEXT__MEMORY; CJ gets full context."""
+        if speaker_key in ("epm", "tan"):
+            try:
+                ctx = json.loads(context_json)
+                if isinstance(ctx, dict):
+                    ctx = dict(ctx)
+                    ctx.pop(self._slot_memory_name, None)
+                    return json.dumps(ctx, ensure_ascii=False)
+            except (TypeError, ValueError):
+                pass
+        return context_json
 
     def run(
         self,
@@ -86,11 +112,12 @@ class DebateOrchestrator:
                 if not persona:
                     continue
                 history = self._format_history(turns)
+                persona_context = self._context_json_for_persona(context_json, speaker_key)
                 system_prompt = (
                     f"{system_base}\n\n"
                     f"[TOPIC]\n{topic}\n\n"
                     f"[PERSONA]\n{persona.model_dump_json()}\n\n"
-                    f"[SHARED_CONTEXT_JSON]\n{context_json}\n\n"
+                    f"[SHARED_CONTEXT_JSON]\n{persona_context}\n\n"
                     f"[HISTORY]\n{history}\n"
                 )
                 spec = PromptSpec(
@@ -112,7 +139,7 @@ class DebateOrchestrator:
                     use_mock=(getattr(self.backbone, "provider", "mock") == "mock"),
                     prompt_spec=spec,
                 )
-                turn = self._normalize_turn(result.model, persona)
+                turn = self._normalize_turn(result.model, persona, speaker_key)
                 turns.append(turn)
                 round_turns.append(turn)
                 trace.append(
@@ -126,9 +153,11 @@ class DebateOrchestrator:
                 )
             rounds.append(DebateRound(round_index=round_idx, turns=round_turns))
 
+        # Judge (CJ role) sees full context including DEBATE_CONTEXT__MEMORY
+        judge_context = self._context_json_for_persona(context_json, "cj")
         judge_prompt = (
             load_prompt("debate_judge")
-            + f"\n\n[TOPIC]\n{topic}\n\n[SHARED_CONTEXT_JSON]\n{context_json}\n\n[ALL_TURNS]\n"
+            + f"\n\n[TOPIC]\n{topic}\n\n[SHARED_CONTEXT_JSON]\n{judge_context}\n\n[ALL_TURNS]\n"
             + self._format_history(turns)
         )
         judge_spec = PromptSpec(

@@ -1,0 +1,5 @@
+transition_type,meaning,count,rate
+Fix,S1 오답 → S2 정답,0,
+Keep,S1 정답 → S2 정답 유지,0,
+Break,S1 정답 → S2 오답(망침),0,
+Still Wrong,S1 오답 → S2 오답 유지,0,

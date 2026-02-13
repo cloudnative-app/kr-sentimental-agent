@@ -1,0 +1,175 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Run Report - beta_n50_c1__seed123_proposed</title><style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1, h2 { margin-bottom: 6px; }
+    .badge { padding: 6px 10px; border-radius: 6px; color: white; display: inline-block; }
+    .PASS { background: #2e8b57; }
+    .WARN { background: #f0ad4e; }
+    .FAIL { background: #d9534f; }
+    .NA { background: #777; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+    th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; vertical-align: top; }
+    th { background: #f5f5f5; }
+    details { margin: 10px 0; }
+    .warning-banner { background: #fff3cd; border: 2px solid #f0ad4e; padding: 12px; margin: 12px 0; border-radius: 6px; }
+    .error-banner { background: #f8d7da; border: 2px solid #d9534f; padding: 12px; margin: 12px 0; border-radius: 6px; }
+    </style></head><body><h1>Run Report: beta_n50_c1__seed123_proposed</h1><div><strong>Timestamp:</strong> 2026-02-11T09:26:57.833649Z &nbsp; <strong>cfg_hash:</strong> 215dc4ad8e00c5204b5f3da6586a5207095983b83bbe0b191069609c0268b21b &nbsp; <strong>backbone:</strong> gpt-4.1-mini &nbsp; <strong>purpose:</strong> paper</div><h2>Overall Verdict <span class="badge FAIL">FAIL</span></h2><table><thead><tr><th>Gate</th><th>Value</th><th>Verdict</th><th>Thresholds</th><th>Meaning</th><th>Criterion</th></tr></thead><tbody><tr><td>parse_failed_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.02}; warn: {'lte': 0.02}; pass: {'lte': 0.005}</td><td>출력 파싱 실패 비율</td><td>스키마/포맷 붕괴 여부의 1차 스모크 지표</td></tr><tr><td>generate_failed_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.01}; warn: {'lte': 0.01}; pass: {'lte': 0.003}</td><td>LLM 호출/생성 실패 비율</td><td>런 안정성(레이트리밋/네트워크/모델 오류) 지표</td></tr><tr><td>fallback_used_rate</td><td>0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.01}</td><td>fallback 사용 비율</td><td>정상 경로 실패를 우회한 정도(품질 리스크)</td></tr><tr><td>empty_output_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>빈 출력 비율(aspect 0개 등)</td><td>실질적 무응답/측정불능 비율</td></tr><tr><td>latency_ms_p95</td><td>57547.649999999994</td><td>WARN</td><td>fail: {'gt': 15000}; warn: {'lte': 15000}; pass: {'lte': 8000}</td><td>지연시간 p95 (ms)</td><td>운영 응답성/타임아웃 리스크 (paper/main: 엄격)</td></tr><tr><td>cost_usd_sum</td><td>0.53084</td><td>PASS</td><td>fail: {'gt': 15.0}; warn: {'lte': 15.0}; pass: {'lte': 5.0}</td><td>총 비용(USD)</td><td>런 단위 비용 상한선(운영 안전장치)</td></tr><tr><td>split_overlap_any_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.0}</td><td>split 간 중복 데이터 비율(train/valid/test 교집합)</td><td>일반화 검증 무결성(0이어야 함)</td></tr><tr><td>pass_rate</td><td>0.08</td><td>FAIL</td><td>fail: {'lt': 0.94}; warn: {'gte': 0.94}; pass: {'gte': 0.97}</td><td>전체 패스 비율(정의된 검증 기준 통과)</td><td>프레임워크 규칙 준수/구조적 타당도</td></tr><tr><td>valid_aspect_rate</td><td>0.96</td><td>PASS</td><td>fail: {'lt': 0.92}; warn: {'gte': 0.92}; pass: {'gte': 0.95}</td><td>유효 aspect 비율</td><td>aspect 추출의 기본 건전성</td></tr><tr><td>polarity_conflict_rate</td><td>0.38</td><td>FAIL</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>동일 aspect polarity 충돌 비율</td><td>구조적 일관성(상충 출력) 리스크</td></tr><tr><td>structural_risk_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.05}; warn: {'lte': 0.05}; pass: {'lte': 0.02}</td><td>Structural Risk 비율</td><td>규칙 기반 구조 검증에서 위험 신호</td></tr><tr><td>targetless_rate</td><td>0.02</td><td>WARN</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>Targetless 비율</td><td>aspect/opinion/target 연결 붕괴</td></tr><tr><td>unanchored_rate</td><td>0.0</td><td>PASS</td><td>fail: {'gt': 0.03}; warn: {'lte': 0.03}; pass: {'lte': 0.01}</td><td>Unanchored 비율(span이 원문에 없거나 비정상)</td><td>추출 정합성(anchoring) 실패</td></tr><tr><td>self_consistency_exact</td><td></td><td>N/A</td><td>fail: {'lt': 0.9}; warn: {'gte': 0.9}; pass: {'gte': 0.95}</td><td>Self-consistency(동일 입력 반복 일치율)</td><td>출력 안정성/재현성</td></tr></tbody></table><details><summary>Ops table</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>split</th><th>n</th><th>parse_failed_rate</th><th>generate_failed_rate</th><th>fallback_used_rate</th><th>tokens_in_mean</th><th>tokens_out_mean</th><th>cost_usd_sum</th><th>latency_ms_p50</th><th>latency_ms_p95</th><th>retries_mean</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>valid</td><td>50</td><td>0</td><td>0</td><td>0</td><td>347.32</td><td>238.12</td><td>0.53084</td><td>27123.5</td><td>57547.649999999994</td><td>0</td></tr></tbody></table></details><details><summary>Top issues</summary><table><thead><tr><th>uid</th><th>split</th><th>case_type</th><th>runner_name</th><th>backbone_model_id</th><th>tokens_in</th><th>tokens_out</th><th>cost_usd</th><th>latency_ms</th><th>retries</th><th>flags</th><th>text_preview</th><th>raw_output_preview</th></tr></thead><tbody><tr><td>nikluge-sa-2022-train-01305</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>413</td><td>758</td><td>0.026869999999999998</td><td>79831</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "얼음정수기 기능",
+      "span": {"start": 0, "end": 8},
+      "normalized": "얼음정수기 기능",
+      "syntactic_head": "갖고 있어야",
+      "confidence": 0.95,
+      "rationale": "문</td></tr><tr><td>nikluge-sa-2022-train-02562</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>388</td><td>633</td><td>0.02287</td><td>63375</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "여드름용",
+      "span": {"start": 0, "end": 4},
+      "normalized": "여드름용",
+      "syntactic_head": "쳐발쳐발",
+      "confidence": 0.9,
+      "rationale": "텍스트 초반에 명사형 </td></tr><tr><td>nikluge-sa-2022-train-01235</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>391</td><td>588</td><td>0.02155</td><td>57828</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "음식물쓰레기",
+      "span": {"start": 7, "end": 13},
+      "normalized": "음식물쓰레기",
+      "syntactic_head": "고민인데",
+      "confidence": 0.95,
+      "rationale": "음식물쓰레기</td></tr><tr><td>nikluge-sa-2022-train-01247</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>349</td><td>102</td><td>0.00655</td><td>57205</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "가위",
+      "span": {"start": 6, "end": 8},
+      "normalized": "가위",
+      "syntactic_head": "정리했는데",
+      "confidence": 0.95,
+      "rationale": "문장에서 '가위로 정리했는</td></tr><tr><td>nikluge-sa-2022-train-00107</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>371</td><td>374</td><td>0.014929999999999999</td><td>49199</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "블루투스 제품",
+      "span": {"start": 11, "end": 17},
+      "normalized": "블루투스 제품",
+      "syntactic_head": "들어있어야",
+      "confidence": 0.95,
+      "rationale": "문장</td></tr><tr><td>nikluge-sa-2022-train-01875</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>349</td><td>414</td><td>0.01591</td><td>49163</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "주름",
+      "span": {"start": 0, "end": 2},
+      "normalized": "주름",
+      "syntactic_head": "관리",
+      "confidence": 0.9,
+      "rationale": "문장 내 '주름'은 피부 관리의 </td></tr><tr><td>nikluge-sa-2022-train-01356</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>376</td><td>550</td><td>0.02026</td><td>47913</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "피부결",
+      "span": {"start": 5, "end": 8},
+      "normalized": "피부결",
+      "syntactic_head": "중요한데",
+      "confidence": 1.0,
+      "rationale": "문장에서 '피부결이 중요한</td></tr><tr><td>nikluge-sa-2022-train-01621</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>369</td><td>548</td><td>0.02013</td><td>47837</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "인삼",
+      "span": {"start": 0, "end": 2},
+      "normalized": "인삼",
+      "syntactic_head": "촉진하고",
+      "confidence": 0.95,
+      "rationale": "인삼과 강황 발효 에너지가 </td></tr><tr><td>nikluge-sa-2022-train-00336</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>367</td><td>523</td><td>0.019360000000000002</td><td>45093</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "입",
+      "span": {"start": 0, "end": 1},
+      "normalized": "입",
+      "syntactic_head": "얼얼할정도로 강한 치약들은",
+      "confidence": 0.9,
+      "rationale": "문장에서 '입이</td></tr><tr><td>nikluge-sa-2022-train-00320</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>366</td><td>292</td><td>0.01242</td><td>44509</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "버블폼",
+      "span": {"start": 8, "end": 12},
+      "normalized": "버블폼",
+      "syntactic_head": "있어서",
+      "confidence": 0.95,
+      "rationale": "텍스트에 '#버블폼'으로</td></tr><tr><td>nikluge-sa-2022-train-01287</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>358</td><td>384</td><td>0.0151</td><td>42387</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "수용성 저분자 어류콜라겐성분",
+      "span": {"start": 0, "end": 14},
+      "normalized": "수용성 저분자 어류 콜라겐 성분",
+      "syntactic_head": "베이스로",
+      "confidence": 0.95,
+      </td></tr><tr><td>nikluge-sa-2022-train-00536</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>362</td><td>467</td><td>0.01763</td><td>40733</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "피부 단백질 구조",
+      "span": {"start": 0, "end": 9},
+      "normalized": "피부 단백질 구조",
+      "syntactic_head": "흡사한",
+      "confidence": 0.95,
+      "rationale": "본문</td></tr><tr><td>nikluge-sa-2022-train-00237</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>352</td><td>449</td><td>0.01699</td><td>40157</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "인체 적용 시험",
+      "span": {"start": 0, "end": 7},
+      "normalized": "인체 적용 시험",
+      "syntactic_head": "확인된",
+      "confidence": 0.95,
+      "rationale": "문장에서</td></tr><tr><td>nikluge-sa-2022-train-00189</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>368</td><td>312</td><td>0.01304</td><td>39167</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "작은사이즈의 #스틱비누",
+      "span": {"start": 5, "end": 18},
+      "normalized": "스틱비누",
+      "syntactic_head": "사용중인데",
+      "confidence": 0.95,
+      "rationale": "문</td></tr><tr><td>nikluge-sa-2022-train-00077</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>339</td><td>270</td><td>0.01149</td><td>39054</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "일류 기업",
+      "span": {"start": 3, "end": 7},
+      "normalized": "일류 기업",
+      "syntactic_head": "못하지",
+      "confidence": 0.95,
+      "rationale": "문장에서 '일류 기</td></tr><tr><td>nikluge-sa-2022-train-00028</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>347</td><td>446</td><td>0.01685</td><td>36078</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "각진 인생",
+      "span": {"start": 0, "end": 5},
+      "normalized": "각진 인생",
+      "syntactic_head": "좋고",
+      "confidence": 0.9,
+      "rationale": "문장 초반에 명사구로 </td></tr><tr><td>nikluge-sa-2022-train-02608</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>348</td><td>210</td><td>0.00978</td><td>35739</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "피부",
+      "span": {"start": 14, "end": 16},
+      "normalized": "피부",
+      "syntactic_head": "쫀쫀해지는",
+      "confidence": 0.95,
+      "rationale": "문장에서 '피부'가 '</td></tr><tr><td>nikluge-sa-2022-train-00969</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>343</td><td>330</td><td>0.013329999999999998</td><td>33906</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "아담한사이즈",
+      "span": {"start": 0, "end": 6},
+      "normalized": "아담한 사이즈",
+      "syntactic_head": "사랑스런",
+      "confidence": 0.9,
+      "rationale": "텍스트에서 '</td></tr><tr><td>nikluge-sa-2022-train-01128</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>348</td><td>300</td><td>0.01248</td><td>33282</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "자외선 차단",
+      "span": {"start": 0, "end": 6},
+      "normalized": "자외선 차단",
+      "syntactic_head": "찾으시면",
+      "confidence": 0.95,
+      "rationale": "문장 초반에 </td></tr><tr><td>nikluge-sa-2022-train-00643</td><td>valid</td><td>unknown</td><td>proposed</td><td>gpt-4.1-mini</td><td>349</td><td>236</td><td>0.01057</td><td>32221</td><td>0</td><td>{"parse_failed": false, "generate_failed": false, "fallback_used": false}</td><td></td><td>{
+  "aspects": [
+    {
+      "term": "99.9% 자연유래의 착한 성분들",
+      "span": {"start": 0, "end": 17},
+      "normalized": "자연유래 성분",
+      "syntactic_head": "안심하고 사용할 수 있는",
+      "confidence": 0.95,
+    </td></tr></tbody></table></details><details open><summary>Paper Table 3 (main results)</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>timestamp_utc</th><th>pass_rate</th><th>valid_aspect_rate</th><th>polarity_conflict_rate</th><th>unanchored_rate</th><th>self_consistency_exact</th><th>parse_failure_rate</th><th>generate_failure_rate</th><th>fallback_used_rate</th><th>cost_usd_mean</th><th>cost_usd_std</th><th>latency_ms_mean</th><th>latency_ms_std</th><th>tokens_in_mean</th><th>tokens_in_std</th><th>tokens_out_mean</th><th>tokens_out_std</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>2026-02-11T09:26:57.833649Z</td><td>0.08</td><td>0.96</td><td>0.38</td><td>0.0</td><td></td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0106168</td><td>0.00542604291910781</td><td>31934.44</td><td>13672.236870622159</td><td>347.32</td><td>18.163083438667567</td><td>238.12</td><td>175.52431626415753</td></tr></tbody></table></details><details open><summary>Paper Table 4 (failure breakdown)</summary><table><thead><tr><th>runner_name</th><th>backbone_model_id</th><th>structural_risk_rate</th><th>structural_risk</th><th>unanchored_rate</th><th>unanchored_aspect_term</th><th>targetless_rate</th><th>targetless</th><th>polarity_conflict_count</th><th>polarity_conflict_rate</th><th>parse_failed</th><th>generate_failed</th></tr></thead><tbody><tr><td>proposed</td><td>gpt-4.1-mini</td><td>0.0</td><td>0</td><td>0.0</td><td>0</td><td>0.02</td><td>1</td><td>19</td><td>0.38</td><td>0</td><td>0</td></tr></tbody></table></details></body></html>

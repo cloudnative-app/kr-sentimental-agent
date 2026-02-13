@@ -1,0 +1,413 @@
+{
+  "run_id": "experiment_mini4_validation_c2_t1_proposed",
+  "expected_count": 10,
+  "e2e_record_count": {
+    "outputs": 10,
+    "scorecards": 10,
+    "traces": 10,
+    "pass": true
+  },
+  "invariant_s1_fail": [
+    {
+      "text_id": "nikluge-sa-2022-train-02829",
+      "debate_summary_n": 1,
+      "final_result_n": 1,
+      "symdiff": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "debate_summary_n": 2,
+      "final_result_n": 2,
+      "symdiff": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01065",
+      "debate_summary_n": 2,
+      "final_result_n": 2,
+      "symdiff": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "debate_summary_n": 4,
+      "final_result_n": 4,
+      "symdiff": 8
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "debate_summary_n": 2,
+      "final_result_n": 1,
+      "symdiff": 3
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "debate_summary_n": 4,
+      "final_result_n": 4,
+      "symdiff": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "debate_summary_n": 5,
+      "final_result_n": 5,
+      "symdiff": 6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01557",
+      "debate_summary_n": 3,
+      "final_result_n": 3,
+      "symdiff": 6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02917",
+      "debate_summary_n": 3,
+      "final_result_n": 3,
+      "symdiff": 6
+    }
+  ],
+  "invariant_s2_fail": [
+    {
+      "text_id": "nikluge-sa-2022-train-02829",
+      "final_tuples_n": 1,
+      "final_aspects_n": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "final_tuples_n": 2,
+      "final_aspects_n": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00474",
+      "final_tuples_n": 1,
+      "final_aspects_n": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01065",
+      "final_tuples_n": 2,
+      "final_aspects_n": 2
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "final_tuples_n": 4,
+      "final_aspects_n": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "final_tuples_n": 1,
+      "final_aspects_n": 1
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "final_tuples_n": 4,
+      "final_aspects_n": 4
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "final_tuples_n": 5,
+      "final_aspects_n": 5
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01557",
+      "final_tuples_n": 3,
+      "final_aspects_n": 3
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02917",
+      "final_tuples_n": 3,
+      "final_aspects_n": 3
+    }
+  ],
+  "invariant_s3_fallbacks": [],
+  "override_applied_hint_evidence": [
+    {
+      "text_id": "nikluge-sa-2022-train-02829",
+      "aspect_term": "피부톤",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "aspect_term": "순한 성분",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "aspect_term": "자와선",
+      "valid_hint_count": 2,
+      "pos_score": 0,
+      "neg_score": 1.6,
+      "total": 1.6,
+      "margin": 1.6
+    }
+  ],
+  "neutral_only_breakdown": [
+    {
+      "text_id": "nikluge-sa-2022-train-00474",
+      "aspect_term": "인정",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "aspect_term": "싱크대거름망",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "aspect_term": "음식물쓰레기봉투",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "aspect_term": "옥수수전분",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "aspect_term": "친환경제품",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "aspect_term": "퀄리티",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "aspect_term": "이뽀여",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "자외선 차단효과",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "피부속",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "화이트 베이스",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "aspect_term": "블루 에센스",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "aspect_term": "와플모양의 순면패드",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "aspect_term": "피부 노폐물",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "aspect_term": "선스크린",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "aspect_term": "잔여감",
+      "valid_hint_count": 0,
+      "pos_score": 0,
+      "neg_score": 0,
+      "note": "hint_absent"
+    },
+    {
+      "_truncated": true,
+      "total_neutral_only": 22
+    }
+  ],
+  "memory_samples": [
+    {
+      "text_id": "nikluge-sa-2022-train-02829",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00474",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 0,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01065",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01557",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02917",
+      "retrieved_k": 3,
+      "exposed_to_debate": true,
+      "prompt_injection_chars": 1433,
+      "advisory_injection_gated": null,
+      "memory_block_reason": ""
+    }
+  ],
+  "metrics_pred_consistency": {
+    "pass": false,
+    "mismatches": [
+      {
+        "text_id": "nikluge-sa-2022-train-02829",
+        "scorecard_pairs": "피부톤|neutral",
+        "triptych_pairs": "피부톤|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-00797",
+        "scorecard_pairs": "순한 성분|neutral;자와선|neutral",
+        "triptych_pairs": "순한 성분|neutral;자와선|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-00474",
+        "scorecard_pairs": "인정|neutral",
+        "triptych_pairs": "|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-01065",
+        "scorecard_pairs": "주방|neutral;하루 한장|neutral",
+        "triptych_pairs": "주방|neutral;하루 한장|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-01233",
+        "scorecard_pairs": "싱크대거름망|neutral;옥수수전분|neutral;음식물쓰레기봉투|neutral;친환경제품|neutral",
+        "triptych_pairs": "싱크대거름망|neutral;옥수수전분|neutral;음식물쓰레기봉투|neutral;친환경제품|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-01230",
+        "scorecard_pairs": "퀄리티|neutral",
+        "triptych_pairs": "퀄리티|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-01089",
+        "scorecard_pairs": "블루 에센스|neutral;자외선 차단효과|neutral;피부속|neutral;화이트 베이스|neutral",
+        "triptych_pairs": "블루 에센스|neutral;자외선 차단효과|neutral;피부속|neutral;화이트 베이스|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-00692",
+        "scorecard_pairs": "선스크린|neutral;와플모양의 순면패드|neutral;잔여감|neutral;피부 노폐물|neutral;피부|neutral",
+        "triptych_pairs": "선스크린|neutral;와플모양의 순면패드|neutral;잔여감|neutral;피부 노폐물|neutral;피부|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-01557",
+        "scorecard_pairs": "가슴크림|neutral;미생물 발효기술|neutral;부작용|neutral",
+        "triptych_pairs": "가슴크림|neutral;미생물 발효기술|neutral;부작용 걱정|neutral"
+      },
+      {
+        "text_id": "nikluge-sa-2022-train-02917",
+        "scorecard_pairs": "수분 공급|neutral;수분보호막|neutral;촉촉하고 생기있게|neutral",
+        "triptych_pairs": "생기|neutral;수분 공급|neutral;수분보호막|neutral;촉촉|neutral"
+      }
+    ],
+    "scorecards_n": 10,
+    "triptych_n": 10
+  }
+}

@@ -10,8 +10,9 @@ scikit-learn>=1.5
 PyYAML>=6.0
 tqdm>=4.66
 
-# Analysis (memory growth plot)
+# Analysis (memory growth plot, IRR Fleiss kappa)
 matplotlib>=3.7
+statsmodels>=0.14  # for compute_irr.py Fleiss' kappa (optional)
 
 # Optional utils
 python-dotenv>=1.0

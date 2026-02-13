@@ -1,0 +1,167 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-00107,valid,unknown,proposed,gpt-4.1-mini,310,347,0.01351,38458,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""말이 안되고"",
+      ""evidence"": ""블루투스 제품마다 모조리 리시버가 들어있어야 하는 것도 말이 안되고"",
+ "
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,352,1057,0.035230000000000004,38148,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""얼음정수기 기능"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""기능"",
+      ""evidence"": ""얼음정수기 기능 이외에도 냉장고가 갖고 있어야 할 기본적인 기능은 물론이고"",
+      ""span"": ""얼음정수기 기"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,331,303,0.0124,34114,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""음식물쓰레기"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""고민"",
+      ""evidence"": ""여름철이라 #음식물쓰레기 때문에 늘 고민인데"",
+      ""span"": ""여름철이라 #음식물쓰레기 때문에 늘 고민인데"","
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,308,332,0.01304,33634,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""두피활력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""촉진"",
+      ""evidence"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"",
+      ""span"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"","
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,289,231,0.00982,33049,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""성분"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""착한"",
+      ""evidence"": ""99.9% 자연유래의 착한 성분들이라서 안심하고 사용할 수 있는"",
+      ""span"": ""착한 성분들이라서 안심하고 사용할 "
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,307,328,0.01291,32031,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""작은사이즈의 #스틱비누"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋네요"",
+      ""evidence"": ""작은사이즈의 #스틱비누 휴대하며 사용중인데 가지고 다니며 사용하니 아이들 손씻길때도 좋고 손씻고 땡기지 않아서"
+nikluge-sa-2022-train-02562,valid,unknown,proposed,gpt-4.1-mini,327,248,0.01071,31816,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 화장품"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""찾지 않게 되더라구요"",
+      ""evidence"": ""강한 #화장품을 찾지 않게 되더라구요"",
+      ""span"": ""강한 #화장품을 찾지 않게 되더라구요"""
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,316,370,0.01426,31553,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부결"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""중요한"",
+      ""evidence"": ""그만큼 피부결이 중요한데"",
+      ""span"": ""그만큼 피부결이 중요한데"",
+      ""confidence"": 0.9"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,283,319,0.012400000000000001,30317,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아담한사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""넘 사랑스런"",
+      ""evidence"": ""아담한사이즈 그리고 #프릴장식 까지 넘 사랑스런 #토끼인형"",
+      ""span"": ""아담한사이즈"",
+     "
+nikluge-sa-2022-train-02608,valid,unknown,proposed,gpt-4.1-mini,287,303,0.011959999999999998,29768,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""끈적이지 않게"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""않게"",
+      ""evidence"": ""끈적이지 않게 촉촉하게 스며들면서"",
+      ""span"": ""끈적이지 않게"",
+      ""confidence"": 0"
+nikluge-sa-2022-train-00320,valid,unknown,proposed,gpt-4.1-mini,306,108,0.0063,29001,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""건조하지도 않고"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋아서"",
+      ""evidence"": ""건조하지도 않고 너무 좋아서"",
+      ""span"": ""건조하지도 않고 너무 좋아서"",
+      ""confide"
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,289,396,0.01477,28470,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""주름"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""주름,미백,피부진정,보습을 #리뉴본달팽이크림 하나로 #피부관리"",
+      ""confidence"": 0.8,
+      ""rationale"": ""The text lists ski"
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,287,236,0.009949999999999999,28290,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""자외선 차단"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""물론이고"",
+      ""evidence"": ""자외선 차단은 물론이고 자연스러운 톤업되는 선케어를 찾으시면 요거 추천해요"",
+      ""span"": ""자외선 차단은"
+nikluge-sa-2022-train-00336,valid,unknown,proposed,gpt-4.1-mini,306,251,0.010589999999999999,28200,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 치약"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""입이 얼얼할정도로 강한"",
+      ""evidence"": ""입이 얼얼할정도로 강한 치약들은 코가찡 맵고 몸이 안좋은 기분인데"",
+      ""span"": ""입이 얼얼"
+nikluge-sa-2022-train-01804,valid,unknown,proposed,gpt-4.1-mini,274,201,0.00877,27787,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사용감"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""부드러운"",
+      ""evidence"": ""부드러운 사용감 최고네요"",
+      ""span"": ""부드러운 사용감 최고네요"",
+      ""confidence"": 0."
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,302,249,0.01049,26351,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""캐비아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""고가"",
+      ""evidence"": ""고가의 캐비아를 저렴한 가격에 마스크팩으로 피부관리를 할 수 있으니"",
+      ""span"": ""고가의 캐비아를 저렴한 가격에"
+nikluge-sa-2022-train-02964,valid,unknown,proposed,gpt-4.1-mini,293,189,0.0086,26213,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""밝기 처리"",
+      ""polarity"": ""neutral"",
+      ""evidence"": ""요렇게 밝기 처리하면 잘 보이려나"",
+      ""span"": ""요렇게 밝기 처리하면 잘 보이려나"",
+      ""confidence"": 0.8,
+      ""rationale"
+nikluge-sa-2022-train-01800,valid,unknown,proposed,gpt-4.1-mini,299,256,0.010669999999999999,25774,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""컴퓨터 하는곳"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""덥고 답답했는데"",
+      ""evidence"": ""컴퓨터 하는곳이 막혀 있어 벌써부터 일하다 보면 덥고 답답했는데"",
+      ""span"": ""컴퓨터 하는곳이"
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,286,131,0.006790000000000001,25687,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""뒷백"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""별롤세"",
+      ""evidence"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""span"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""confidence"""
+nikluge-sa-2022-train-01112,valid,unknown,proposed,gpt-4.1-mini,280,127,0.0066099999999999996,24849,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋아요"",
+      ""evidence"": ""사이즈가 넉넉하게 나와서 오래입힐수 있어서 좋아요"",
+      ""span"": ""사이즈가 넉넉하게 나와서 오래입힐수 있어서 좋"

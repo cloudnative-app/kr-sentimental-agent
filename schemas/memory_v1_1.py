@@ -44,6 +44,12 @@ class CorrectionV1_1(BaseModel):
     anti_pattern: Optional[str] = Field(None, max_length=200)
 
 
+class OutcomeDeltaV1_1(BaseModel):
+    """Risk → action outcome: ΔF1 (when gold available), conflict_resolved, etc."""
+    delta_f1: Optional[float] = None
+    conflict_resolved: Optional[bool] = None
+
+
 class EvaluationV1_1(BaseModel):
     risk_before: RiskVectorV1_1
     risk_after: RiskVectorV1_1
@@ -66,6 +72,7 @@ class StageSnapshotPairV1_1(BaseModel):
 
 
 class EpisodicMemoryEntryV1_1(BaseModel):
+    """Episodic entry with risk→action mapping for content-strengthened memory (not just access)."""
     schema_version: Literal["1.1"] = "1.1"
     episode_id: str = Field(..., pattern=r"^epi_[0-9]{6,}$")
     episode_type: str = Field(..., pattern="^(success|harm|neutral)$")
@@ -76,6 +83,10 @@ class EpisodicMemoryEntryV1_1(BaseModel):
     correction: CorrectionV1_1
     evaluation: EvaluationV1_1
     provenance: ProvenanceV1_1
+    # Risk → action mapping (content strengthening)
+    risk_type: Optional[str] = Field(None, description="L3, conflict, implicit, etc.")
+    action_taken: Optional[str] = Field(None, description="polarity_flip, abstain, defer, confidence_reduce, neutral_fallback")
+    outcome_delta: Optional[OutcomeDeltaV1_1] = Field(None, description="ΔF1, conflict_resolved when available")
 
     def model_dump_for_store(self) -> Dict[str, Any]:
         """Export for store; must not contain raw_text."""

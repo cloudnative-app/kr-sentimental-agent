@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-02482,valid,unknown,proposed,gpt-4.1-mini,366,362,0.01452,60686,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""젤제형"",
+      ""span"": {""start"": 11, ""end"": 14},
+      ""normalized"": ""젤 제형"",
+      ""syntactic_head"": ""사용하기"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '젤제형'"
+nikluge-sa-2022-train-01914,valid,unknown,proposed,gpt-4.1-mini,359,443,0.01688,57982,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""세럼"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""세럼"",
+      ""syntactic_head"": ""담아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '세럼'이 '한병에 담"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,362,463,0.017509999999999998,57520,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부 단백질 구조"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""피부 단백질 구조"",
+      ""syntactic_head"": ""흡사한"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장"
+nikluge-sa-2022-train-00489,valid,unknown,proposed,gpt-4.1-mini,380,386,0.015380000000000001,53981,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""스포트라이트 조명"",
+      ""span"": {""start"": 11, ""end"": 19},
+      ""normalized"": ""스포트라이트 조명"",
+      ""syntactic_head"": ""쏴주는데"",
+      ""confidence"": 0.95,
+      ""rationale"": "
+nikluge-sa-2022-train-01721,valid,unknown,proposed,gpt-4.1-mini,369,373,0.01488,51450,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""룰"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""룰"",
+      ""syntactic_head"": ""이해못해서"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장에서 '&name&는 룰을 "
+nikluge-sa-2022-train-01320,valid,unknown,proposed,gpt-4.1-mini,366,400,0.01566,50004,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""pH 밸런스"",
+      ""span"": {""start"": 4, ""end"": 10},
+      ""normalized"": ""pH 밸런스"",
+      ""syntactic_head"": ""유지시켜주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-02916,valid,unknown,proposed,gpt-4.1-mini,357,497,0.018480000000000003,48983,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""자외선"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""자외선"",
+      ""syntactic_head"": ""자극받은"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '자외선과 폭염"
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,343,321,0.013059999999999999,48885,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""아담한사이즈"",
+      ""span"": {""start"": 0, ""end"": 6},
+      ""normalized"": ""아담한 사이즈"",
+      ""syntactic_head"": ""사랑스런"",
+      ""confidence"": 0.9,
+      ""rationale"": ""텍스트 초반에"
+nikluge-sa-2022-train-02909,valid,unknown,proposed,gpt-4.1-mini,363,327,0.013439999999999999,47954,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""까무잡잡한 부위"",
+      ""span"": {""start"": 0, ""end"": 8},
+      ""normalized"": ""까무잡잡한 부위"",
+      ""syntactic_head"": ""사용하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에"
+nikluge-sa-2022-train-01495,valid,unknown,proposed,gpt-4.1-mini,360,334,0.01362,47501,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""미세버블"",
+      ""span"": {""start"": 5, ""end"": 9},
+      ""normalized"": ""미세버블"",
+      ""syntactic_head"": ""제거해주고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""미세버블이 메이크업"
+nikluge-sa-2022-train-00203,valid,unknown,proposed,gpt-4.1-mini,340,281,0.01183,46159,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""약산성"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""약산성"",
+      ""syntactic_head"": ""맞춰주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에 명시된 "
+nikluge-sa-2022-train-02325,valid,unknown,proposed,gpt-4.1-mini,339,183,0.008879999999999999,44982,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""수분에센스겔타입"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""수분 에센스 겔 타입"",
+      ""syntactic_head"": ""타입"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장"
+nikluge-sa-2022-train-00037,valid,unknown,proposed,gpt-4.1-mini,341,256,0.01109,44935,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""배색"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""배색"",
+      ""syntactic_head"": ""무난하다"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '배색'이 '무난하"
+nikluge-sa-2022-train-01649,valid,unknown,proposed,gpt-4.1-mini,339,290,0.01209,43458,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""리무버"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""리무버"",
+      ""syntactic_head"": ""지울 수 있어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '리무버 "
+nikluge-sa-2022-train-02384,valid,unknown,proposed,gpt-4.1-mini,340,295,0.01225,43424,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""욕실"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""욕실"",
+      ""syntactic_head"": ""사용가능하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '욕실'이 다양"
+nikluge-sa-2022-train-01743,valid,unknown,proposed,gpt-4.1-mini,342,271,0.011549999999999998,42047,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""관심사"",
+      ""span"": {""start"": 6, ""end"": 9},
+      ""normalized"": ""관심사"",
+      ""syntactic_head"": ""요즘"",
+      ""confidence"": 0.9,
+      ""rationale"": ""문장에서 '나의 관심사'가 명"
+nikluge-sa-2022-train-00244,valid,unknown,proposed,gpt-4.1-mini,364,246,0.01102,40839,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마스킹 레이어링 앰플"",
+      ""span"": {""start"": 0, ""end"": 11},
+      ""normalized"": ""마스킹 레이어링 앰플"",
+      ""syntactic_head"": ""출시한"",
+      ""confidence"": 0.95,
+      ""rationale"""
+nikluge-sa-2022-train-01939,valid,unknown,proposed,gpt-4.1-mini,351,215,0.00996,40115,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""잔향"",
+      ""span"": {""start"": 11, ""end"": 13},
+      ""normalized"": ""잔향"",
+      ""syntactic_head"": ""오래가"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '잔향'이 '오래"
+nikluge-sa-2022-train-01813,valid,unknown,proposed,gpt-4.1-mini,338,300,0.012379999999999999,39761,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""블루진"",
+      ""span"": {""start"": 0, ""end"": 3},
+      ""normalized"": ""블루진"",
+      ""syntactic_head"": ""어울리지요"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '블루진'은 "
+nikluge-sa-2022-train-00617,valid,unknown,proposed,gpt-4.1-mini,363,288,0.01227,39182,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""향"",
+      ""span"": {""start"": 8, ""end"": 9},
+      ""normalized"": ""향"",
+      ""syntactic_head"": ""맡으면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '좋은 향 맡으면' 구문"

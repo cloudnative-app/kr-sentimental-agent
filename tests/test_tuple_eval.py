@@ -8,10 +8,13 @@ from __future__ import annotations
 import pytest
 
 from metrics.eval_tuple import (
+    gold_implicit_polarities_from_tuples,
     gold_row_to_tuples,
     gold_tuple_set_from_record,
     normalize_polarity,
+    precision_recall_f1_implicit_only,
     precision_recall_f1_tuple,
+    pred_valid_polarities_from_tuples,
     tuple_from_sent,
     tuple_sets_match_with_empty_rule,
     tuples_from_list,
@@ -28,7 +31,7 @@ def test_gold_row_to_tuples_new_format() -> None:
             {"aspect_ref": "가격", "aspect_term": "가격", "polarity": "neutral"},
         ],
     }
-    out = gold_row_to_tuples(row)
+    out, _ = gold_row_to_tuples(row)
     assert len(out) == 2
     assert out[0]["aspect_ref"] == "본품#다양성"
     assert out[0]["aspect_term"] == "마스크팩"
@@ -46,7 +49,7 @@ def test_gold_row_to_tuples_legacy_format() -> None:
             {"aspect_ref": "본품#다양성", "opinion_term": {"term": "마스크팩"}, "polarity": "positive"},
         ],
     }
-    out = gold_row_to_tuples(row)
+    out, _ = gold_row_to_tuples(row)
     assert len(out) == 1
     assert out[0]["aspect_ref"] == "본품#다양성"
     assert out[0]["aspect_term"] == "마스크팩"
@@ -63,8 +66,10 @@ def test_gold_tuple_set_same_for_both_formats() -> None:
         "uid": "x",
         "gold_triplets": [{"aspect_ref": "a", "opinion_term": {"term": "b"}, "polarity": "positive"}],
     }
-    set_new = set(tuple(t[k] for k in ("aspect_ref", "aspect_term", "polarity")) for t in gold_row_to_tuples(row_new))
-    set_legacy = set(tuple(t[k] for k in ("aspect_ref", "aspect_term", "polarity")) for t in gold_row_to_tuples(row_legacy))
+    lst_new, _ = gold_row_to_tuples(row_new)
+    lst_legacy, _ = gold_row_to_tuples(row_legacy)
+    set_new = set(tuple(t[k] for k in ("aspect_ref", "aspect_term", "polarity")) for t in (lst_new or []))
+    set_legacy = set(tuple(t[k] for k in ("aspect_ref", "aspect_term", "polarity")) for t in (lst_legacy or []))
     assert set_new == set_legacy
     assert set_new == {("a", "b", "positive")}
 
@@ -119,7 +124,7 @@ def test_gold_aspect_term_empty_preserved() -> None:
         "uid": "x",
         "gold_tuples": [{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive"}],
     }
-    out = gold_row_to_tuples(row)
+    out, _ = gold_row_to_tuples(row)
     assert len(out) == 1
     assert out[0]["aspect_term"] == ""
     assert out[0]["aspect_ref"] == "본품#품질"
@@ -130,6 +135,7 @@ def test_tuple_from_sent_implicit() -> None:
     """When is_implicit is True, aspect_term is \"\" (암시적 관점)."""
     sent = {"aspect_term": {"term": "추측", "span": {"start": 0, "end": 2}}, "polarity": "positive", "is_implicit": True}
     t = tuple_from_sent(sent)
+    assert t is not None
     assert t[1] == ""
     assert t[2] == "positive"
 
@@ -147,7 +153,7 @@ def test_tuples_from_list_includes_empty_aspect_term() -> None:
 
 
 def test_normalize_polarity() -> None:
-    """Polarity normalized: pos→positive, neg→negative, neu→neutral."""
+    """Polarity normalized: pos→positive, neg→negative, neu→neutral. Missing with default_missing=None → None."""
     assert normalize_polarity("pos") == "positive"
     assert normalize_polarity("positive") == "positive"
     assert normalize_polarity("neg") == "negative"
@@ -155,6 +161,8 @@ def test_normalize_polarity() -> None:
     assert normalize_polarity("neu") == "neutral"
     assert normalize_polarity("neutral") == "neutral"
     assert normalize_polarity(None) == "neutral"
+    assert normalize_polarity(None, default_missing=None) is None
+    assert normalize_polarity("", default_missing=None) is None
 
 
 def test_precision_recall_f1_empty_aspect_polarity_only() -> None:
@@ -177,3 +185,54 @@ def test_precision_recall_f1_empty_aspect_strict_no_match() -> None:
     prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_empty_aspect_by_polarity_only=False)
     assert f1 == 0.0
     assert tuple_sets_match_with_empty_rule(gold, pred, match_empty_aspect_by_polarity_only=False) is False
+
+
+# ---------- Implicit-only F1 and valid/invalid polarity (tuple_f1_s2_implicit_only, implicit_invalid_pred_rate) ----------
+
+
+def test_implicit_gold_one_pred_valid_one_f1_one() -> None:
+    """Implicit gold 1, pred polarity valid 1 → implicit F1 = 1.0, invalid count 0."""
+    gold = {("", "", "positive")}  # (aspect_ref, aspect_term, polarity) with aspect_term=""
+    pred = {("", "", "positive")}
+    g_pols = gold_implicit_polarities_from_tuples(gold)
+    p_pols, invalid = pred_valid_polarities_from_tuples(pred)
+    assert g_pols == ["positive"]
+    assert p_pols == ["positive"]
+    assert invalid == 0
+    _, _, f1 = precision_recall_f1_implicit_only(g_pols, p_pols)
+    assert f1 == 1.0
+
+
+def test_implicit_gold_one_pred_missing_polarity_invalid() -> None:
+    """Implicit gold 1, pred polarity missing → valid=0, invalid=1; implicit F1 uses empty pred set."""
+    gold = {("", "", "positive")}
+    pred = {("", "", "")}  # empty polarity
+    g_pols = gold_implicit_polarities_from_tuples(gold)
+    p_pols, invalid = pred_valid_polarities_from_tuples(pred)
+    assert g_pols == ["positive"]
+    assert p_pols == []
+    assert invalid == 1
+    _, _, f1 = precision_recall_f1_implicit_only(g_pols, p_pols)
+    assert f1 == 0.0
+
+
+def test_implicit_f1_set_based() -> None:
+    """Implicit-only F1 is set-based: gold {pos, neg}, pred {pos} → TP=1, FP=0, FN=1, rec=0.5, prec=1, F1=2/3."""
+    gold_pols = ["positive", "negative"]
+    pred_pols = ["positive"]
+    prec, rec, f1 = precision_recall_f1_implicit_only(gold_pols, pred_pols)
+    assert prec == 1.0
+    assert rec == 0.5
+    assert abs(f1 - 2.0 / 3.0) < 1e-6
+
+
+def test_pred_valid_polarities_rejects_unknown() -> None:
+    """Pred with polarity unknown/missing → valid list empty or partial, invalid count increased."""
+    pred_unknown = {("", "x", "unknown")}
+    p_pols, inv = pred_valid_polarities_from_tuples(pred_unknown)
+    assert p_pols == []
+    assert inv == 1
+    pred_mixed = {("", "a", "positive"), ("", "b", "")}
+    p_pols2, inv2 = pred_valid_polarities_from_tuples(pred_mixed)
+    assert p_pols2 == ["positive"]
+    assert inv2 == 1

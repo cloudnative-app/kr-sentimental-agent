@@ -1,0 +1,181 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01914,valid,unknown,proposed,gpt-4.1-mini,359,642,0.02285,110520,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""세럼"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""세럼"",
+      ""syntactic_head"": ""담아"",
+      ""confidence"": 1.0,
+      ""rationale"": ""문장 초반에 명시적으로 나열된 제"
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,349,223,0.01018,96171,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""99.9% 자연유래의 착한 성분들"",
+      ""span"": {""start"": 0, ""end"": 15},
+      ""normalized"": ""자연유래 성분"",
+      ""syntactic_head"": ""사용할 수 있다"",
+      ""confidence"": 0.95,
+      ""ra"
+nikluge-sa-2022-train-01320,valid,unknown,proposed,gpt-4.1-mini,366,396,0.01554,95127,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""pH 밸런스"",
+      ""span"": {""start"": 4, ""end"": 10},
+      ""normalized"": ""pH 밸런스"",
+      ""syntactic_head"": ""유지시켜주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00617,valid,unknown,proposed,gpt-4.1-mini,363,295,0.01248,92682,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""향"",
+      ""span"": {""start"": 9, ""end"": 10},
+      ""normalized"": ""향"",
+      ""syntactic_head"": ""맡으면"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '좋은 향 맡으면' 구"
+nikluge-sa-2022-train-02395,valid,unknown,proposed,gpt-4.1-mini,346,211,0.00979,88563,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""바닥"",
+      ""span"": {""start"": 7, ""end"": 9},
+      ""normalized"": ""바닥"",
+      ""syntactic_head"": ""앉지않고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서 '바닥에 앉지않고'"
+nikluge-sa-2022-train-01495,valid,unknown,proposed,gpt-4.1-mini,360,378,0.014940000000000002,88142,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""쫀쫀한 미세버블"",
+      ""span"": {""start"": 0, ""end"": 9},
+      ""normalized"": ""미세버블"",
+      ""syntactic_head"": ""제거해주고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '"
+nikluge-sa-2022-train-00735,valid,unknown,proposed,gpt-4.1-mini,382,424,0.01654,87939,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마더케이 물티슈"",
+      ""span"": {""start"": 1, ""end"": 9},
+      ""normalized"": ""마더케이 물티슈"",
+      ""syntactic_head"": ""뽑혀"",
+      ""confidence"": 0.95,
+      ""rationale"": ""제품명으로"
+nikluge-sa-2022-train-00489,valid,unknown,proposed,gpt-4.1-mini,380,380,0.015200000000000002,87438,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""스포트라이트 조명"",
+      ""span"": {""start"": 11, ""end"": 18},
+      ""normalized"": ""스포트라이트 조명"",
+      ""syntactic_head"": ""쏴주는데"",
+      ""confidence"": 0.95,
+      ""rationale"": "
+nikluge-sa-2022-train-00591,valid,unknown,proposed,gpt-4.1-mini,369,430,0.01659,87242,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""컨디션"",
+      ""span"": {""start"": 3, ""end"": 6},
+      ""normalized"": ""컨디션"",
+      ""syntactic_head"": ""안 좋고"",
+      ""confidence"": 0.95,
+      ""rationale"": ""텍스트에서 '컨디션도 안"
+nikluge-sa-2022-train-00173,valid,unknown,proposed,gpt-4.1-mini,372,398,0.01566,86604,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""#신생아아기띠"",
+      ""span"": {""start"": 4, ""end"": 11},
+      ""normalized"": ""신생아 아기띠"",
+      ""syntactic_head"": ""벗어나나"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서"
+nikluge-sa-2022-train-00746,valid,unknown,proposed,gpt-4.1-mini,377,297,0.01268,85348,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""물 사용량"",
+      ""span"": {""start"": 15, ""end"": 20},
+      ""normalized"": ""물 사용량"",
+      ""syntactic_head"": ""만만치 않은데"",
+      ""confidence"": 0.95,
+      ""rationale"": ""본문에서"
+nikluge-sa-2022-train-01105,valid,unknown,proposed,gpt-4.1-mini,362,480,0.01802,85293,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""모기"",
+      ""span"": {""start"": 0, ""end"": 2},
+      ""normalized"": ""모기"",
+      ""syntactic_head"": ""알러지반응"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '모기나 벌레에 "
+nikluge-sa-2022-train-02482,valid,unknown,proposed,gpt-4.1-mini,366,355,0.01431,84971,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""젤제형"",
+      ""span"": {""start"": 11, ""end"": 14},
+      ""normalized"": ""젤 제형"",
+      ""syntactic_head"": ""사용하기"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '젤제형'"
+nikluge-sa-2022-train-00770,valid,unknown,proposed,gpt-4.1-mini,363,304,0.01275,82983,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""피부관리"",
+      ""span"": {""start"": 15, ""end"": 18},
+      ""normalized"": ""피부 관리"",
+      ""syntactic_head"": ""하니"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '피부관리"
+nikluge-sa-2022-train-01761,valid,unknown,proposed,gpt-4.1-mini,362,292,0.01238,82628,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""아이라인 문신"",
+      ""span"": {""start"": 1, ""end"": 7},
+      ""normalized"": ""아이라인 문신"",
+      ""syntactic_head"": ""있어"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 내 '아"
+nikluge-sa-2022-train-01814,valid,unknown,proposed,gpt-4.1-mini,339,210,0.00969,81629,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""미백주름개선"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""미백 주름 개선"",
+      ""syntactic_head"": ""발라도"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 시작 "
+nikluge-sa-2022-train-02575,valid,unknown,proposed,gpt-4.1-mini,351,194,0.00933,81467,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""쫀쫀한 제형"",
+      ""span"": {""start"": 0, ""end"": 7},
+      ""normalized"": ""제형"",
+      ""syntactic_head"": ""좋아"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장에서 '쫀쫀한 제형'"
+nikluge-sa-2022-train-00244,valid,unknown,proposed,gpt-4.1-mini,364,372,0.0148,81328,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""마스킹 레이어링 앰플"",
+      ""span"": {""start"": 0, ""end"": 11},
+      ""normalized"": ""마스킹 레이어링 앰플"",
+      ""syntactic_head"": ""출시한"",
+      ""confidence"": 0.95,
+      ""rationale"""
+nikluge-sa-2022-train-00203,valid,unknown,proposed,gpt-4.1-mini,340,286,0.011980000000000001,80974,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""약산성"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""약산성"",
+      ""syntactic_head"": ""맞춰주는"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 첫 부분에 명시된 "
+nikluge-sa-2022-train-00448,valid,unknown,proposed,gpt-4.1-mini,335,198,0.00929,80957,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""aspects"": [
+    {
+      ""term"": ""악건성"",
+      ""span"": {""start"": 0, ""end"": 4},
+      ""normalized"": ""악건성"",
+      ""syntactic_head"": ""인데도"",
+      ""confidence"": 0.95,
+      ""rationale"": ""문장 초반에 명시된 피부 "

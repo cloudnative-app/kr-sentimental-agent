@@ -1,7 +1,7 @@
 # conditions_memory_v1_1 — 3조건(C1 / C2 / C2_silent)
 # 원칙: 에이전트 수/역할/토론 위치/모더레이터/입출력 포맷 불변
 # 차이: Debate 단계 DEBATE_CONTEXT__MEMORY 슬롯에 advisory 채움(ON) / 비움(OFF·silent) 만 다름
-# C2_silent: retrieval은 실행하되 주입만 마스킹(실행 경로·라운드·토큰 통제 목적)
+# C2_silent (C3 retrieval-only): retrieval은 실행(비용/지연 유지)하되 프롬프트에는 넣지 않음. 주입만 마스킹.
 #
 schema_version: "1.1"
 
@@ -84,4 +84,24 @@ conditions:
       memory_mode: "silent"
       retrieval_execute: true
       injection_mask: true
+      store_write: true
+
+  # CR(Conflict-Review) 전용
+  M0:
+    episodic_memory:
+      memory_mode: "off"
+      retrieval_execute: false
+      injection_mask: true
+      store_write: false
+  M1:
+    episodic_memory:
+      memory_mode: "on"
+      retrieval_execute: true
+      injection_mask: false
+      store_write: false
+  M2:
+    episodic_memory:
+      memory_mode: "on"
+      retrieval_execute: true
+      injection_mask: false
       store_write: true

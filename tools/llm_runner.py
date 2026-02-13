@@ -1,15 +1,88 @@
 from __future__ import annotations
 
 import json
+import logging
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Type, Dict, Any, Optional, TypeVar, Generic
+from typing import Type, Dict, Any, Optional, List, TypeVar, Generic, Tuple
 
 from pydantic import BaseModel, ValidationError
 
 from .backbone_client import BackboneClient
 from .prompt_spec import PromptSpec, DemoExample, OpenAIAdapter, ClaudeAdapter, GeminiAdapter
+from schemas.agent_outputs import (
+    normalize_polarity_distribution,
+    canonicalize_polarity_with_repair,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def _normalize_atsa_stage1_parsed(parsed: Dict[str, Any]) -> Tuple[Dict[str, Any], int, int]:
+    """
+    Normalize raw ATSA Stage1 parsed dict: aspect_term mapping, polarity whitelist/repair (edit distance 1~2).
+    Invalid polarity → None (sample invalid, run continues). Returns (parsed_dict, polarity_repair_count, polarity_invalid_count).
+    """
+    raw_items: List[Dict[str, Any]] = parsed.get("aspect_sentiments") or []
+    if not raw_items:
+        return (parsed, 0, 0)
+
+    normalized_items: List[Dict[str, Any]] = []
+    repair_count = 0
+    invalid_count = 0
+    for raw_item in raw_items:
+        # aspect_term: from aspect_term, aspect_ref, or opinion_term.term
+        aspect_term = raw_item.get("aspect_term")
+        if not aspect_term or not (aspect_term.get("term") if isinstance(aspect_term, dict) else None):
+            ref = raw_item.get("aspect_ref")
+            if isinstance(ref, str) and ref.strip():
+                aspect_term = {"term": ref.strip(), "span": {"start": 0, "end": 0}}
+            else:
+                ot = raw_item.get("opinion_term")
+                if isinstance(ot, dict) and ot.get("term"):
+                    aspect_term = {"term": (ot["term"] or "").strip(), "span": ot.get("span") or {"start": 0, "end": 0}}
+                elif isinstance(ot, dict) and isinstance(ref, str) and ref.strip():
+                    aspect_term = {"term": ref.strip(), "span": {"start": 0, "end": 0}}
+                else:
+                    aspect_term = {"term": "", "span": {"start": 0, "end": 0}}
+        if isinstance(aspect_term, dict) and not aspect_term.get("term") and raw_item.get("aspect_ref"):
+            aspect_term = {"term": (raw_item["aspect_ref"] or "").strip(), "span": aspect_term.get("span") or {"start": 0, "end": 0}}
+
+        # polarity: whitelist or edit-distance 1~2 repair; invalid → None, run continues
+        raw_pol = raw_item.get("polarity")
+        if raw_pol is None or (isinstance(raw_pol, str) and not raw_pol.strip()):
+            polarity = None
+            invalid_count += 1
+        else:
+            canon, was_repair = canonicalize_polarity_with_repair(raw_pol)
+            polarity = canon
+            if was_repair:
+                repair_count += 1
+            elif canon is None:
+                invalid_count += 1
+
+        confidence = raw_item.get("confidence")
+        if confidence is None:
+            confidence = 0.5
+        else:
+            try:
+                confidence = float(confidence)
+            except (TypeError, ValueError):
+                confidence = 0.5
+        confidence = max(0.0, min(1.0, confidence))
+
+        pol_dist = normalize_polarity_distribution(raw_item.get("polarity_distribution"))
+
+        normalized_items.append({
+            "aspect_term": aspect_term,
+            "polarity": polarity,
+            "evidence": raw_item.get("evidence") or "",
+            "confidence": confidence,
+            "polarity_distribution": pol_dist,
+            "is_implicit": bool(raw_item.get("is_implicit", False)),
+        })
+    return ({"aspect_sentiments": normalized_items}, repair_count, invalid_count)
 
 _semaphore_cache: Dict[int, threading.BoundedSemaphore] = {}
 _sem_lock = threading.Lock()
@@ -30,6 +103,8 @@ class StructuredResultMeta:
     tokens_out: Optional[int] = None
     cost_usd: Optional[float] = None
     usage_parse_failed: bool = False
+    polarity_repair_count: int = 0
+    polarity_invalid_count: int = 0
 
     def to_notes_str(self) -> str:
         """Format metadata for ProcessTrace.notes field."""
@@ -44,6 +119,8 @@ class StructuredResultMeta:
             "tokens_out": self.tokens_out,
             "cost_usd": self.cost_usd,
             "usage_parse_failed": self.usage_parse_failed,
+            "polarity_repair_count": self.polarity_repair_count,
+            "polarity_invalid_count": self.polarity_invalid_count,
         }, ensure_ascii=False)
 
 
@@ -262,7 +339,32 @@ def run_structured(
 
         try:
             parsed = json.loads(response)
+            # Stage1 ATSA: whitelist/repair polarity (edit distance 1~2); invalid → None, run continues
+            schema_name = getattr(schema, "__name__", "")
+            if schema_name == "AspectSentimentStage1Schema":
+                parsed, pol_repair, pol_invalid = _normalize_atsa_stage1_parsed(parsed)
+                result_meta.polarity_repair_count = (getattr(result_meta, "polarity_repair_count", 0) or 0) + pol_repair
+                result_meta.polarity_invalid_count = (getattr(result_meta, "polarity_invalid_count", 0) or 0) + pol_invalid
             validated_model = schema.model_validate(parsed)
+            # FIX-3: polarity mismatch guard for Stage1 ATSA
+            if schema_name == "AspectSentimentStage1Schema":
+                raw_items = (parsed.get("aspect_sentiments") or [])
+                for i, val_item in enumerate(getattr(validated_model, "aspect_sentiments", []) or []):
+                    if i >= len(raw_items):
+                        break
+                    expected_pol = raw_items[i].get("polarity")
+                    parsed_pol = getattr(val_item, "polarity", None)
+                    if expected_pol != parsed_pol:
+                        logger.error(
+                            "ATSA_POLARITY_MISMATCH",
+                            extra={
+                                "raw": expected_pol,
+                                "parsed": parsed_pol,
+                                "text_id": text_id or "",
+                                "index": i,
+                            },
+                        )
+                        assert expected_pol == parsed_pol, "ATSA polarity must match normalized raw polarity"
             # Success - return result with metadata
             return StructuredResult(model=validated_model, meta=result_meta)
         except json.JSONDecodeError as e:
@@ -296,6 +398,42 @@ def run_structured(
                     },
                 )
                 # Fatal error if real run
+                _raise_if_realrun_fallback(backbone, errors_path, run_id, text_id, stage, last_error, attempt, use_mock=use_mock)
+                fallback = schema.model_construct()
+                if hasattr(fallback, "meta") and isinstance(getattr(fallback, "meta"), dict):
+                    fallback.meta["llm_runner_error"] = last_error
+                return StructuredResult(model=fallback, meta=result_meta)
+            continue
+        except ValueError as e:
+            # ATSA normalizer: missing/invalid polarity (no neutral fallback)
+            last_error = f"atsa_parse_failed:{type(e).__name__}:{e}"
+            _log_error(
+                errors_path,
+                {
+                    "type": "atsa_parse_error",
+                    "run_id": run_id,
+                    "text_id": text_id,
+                    "stage": stage,
+                    "error": last_error,
+                    "attempt": attempt + 1,
+                    "response_snippet": last_response[:500],
+                },
+            )
+            attempt += 1
+            if attempt > max_retries:
+                result_meta.fallback_construct_used = True
+                result_meta.error = last_error
+                _log_error(
+                    errors_path,
+                    {
+                        "type": "fallback_construct",
+                        "run_id": run_id,
+                        "text_id": text_id,
+                        "stage": stage,
+                        "reason": last_error,
+                        "attempt": attempt,
+                    },
+                )
                 _raise_if_realrun_fallback(backbone, errors_path, run_id, text_id, stage, last_error, attempt, use_mock=use_mock)
                 fallback = schema.model_construct()
                 if hasattr(fallback, "meta") and isinstance(getattr(fallback, "meta"), dict):

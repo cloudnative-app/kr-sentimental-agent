@@ -1,0 +1,38 @@
+{
+  "n_aspects": 123,
+  "decision_applied_n": 64,
+  "decision_skip_n": 59,
+  "skipped_neutral_only_n": 59,
+  "low_signal_breakdown": {
+    "neutral_only": 59,
+    "low_signal": 0
+  },
+  "skip_reason_count": {
+    "neutral_only": 59
+  },
+  "skip_reason_rate": {
+    "neutral_only": 0.4797
+  },
+  "total_dist": {
+    "min": 0.0,
+    "mean": 0.7675,
+    "median": 0.8,
+    "p90": 1.6,
+    "p95": 1.6,
+    "max": 2.4
+  },
+  "margin_dist": {
+    "min": 0.0,
+    "mean": 0.7675,
+    "median": 0.8,
+    "p90": 1.6,
+    "p95": 1.6,
+    "max": 2.4
+  },
+  "threshold_near_rate": {
+    "total_in_min_total_minus_0_2_to_min_total_n": 0,
+    "total_near_rate": 0.0,
+    "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+    "margin_near_rate": 0.0
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "run_id": "experiment_real_n100_seed1_c2__seed1_proposed",
+  "timestamp_utc": "2026-02-09T03:24:32.172850Z",
+  "cfg_hash": "9a32cd1d89676abababe9bf46c7514c881177b87fa7739f967ecbb3bc75173b1",
+  "backbone_model_id": "gpt-4.1-mini",
+  "prompt_hashes": [
+    "375910d969806fc91734eaebab8d4acaf2574d84e1e74ff74f8df06749faf2b0",
+    "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "ea9918abbeadee43c90c8641ec4f8bb67c65148240509edbbc229b7d004c498a",
+    "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "0a2ba169f1e7ba4c5ff4fd67da7c05fd37528f652e80809d6b8fa963523426db",
+    "c89825940e65936476714aada778b9bc3fdc3dd27be7ec194a7640b9e367d0b4",
+    "3d89485913f21b66c73ee42dd740cfe0d9d5df55a5c19b2695229230e5944abe",
+    "4c9a60d16c5305df88c4a687cc849fab9a3dba52c5154c5989e502d3a5fbabfb",
+    "171832608d7193335fb39e224bf522f460e980445f95a7a21ab15e32a3b7c899",
+    "55362e6c538d843df727a5c6c46ccf47ccd1557942b4060a427d64a542a9e8a2",
+    "b84d9e881d31c005fe23ae0ee4fc53309de58a6df1d1dac0bd5c5b385b8a5c49"
+  ],
+  "purpose": "paper",
+  "artifacts": {
+    "manifest": true,
+    "scorecards": true,
+    "traces": true,
+    "smoke_outputs": false,
+    "manifest_bytes": 5138,
+    "scorecards_bytes": 8822157,
+    "traces_bytes": 6722547,
+    "smoke_outputs_bytes": null
+  },
+  "volume": {
+    "total_rows": 100,
+    "rows_by_split": {
+      "valid": 100
+    },
+    "rows_by_case_type": {
+      "unknown": 100
+    }
+  },
+  "reliability": {
+    "generate_failed_rate": 0.0,
+    "parse_failed_rate": 0.0,
+    "fallback_used_rate": 0.0,
+    "empty_output_rate": 1.0,
+    "avg_aspect_count": 0
+  },
+  "usage": {
+    "tokens_in_total": 34460,
+    "tokens_out_total": 21606,
+    "cost_usd_total": 0.99278,
+    "latency_ms_mean": 65364.82,
+    "latency_ms_p50": 64554.5,
+    "latency_ms_p95": 82361.15,
+    "retries_mean": 0
+  },
+  "integrity": {
+    "split_overlap_pairs": {
+      "train_valid": 0.0,
+      "train_test": 0.0,
+      "valid_test": 0.0
+    },
+    "split_overlap_any_rate": 0.0,
+    "split_overlap_notes": null,
+    "split_hash_counts": {
+      "train": 0,
+      "valid": 100,
+      "test": 0
+    }
+  }
+}

@@ -1,0 +1,3 @@
+| runner_name | backbone_model_id | structural_risk_rate | structural_risk | unanchored_rate | unanchored_aspect_term | targetless_rate | targetless | polarity_conflict_count | polarity_conflict_rate | parse_failed | generate_failed |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| proposed | gpt-4.1-mini | 0.000 | 0 | 0.000 | 0 | 0.020 | 1 | 18 | 0.360 | 0 | 0 |

@@ -1,0 +1,59 @@
+# mini4 C2 T2: 매우 완화 — "게이트가 문제인지 확정". l3_conservative=false (여기서만 해제).
+# T2: min_total=0.6, min_margin=0.3, min_target_conf=0.55
+run_purpose: paper
+run_id: experiment_mini4_validation_c2_t2
+run_mode: proposed
+
+pipeline:
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: true
+  enable_debate_override: true
+  leakage_guard: true
+  debate_override:
+    min_total: 0.6
+    min_margin: 0.3
+    min_target_conf: 0.55
+    l3_conservative: false
+
+episodic_memory:
+  condition: C2
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: mini4/train.csv
+  valid_file: mini4/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: mini4/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: true
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42]
+  concurrency: 1

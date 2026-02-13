@@ -1,0 +1,589 @@
+{
+  "run_id": "experiment_mini4_validation_c2_t0_proposed",
+  "cfg_hash": "e9490a184780b0040dd9908af759b490ad1b78a464c17a90f158d0a26e1eea8d",
+  "findings": [
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-02829_피부톤",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-02829 aspect=피부톤: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-02829",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_aspect_ref",
+              "value": "피부톤"
+            },
+            {
+              "op": "drop_tuple",
+              "value": null
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-00474_인정",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-00474 aspect=인정: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-00474",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "drop_tuple",
+              "value": null
+            },
+            {
+              "op": "set_aspect_ref",
+              "value": "인정"
+            },
+            {
+              "op": "drop_tuple",
+              "value": null
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01233_싱크대거름망",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01233 aspect=싱크대거름망: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01233",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01233_음식물쓰레기봉투",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01233 aspect=음식물쓰레기봉투: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01233",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01233_옥수수전분",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01233 aspect=옥수수전분: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01233",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01233_친환경제품",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01233 aspect=친환경제품: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01233",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01230_퀄리티",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01230 aspect=퀄리티: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01230",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_aspect_ref",
+              "value": "퀄리티"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01230_이뽀여",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01230 aspect=이뽀여: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01230",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_aspect_ref",
+              "value": "퀄리티"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01089_화이트_베이스",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01089 aspect=화이트 베이스: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01089",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01089_블루_에센스",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01089 aspect=블루 에센스: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01089",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01089_자외선_차단효과",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01089 aspect=자외선 차단효과: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01089",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step2_neutral_only_nikluge-sa-2022-train-01089_피부속",
+      "severity": "blocker",
+      "symptom": "text_id=nikluge-sa-2022-train-01089 aspect=피부속: proposed_edits에 set_polarity 등 있는데 polarity_hint 전부 neutral/None, valid_hint_count=0",
+      "expected": "set_polarity(value=positive|negative) → polarity_hint가 positive|negative로 기록",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "record_key": "nikluge-sa-2022-train-01089",
+        "json_path": "runtime.parsed_output.meta.debate_review_context.aspect_hints",
+        "observed_value": {
+          "polarity_hint_list": [
+            "neutral",
+            "neutral"
+          ],
+          "valid_hint_count": 0,
+          "pos_score": 0,
+          "neg_score": 0,
+          "proposed_edits_sample": [
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            },
+            {
+              "op": "set_polarity",
+              "value": "positive"
+            }
+          ]
+        }
+      },
+      "root_cause_hypothesis": "_build_debate_review_context에서 proposed_edits 항목이 dict일 때 getattr(e,'value',None) → None (수정: _edit_attr 사용)",
+      "fix_plan": "supervisor_agent._build_debate_review_context에서 edit 필드 읽기 시 dict/object 둘 다 지원 (_edit_attr)",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step3_signal_bug_T1",
+      "severity": "blocker",
+      "symptom": "T1: override_applied=0, skip_reason에 neutral_only/low_signal 존재 → total/margin 0",
+      "expected": "T1/T2 완화 시 applied 증가하거나, 증가 안 하면 신호 생성/매핑 버그",
+      "evidence": {
+        "file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\results\\experiment_mini4_validation_c2_t1_proposed\\override_gate_debug_summary.json",
+        "observed_value": {
+          "n_aspects": 25,
+          "decision_applied_n": 0,
+          "decision_skip_n": 25,
+          "skip_reason_count": {
+            "low_signal": 25
+          },
+          "skip_reason_rate": {
+            "low_signal": 1.0
+          },
+          "total_dist": {
+            "min": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "margin_dist": {
+            "min": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "threshold_near_rate": {
+            "total_in_min_total_minus_0_2_to_min_total_n": 0,
+            "total_near_rate": 0.0,
+            "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+            "margin_near_rate": 0.0
+          }
+        }
+      },
+      "root_cause_hypothesis": "polarity_hint가 neutral로 환원되는 버그 (proposed_edits dict 시 value 미읽음)",
+      "fix_plan": "polarity_hint 매핑 버그 수정 후 재측정",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "step3_signal_bug_T2",
+      "severity": "blocker",
+      "symptom": "T2: override_applied=0, skip_reason에 neutral_only/low_signal 존재 → total/margin 0",
+      "expected": "T1/T2 완화 시 applied 증가하거나, 증가 안 하면 신호 생성/매핑 버그",
+      "evidence": {
+        "file": "C:\\Users\\wisdo\\Documents\\kr-sentimental-agent\\results\\experiment_mini4_validation_c2_t2_proposed\\override_gate_debug_summary.json",
+        "observed_value": {
+          "n_aspects": 24,
+          "decision_applied_n": 0,
+          "decision_skip_n": 24,
+          "skip_reason_count": {
+            "low_signal": 24
+          },
+          "skip_reason_rate": {
+            "low_signal": 1.0
+          },
+          "total_dist": {
+            "min": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "margin_dist": {
+            "min": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "max": 0.0
+          },
+          "threshold_near_rate": {
+            "total_in_min_total_minus_0_2_to_min_total_n": 0,
+            "total_near_rate": 0.0,
+            "margin_in_min_margin_minus_0_2_to_min_margin_n": 0,
+            "margin_near_rate": 0.0
+          }
+        }
+      },
+      "root_cause_hypothesis": "polarity_hint가 neutral로 환원되는 버그 (proposed_edits dict 시 value 미읽음)",
+      "fix_plan": "polarity_hint 매핑 버그 수정 후 재측정",
+      "status": "fixed"
+    },
+    {
+      "finding_id": "integrity_outputs_count",
+      "severity": "major",
+      "symptom": "outputs.jsonl 레코드 수 7 (기대 10)",
+      "expected": "10",
+      "evidence": {
+        "file": "outputs.jsonl",
+        "observed_value": 7
+      },
+      "root_cause_hypothesis": "dataset 또는 run 설정",
+      "fix_plan": "mini4 valid 10 샘플 확인",
+      "status": "open"
+    },
+    {
+      "finding_id": "integrity_scorecards_count",
+      "severity": "major",
+      "symptom": "scorecards.jsonl 레코드 수 7 (기대 10)",
+      "expected": "10",
+      "evidence": {
+        "file": "scorecards.jsonl",
+        "observed_value": 7
+      },
+      "root_cause_hypothesis": "scorecard 생성 누락",
+      "fix_plan": "run 시 scorecard 1:1 기록",
+      "status": "open"
+    },
+    {
+      "finding_id": "e2e_7_vs_10_cause",
+      "severity": "blocker",
+      "symptom": "감사 시점 outputs/scorecards/traces 레코드 수 7 (기대 10). SoT/메트릭/게이트 판정에 샘플링 편향 가능.",
+      "expected": "manifest processing_count=10, valid=10; 10/10 기록.",
+      "evidence": {
+        "file": "manifest.json",
+        "record_key": "dataset",
+        "json_path": "dataset.processing_count, dataset.split_counts.valid",
+        "observed_value": "processing_count=10, valid=10; run_experiments에 max_examples/early_stop/profile_filter로 7 제한 없음"
+      },
+      "root_cause_hypothesis": "런 중단(예외/타임아웃/레이트리밋/재시도 실패). config가 7을 만드는 조건 없음.",
+      "fix_plan": "재실행으로 10/10 확보 후에만 아래 항목 PASS 판정. 원인 규명 시 run_experiments 로그 확인.",
+      "status": "open"
+    }
+  ],
+  "summary": {
+    "blocker": 15,
+    "major": 2,
+    "minor": 0,
+    "fixed": 14,
+    "note": "Fixed 건수는 재현 증거(커밋 해시/재실행 결과)로 검증 전까지 수정 반영 수준으로만 기술."
+  }
+}

@@ -1,0 +1,174 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-train-01305,valid,unknown,proposed,gpt-4.1-mini,352,1101,0.03655,80972,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""얼음정수기 기능"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""있어야 할 기본적인 기능은 물론이고"",
+      ""evidence"": ""얼음정수기 기능 이외에도 냉장고가 갖고 있어야 할 기본적인 기능은 물론이고"",
+     "
+nikluge-sa-2022-train-01621,valid,unknown,proposed,gpt-4.1-mini,308,332,0.01304,33803,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""두피활력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""촉진"",
+      ""evidence"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"",
+      ""span"": ""인삼과 강황 발효 에너지가 두피활력을 촉진하고"","
+nikluge-sa-2022-train-00189,valid,unknown,proposed,gpt-4.1-mini,307,269,0.011139999999999999,32181,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""작은사이즈의 #스틱비누"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""좋고"",
+      ""evidence"": ""작은사이즈의 #스틱비누 휴대하며 사용중인데 가지고 다니며 사용하니 아이들 손씻길때도 좋고"",
+      ""spa"
+nikluge-sa-2022-train-01961,valid,unknown,proposed,gpt-4.1-mini,267,118,0.006209999999999999,23921,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""번들거림"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""없어요"",
+      ""evidence"": ""번들거림이없어요"",
+      ""span"": ""0-7"",
+      ""confidence"": 0.95,
+      ""rati"
+nikluge-sa-2022-train-01128,valid,unknown,proposed,gpt-4.1-mini,287,236,0.009949999999999999,23411,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""자외선 차단"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""물론이고"",
+      ""evidence"": ""자외선 차단은 물론이고 자연스러운 톤업되는 선케어를 찾으시면 요거 추천해요"",
+      ""span"": ""자외선 차단은"
+nikluge-sa-2022-train-00536,valid,unknown,proposed,gpt-4.1-mini,302,320,0.012620000000000001,22665,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""캐비아"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""고가"",
+      ""evidence"": ""고가의 캐비아를 저렴한 가격에 마스크팩으로 피부관리를 할 수 있으니"",
+      ""span"": ""고가의 캐비아"",
+      "
+nikluge-sa-2022-train-00969,valid,unknown,proposed,gpt-4.1-mini,283,296,0.011709999999999998,21950,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아담한사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""아담한"",
+      ""evidence"": ""아담한사이즈"",
+      ""span"": [0, 6],
+      ""confidence"": 0.95,
+      ""rat"
+nikluge-sa-2022-train-01112,valid,unknown,proposed,gpt-4.1-mini,280,217,0.009309999999999999,21495,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""사이즈"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""넉넉하게 나와서"",
+      ""evidence"": ""사이즈가 넉넉하게 나와서 오래입힐수 있어서 좋아요!!"",
+      ""span"": ""사이즈가 넉넉하게 나와서"",
+  "
+nikluge-sa-2022-train-00028,valid,unknown,proposed,gpt-4.1-mini,286,118,0.0063999999999999994,21307,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""뒷백"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""별롤세"",
+      ""evidence"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""span"": ""뒷백도 펄 같은 거 좀 별롤세"",
+      ""confidence"""
+nikluge-sa-2022-train-01356,valid,unknown,proposed,gpt-4.1-mini,316,366,0.01414,20934,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""피부결"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""중요한"",
+      ""evidence"": ""그만큼 피부결이 중요한데"",
+      ""span"": ""그만큼 피부결이 중요한데"",
+      ""confidence"": 0.9"
+nikluge-sa-2022-train-00987,valid,unknown,proposed,gpt-4.1-mini,278,129,0.00665,20925,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""아이립밤"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""안성맞춤"",
+      ""evidence"": ""엄마따라하기를 좋아하는 아이들에게 안성맞춤 #아이립밤"",
+      ""span"": ""안성맞춤 #아이립밤"",
+      ""c"
+nikluge-sa-2022-train-02562,valid,unknown,proposed,gpt-4.1-mini,327,248,0.01071,20666,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""강한 화장품"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""찾지 않게 되더라구요"",
+      ""evidence"": ""강한 #화장품을 찾지 않게 되더라구요"",
+      ""span"": ""강한 #화장품을 찾지 않게 되더라구요"""
+nikluge-sa-2022-train-01287,valid,unknown,proposed,gpt-4.1-mini,297,229,0.00984,20579,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""수분보충"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""보충해 주는"",
+      ""evidence"": ""수분보충과 동시에 탄력까지 보충해 주는 에센스에요"",
+      ""span"": ""수분보충과 동시에 탄력까지 보충해 주는"
+nikluge-sa-2022-train-01235,valid,unknown,proposed,gpt-4.1-mini,331,303,0.0124,20550,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""음식물쓰레기"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""고민"",
+      ""evidence"": ""여름철이라 #음식물쓰레기 때문에 늘 고민인데"",
+      ""span"": ""여름철이라 #음식물쓰레기 때문에 늘 고민인데"","
+nikluge-sa-2022-train-01800,valid,unknown,proposed,gpt-4.1-mini,299,256,0.010669999999999999,20466,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""컴퓨터 하는곳"",
+      ""polarity"": ""negative"",
+      ""opinion_term"": ""덥고 답답했는데"",
+      ""evidence"": ""컴퓨터 하는곳이 막혀 있어 벌써부터 일하다 보면 덥고 답답했는데"",
+      ""span"": ""컴퓨터 하는곳이"
+nikluge-sa-2022-train-02608,valid,unknown,proposed,gpt-4.1-mini,287,348,0.013309999999999999,20182,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""끈적이지 않게"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""끈적이지 않게"",
+      ""evidence"": ""끈적이지 않게 촉촉하게 스며들면서 피부 깊숙히 쫀쫀해지는 느낌"",
+      ""span"": ""끈적이지 않게"",
+"
+nikluge-sa-2022-train-01875,valid,unknown,proposed,gpt-4.1-mini,289,384,0.014410000000000001,19827,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""주름"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""주름,미백,피부진정,보습을 #리뉴본달팽이크림 하나로 #피부관리"",
+      ""confidence"": 0.9,
+      ""rationale"": ""The text lists ski"
+nikluge-sa-2022-train-02328,valid,unknown,proposed,gpt-4.1-mini,275,107,0.00596,19624,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""롱 귀걸이"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""땡기는"",
+      ""evidence"": ""오늘은 왠지 롱 귀걸이가 땡기는 날"",
+      ""span"": [6, 14],
+      ""confidence"": 0.9"
+nikluge-sa-2022-train-01751,valid,unknown,proposed,gpt-4.1-mini,278,92,0.00554,19526,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""발색력"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""짱 좋은"",
+      ""evidence"": ""발색력 짱 좋은"",
+      ""span"": ""발색력 짱 좋은"",
+      ""confidence"": 0.95,
+      "
+nikluge-sa-2022-train-00643,valid,unknown,proposed,gpt-4.1-mini,289,239,0.01006,19187,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""성분"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""착한"",
+      ""evidence"": ""99.9% 자연유래의 착한 성분들이라서 안심하고 사용할 수 있는"",
+      ""span"": ""99.9% 자연유래의 착한 성분들이"

@@ -1,0 +1,53 @@
+# CR-M0 (seeds 5): condition 2 용. L-M0 vs CR-M0 비교 시에는 seeds 3 사용(lm_n50_m0, cr_n50_m0).
+run_purpose: paper
+run_id: cr_n50_m0_s5
+run_mode: proposed
+
+pipeline:
+  protocol_mode: conflict_review_v1
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: false
+  enable_debate_override: false
+
+episodic_memory:
+  condition: M0
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: beta_n50/train.csv
+  valid_file: beta_n50/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: beta_n50/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456, 789, 101]
+  concurrency: 3

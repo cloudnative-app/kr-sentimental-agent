@@ -1,0 +1,2 @@
+run_id,n_gold_pairs,gold_empty_aspect_rate,gold_long_term_rate,gold_brand_like_rate,gold_taxonomy_like_rate
+experiment_real_n100_seed1_c1__seed1_proposed,106,0.49056603773584906,0.018867924528301886,0.018867924528301886,0.0

@@ -20,7 +20,12 @@ def _aggregate_label_from_sentiments(atsa_output: AspectSentimentStage1Schema) -
     if not sentiments:
         return ATEOutput(label="neutral", confidence=0.0, rationale="No sentiments detected.")
     best = max(sentiments, key=lambda s: s.confidence)
-    return ATEOutput(label=best.polarity, confidence=best.confidence, rationale=best.evidence or "")
+    pol = getattr(best, "polarity", None)
+    rationale = best.evidence or ""
+    if pol is None:
+        rationale = (rationale + " [missing polarity]").strip()
+        pol = "neutral"
+    return ATEOutput(label=pol, confidence=best.confidence, rationale=rationale)
 
 
 def _validator_summary(validator_output: object) -> ValidatorOutput:

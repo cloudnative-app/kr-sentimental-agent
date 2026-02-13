@@ -22,7 +22,7 @@ def test_negation_gate_removes_negation_when_no_trigger():
     agent = ValidatorAgent()
     sr = _build_structured_result()
 
-    gated = agent._apply_negation_gate("서비스가 매우 좋다", sr)
+    gated = agent._apply_negation_gate("서비스가 매우 좋다", sr, language_code="ko")
 
     risk_types = {r.type for r in gated.model.structural_risks}
     prop_types = {p.proposal_type for p in gated.model.correction_proposals}
@@ -36,7 +36,7 @@ def test_negation_gate_keeps_negation_when_trigger_present():
     agent = ValidatorAgent()
     sr = _build_structured_result()
 
-    gated = agent._apply_negation_gate("서비스가 좋지 않다", sr)
+    gated = agent._apply_negation_gate("서비스가 좋지 않다", sr, language_code="ko")
 
     risk_types = {r.type for r in gated.model.structural_risks}
     prop_types = {p.proposal_type for p in gated.model.correction_proposals}

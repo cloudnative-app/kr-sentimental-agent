@@ -1,6 +1,8 @@
 # How to Run — 퀵스타트·파이프라인·데이터·설정
 
-실험 실행 방법, `run_pipeline.py` 사용, **실험 무결성·데이터 누수 방지·실수 방지**를 위한 데이터 이용·분할·폴드·config 양식까지 한 문서에 정리합니다.
+실험 실행 방법, `run_pipeline.py` 사용, **실험 무결성·데이터 누수 방지·실수 방지**를 위한 데이터 이용·분할·config 양식, scorecard 경로 규칙, 정합성 체크리스트까지 한 문서에 정리합니다.
+
+**로컬 레포 구조 요약**: `scripts/`(run_pipeline, scorecard_from_smoke, structural_error_aggregator, consistency_checklist 등), `experiments/configs/`(실험 YAML·datasets), `experiments/scripts/run_experiments.py`, `results/<run_id>_<mode>/`, `reports/`. 상세는 `README.md` §프로젝트 구조.
 
 ---
 
@@ -103,12 +105,28 @@ check_experiment_config(--with_integrity_check 시) → provider_dry_run(선택)
 ### 2.5 실행 후 산출물
 
 - **run_pipeline** (또는 run_experiments만) 실행 시: `results/<run_id>_<mode>/` (seed 반복 시 `<run_id>`에 `__seed42` 등 포함)  
-  - manifest.json, traces.jsonl, scorecards.jsonl, outputs.jsonl  
+  - **manifest.json**, **traces.jsonl**, **scorecards.jsonl**(원본), **outputs.jsonl**  
+  - **(C2 시)** **episodic_store.jsonl** — run별 에피소드 메모리 스토어 (`results/<run_id>_<mode>/episodic_store.jsonl`). run_id별로 분리되어 이전 런의 메모리가 다른 런에 영향을 주지 않음.  
+  - **derived/** — metrics/(structural_metrics.csv), diagnostics/(inconsistency_flags.tsv, tuple_source_coverage.csv), tables/(triptych_table.tsv), scorecards/(smoke 재생성 시에만 사용)  
   - ops_outputs/, (paper 프로파일 시) paper_outputs/  
-  - (--with_metrics 시) derived/metrics/
-- HTML 리포트: `reports/<run_id>_<mode>/index.html` (시드별로 생성됨)
+  - (--with_metrics 시) derived/metrics/, reports/.../metric_report.html
+- HTML 리포트: `reports/<run_id>_<mode>/metric_report.html` (또는 index.html, 시드별로 생성됨)
 
-### 2.6 N회(seed) 실행 후 결과 머징 및 보고서 생성
+**Scorecard 경로 규칙**: `results/<run_id>/scorecards.jsonl`은 **원본(run_experiments)** 전용. smoke 재생성 시 **덮어쓰지 말고** `--out results/<run_id>/derived/scorecards/scorecards.smoke.jsonl` (또는 gold 주입 시 `scorecards.smoke.gold.jsonl`) 사용. 상세: `docs/scorecard_path_and_consistency_checklist.md`.
+
+### 2.6 논문용 테이블 (Tables 1–4)
+
+시드별 실행 및 메트릭 생성이 끝난 후, IP&M 스타일 논문 테이블을 생성한다:
+
+```powershell
+python scripts/build_paper_tables.py --base_run_id <base_run_id> --report md --out reports/paper_tables_<base_run_id>.md
+```
+
+- **예**: `--base_run_id beta_n50` → `results/beta_n50_c1__seed42_proposed`, `beta_n50_c2__seed42_proposed`, `beta_n50_c3__seed42_proposed`, `beta_n50_c2_eval_only__seed42_proposed` 등에서 `derived/metrics/structural_metrics.csv` 수집
+- **출력**: Table 1 (RQ1 Structural Error Control), Table 2 (RQ2 Inference Stability), Table 3 (Explicit-only F1), Table 4 (Implicit Subset) — mean (SD) over seeds, 최우수 조건 **굵게**
+- **상세**: `docs/Quick_start.md` §7 논문용 테이블 생성
+
+### 2.7 N회(seed) 실행 후 결과 머징 및 보고서 생성
 
 | 구분 | 담당 | 내용 |
 |------|------|------|
@@ -144,13 +162,49 @@ check_experiment_config(--with_integrity_check 시) → provider_dry_run(선택)
 3. **수동 절차 (선택)**  
    스크립트 없이 하려면: 시드별 scorecards를 이어붙인 뒤 `experiment_results_integrate.py --merged_scorecards`로 머지 메트릭만 생성하고, 시드별 CSV의 평균·표준편차·통합 보고서는 엑셀/스크립트로 직접 계산·작성.
 
-### 2.7 이미 실행된 런에서 스냅샷·리포트·메트릭만
+### 2.8 이미 실행된 런에서 스냅샷·리포트·메트릭만
 
 실험은 이미 돌렸고, 스냅샷·paper 테이블·HTML·메트릭만 다시 만들 때:
 
 ```powershell
 python scripts/experiment_results_integrate.py --run_dir results/<run_id>_proposed --with_metrics --metrics_profile paper_main
 ```
+
+### 2.9 정합성 체크리스트 (한 커맨드 GO/NO-GO)
+
+실행 후 source·gold·tuple path·sanity·inconsistency_flags·triptych 상위 n행을 한 번에 확인:
+
+```powershell
+python scripts/consistency_checklist.py --run_dir results/experiment_real_n100_seed1_c1_1__seed1_proposed --triptych_n 5
+```
+
+- **필수 체크**: meta.scorecard_source, gold_injected ⇒ inputs.gold_tuples, structural_metrics N_pred_*, sanity(gold→gold/final→final F1=1), inconsistency_flags==0, triptych 존재. 상세: `docs/scorecard_path_and_consistency_checklist.md`.
+
+### 2.10 Real N100 C1/C2/C3 순차 실행
+
+메모리 조건별 real n100 실험을 C1 → C2 → C3 순으로 돌리고 머지할 때:
+
+```powershell
+# PowerShell
+.\scripts\run_real_n100_c1_c2_c3.ps1
+```
+
+- 내부: run_pipeline으로 c1, c2, c3 각각 실행 후 `build_memory_condition_summary.py`로 머지 리포트 생성.  
+- 설정: `experiments/configs/experiment_real_n100_seed1_c1.yaml`, `_c2.yaml`, `_c3.yaml`.  
+- 상세 명령·경로: `docs/run_real_n100_c1_c2_c3_commands.md`.
+
+### 2.11 Real N100 C2 → C3 순차 실행 (run ID: c2_1, c3_1)
+
+C2(advisory) 다음 C3(retrieval-only)만 순차 실행하고, run ID를 **c2_1**, **c3_1**로 둘 때 (paper 프로파일 + 메트릭 포함):
+
+```powershell
+.\scripts\run_real_n100_c2_c3.ps1
+```
+
+- **C2**: `experiment_real_n100_seed1_c2.yaml` → run-id `experiment_real_n100_seed1_c2_1`  
+- **C3**: `experiment_real_n100_seed1_c3.yaml` → run-id `experiment_real_n100_seed1_c3_1`  
+- `--profile paper --with_metrics --metrics_profile paper_main` 적용.  
+- 결과: `results/experiment_real_n100_seed1_c2_1__seed1_proposed/`, `results/experiment_real_n100_seed1_c3_1__seed1_proposed/`, `reports/real_n100_c2_1_c3_1_summary.md`.
 
 ---
 
@@ -297,8 +351,21 @@ demo:
 | backbone | 필수 | provider, model. 스모크는 provider: mock, model: mock-model. |
 | data_roles | 권장(paper 필수) | demo_pool: [train], report_set/blind_set(fallback), **report_sources/blind_sources**(paper 필수). |
 | demo | 권장 | k: 0(본실험), seed: 42, hash_filter: true(paper). |
+| episodic_memory | C2/C3 시 | condition(C1/C2/C2_silent/C2_eval_only), **clear_store_at_run_start**(실행마다 스토어 비우기, 기본 false). store_path는 run_experiments가 `results/<run_id>_<mode>/episodic_store.jsonl`로 자동 주입. |
 
-### 5.3 스모크 vs 본실험(paper)
+### 5.3 에피소드 메모리 (episodic_memory, C2/C3 사용 시)
+
+- **run별 스토어**: run_experiments가 `store_path = results/<run_id>_<mode>/episodic_store.jsonl`로 자동 설정. run_id별로 파일이 분리되어 이전 런의 메모리가 다른 런에 영향을 주지 않음.
+- **실행마다 스토어 비우기**: 동일 run_id를 재실행할 때 이전 실행의 메모리가 로드되지 않게 하려면 config에 `clear_store_at_run_start: true`를 두면 됨 (기본값 false).
+
+```yaml
+episodic_memory:
+  clear_store_at_run_start: true   # 실행마다 스토어 비우기 (선택, 기본 false)
+```
+
+- condition(C1/C2/C2_silent/C2_eval_only)은 `memory.enable`·`memory.mode`로 자동 설정되며, 상세는 `docs/pipeline_stages_data_and_metrics_flow.md` §1.1 참고.
+
+### 5.4 스모크 vs 본실험(paper)
 
 | 항목 | 스모크 | 본실험(paper) |
 |------|--------|----------------|
@@ -308,7 +375,7 @@ demo:
 | dataset_root | allowed_roots 하위 | 동일 |
 | check_experiment_config | 선택 | **--strict 권장** |
 
-### 5.4 2-fold 설정 예 (minitest60_gold_fold0) : 이 실험구조에 폴드설정은 적합x, 사용 x
+### 5.5 2-fold 설정 예 (minitest60_gold_fold0) : 이 실험구조에 폴드설정은 적합x, 사용 x
 
 - valid_file 없이 train_file + test_file만 사용.
 - test_file이 곧 “이 폴드의 평가용 split” CSV. 골드는 같은 행에 대한 gold JSONL을 eval.gold_test_jsonl에 지정.
@@ -353,7 +420,7 @@ demo:
 
 - 폴드 1은 동일 구조로 train_file: valid/fold1_train.csv, test_file: valid/fold1_valid.csv, gold_test_jsonl: valid/fold1_valid.gold.jsonl, report_sources/blind_sources 동일, run_id: minitest60_fold1 등으로 config를 하나 더 두면 됨.
 
-### 5.5 experiment_mini / experiment_real (단일 고정 데이터 + seed 반복, 폴드 없음)
+### 5.6 experiment_mini / experiment_real (단일 고정 데이터 + seed 반복, 폴드 없음)
 
 - **정책 전환**: 반복 단위는 **폴드가 아닌 seed**. 동일 데이터셋에서 시드만 바꿔 N회 실행 후 seed 기준 집계. 상세: `docs/seed_repeat_policy.md`.
 
@@ -396,8 +463,11 @@ demo:
 
 - **Seed 반복 정책 (Fold → Seed 전환)**: `docs/seed_repeat_policy.md`
 - **실험 무결성·누수 관리 상세**: `docs/experiment_integrity_and_leakage_management.md`
+- **파이프라인 스테이지·데이터·메트릭 흐름·에피소드 메모리 격리**: `docs/pipeline_stages_data_and_metrics_flow.md`
 - **Tuple 평가 정의 (gold_tuples, tuple_f1)**: `docs/absa_tuple_eval.md`
-- **본실험 데이터 배치·생성**: `experiments/configs/datasets/real/README.md`
-- **README0**: `README0.md` (§6 파이프라인 러너·실행 구조·N회 머징, §7 빠른 실행, §8 기술적 기여사항)
+- **Scorecard 경로·정합성 체크리스트**: `docs/scorecard_path_and_consistency_checklist.md` (덮어쓰기 금지, meta.source, consistency_checklist)
+- **Real N100 C1/C2/C3 실행 명령**: `docs/run_real_n100_c1_c2_c3_commands.md`
+- **Betatest (C1/C2/C3/C2_eval, betatest_n50, seed=99)**: `docs/run_betatest_commands.md`
+- **본실험 데이터 배치·생성**: `experiments/configs/datasets/real/README.md`, `experiments/configs/datasets/real_n100_seed1/`
+- **README**: `README.md` (프로젝트 구조, 결과·경로 규칙, 관련 문서)
 - **origin vs 로컬 차이**: `docs/github_vs_local_diff.md`
-- **변경리포트 (A·C·D·E·F)**: `docs/change_report_A_C_D.md`

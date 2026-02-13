@@ -20,12 +20,12 @@
 - Validator가 비활성(`enable_validator=False`)이면 빈 StructuralValidatorStage1Schema가 trace에만 기록됨.
 - Stage1 결과는 `stage1_outputs`(ate, atsa, validator)로 보관되며, Stage2 입력으로 사용됨.
 
-### 1.2 토론 (Debate: 상호 논증/합의)
+### 1.2 토론 (Debate: EPM → TAN → CJ 패치)
 
 - **위치:** Stage1 이후, Stage2 이전  
-- **구성:** 분석가/공감가/비평가 패널(페르소나) + 심판  
-- **산출물:** `DebateOutput` (turns, summary, winner/consensus)  
-- **목적:** 상호 논증과 자기 반성(Planning/Reflection)을 통해 쟁점을 구조화하고, **Stage2 리뷰의 추가 컨텍스트**로 사용
+- **구성:** EPM(Evidence–Polarity Mapper), TAN(Target–Aspect Normalizer), CJ(Consistency Judge) 3명. **패치(proposed_edits)만 출력**, pro/con 대결 없음.  
+- **산출물:** `DebateOutput` (rounds, summary). summary: `final_patch`, `final_tuples`, `sentence_polarity`, `sentence_evidence_spans` 등.  
+- **목적:** EPM/TAN이 proposed_edits로 수정 제안, CJ가 final_patch/final_tuples로 일관된 aspect–polarity 집합을 만들어 **Stage2 리뷰의 추가 컨텍스트**로 사용
 
 ### 1.3 Stage2 (재분석: Validator 피드백 반영)
 
@@ -36,14 +36,13 @@
 | 3 | **Validator** | text, stage1_validator, … | StructuralValidatorStage2Schema | Stage2 재검증 |
 
 - Stage2 ATE/ATSA는 **Validator의 structural_risks와 correction_proposals를 프롬프트로 전달받아** 재분석만 수행하며, 전체 목록을 새로 생성하지 않음(`_enforce_stage2_review_only`로 aspects / aspect_sentiments 출력 금지).
-- **Debate review context(JSON)** 가 Stage2 프롬프트에 추가로 주입되어, **토론 반박 포인트를 review 항목에 매핑**하도록 유도합니다.  
+- **Debate review context(JSON)** 가 Stage2 프롬프트에 추가로 주입되어, **토론 proposed_edits/final_patch를 review 항목에 매핑**하도록 유도합니다.  
   - Stage1 ATE/ATSA의 aspect_terms를 기준으로 **정규화 매핑**(공백/구두점 제거)을 수행해 aspect_refs를 제공합니다.  
   - **동의어 힌트(synonym_hints)** 를 사용해 매칭 후보를 확장합니다 (`resources/patterns/ko.json`).  
-  - 각 rebuttal에 **speaker/stance 기반 weight + polarity_hint + provenance_hint**가 포함됩니다.  
-  - aspect_refs가 비어 있으면 **ATSA polarity 매칭 기반 fallback**을 적용합니다.  
+  - **proposed_edits**가 있으면 op·target·value에서 aspect_ref/aspect_term, polarity를 추출해 aspect_hints를 구성합니다.  
+  - proposed_edits가 없으면 legacy: message/key_points + speaker stance 기반 fallback.  
   - Stage2 적용 시 **review reason/evidence에 provenance_hint가 자동 삽입**됩니다 (LLM 의존 없음).  
   - review 항목에 `provenance` 필드가 존재하며, 토론 출처가 구조적으로 분리됩니다.
-  - aspect_refs가 없는 경우에도 speaker/stance를 참고해 보수적으로 추론합니다.
   - scorecard에는 `debate.mapping_stats` / `debate.mapping_coverage`가 기록됩니다.
   - quality_report / structural_error_aggregator 에서 debate 매핑 지표가 집계됩니다.
   - 매핑 실패 원인(`mapping_fail_reasons`: no_aspects/no_match/neutral_stance/fallback_used)이 scorecard 및 리포트에 기록됩니다.
@@ -144,8 +143,10 @@ Moderator는 **Rule 기반(LLM 없음)**. `agents/specialized_agents/moderator.p
 | **Rule C** | Validator veto: validator.suggested_label이 있고, (critical risk 또는 validator.confidence ≥ current_conf) 이면 validator 제안으로 덮음. |
 | **Rule A** | Span alignment: candidate_atsa와 stage1_atsa의 span IoU ≥ 0.8이고 레이블 일치 시 confidence 보정. (drop_guard일 때는 스킵) |
 | **Rule D** | Confidence tie-break: ate vs atsa 레이블이 다를 때 diff&lt;0.1이면 sentence ATE 우선, 아니면 confidence 큰 쪽 우선. |
+| **Rule E** | 토론 합의 힌트: debate_summary에서 레이블 추론. **우선순위:** (1) sentence_polarity (2) final_tuples 극성 집계 (3) consensus/rationale/key_* 텍스트. 추론값이 있고 현재 final_label과 다르며 (confidence &lt; 0.55 또는 final_label=="mixed") 이면 토론 쪽으로 덮음. block 시: label_unchanged, confidence_too_high, inferred_empty. |
 
 - **최종 출력:** final_label, confidence, rationale, applied_rules, arbiter_flags.  
+- **ArbiterFlags:** stage2_rejected_due_to_confidence(drop_guard), validator_override_applied, confidence_margin_used, **rule_e_fired**, **rule_e_block_reason**, **rule_b_applied**, **rule_e_attempted_after_b**.  
 - **final_aspects:** Moderator는 `build_final_aspects(final_aspect_sentiments)`로 patched_stage2_atsa의 aspect_sentiments를 그대로 리스트로 변환해 FinalResult에 넣음.
 
 ---

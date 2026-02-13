@@ -1,0 +1,272 @@
+{
+  "run_id": "experiment_mini4_validation_c2_t1_proposed",
+  "canon_definition": "(aspect_term_norm, polarity_norm) via normalize_for_eval + normalize_polarity; aspect_ref ignored",
+  "invariant_s1_canon_fail": [
+    {
+      "text_id": "nikluge-sa-2022-train-02829",
+      "debate_summary_canon_n": 1,
+      "final_result_canon_n": 1,
+      "symdiff": 2,
+      "only_in_ds": [
+        [
+          "피부톤",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "피부톤",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00797",
+      "debate_summary_canon_n": 2,
+      "final_result_canon_n": 2,
+      "symdiff": 4,
+      "only_in_ds": [
+        [
+          "순한 성분",
+          "positive"
+        ],
+        [
+          "자와선",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "자와선",
+          "neutral"
+        ],
+        [
+          "순한 성분",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01065",
+      "debate_summary_canon_n": 2,
+      "final_result_canon_n": 2,
+      "symdiff": 4,
+      "only_in_ds": [
+        [
+          "하루 한장",
+          "positive"
+        ],
+        [
+          "주방",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "주방",
+          "neutral"
+        ],
+        [
+          "하루 한장",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01233",
+      "debate_summary_canon_n": 4,
+      "final_result_canon_n": 4,
+      "symdiff": 8,
+      "only_in_ds": [
+        [
+          "싱크대거름망",
+          "positive"
+        ],
+        [
+          "옥수수전분",
+          "positive"
+        ],
+        [
+          "음식물쓰레기봉투",
+          "positive"
+        ],
+        [
+          "친환경제품",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "친환경제품",
+          "neutral"
+        ],
+        [
+          "옥수수전분",
+          "neutral"
+        ],
+        [
+          "싱크대거름망",
+          "neutral"
+        ],
+        [
+          "음식물쓰레기봉투",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01230",
+      "debate_summary_canon_n": 2,
+      "final_result_canon_n": 1,
+      "symdiff": 3,
+      "only_in_ds": [
+        [
+          "이뽀여",
+          "positive"
+        ],
+        [
+          "퀄리티",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "퀄리티",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01089",
+      "debate_summary_canon_n": 4,
+      "final_result_canon_n": 4,
+      "symdiff": 4,
+      "only_in_ds": [
+        [
+          "자외선 차단효과",
+          "positive"
+        ],
+        [
+          "피부속",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "피부속",
+          "neutral"
+        ],
+        [
+          "자외선 차단효과",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-00692",
+      "debate_summary_canon_n": 5,
+      "final_result_canon_n": 5,
+      "symdiff": 6,
+      "only_in_ds": [
+        [
+          "와플모양의 순면패드",
+          "positive"
+        ],
+        [
+          "피부",
+          "positive"
+        ],
+        [
+          "잔여감",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "와플모양의 순면패드",
+          "neutral"
+        ],
+        [
+          "피부",
+          "neutral"
+        ],
+        [
+          "잔여감",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-01557",
+      "debate_summary_canon_n": 3,
+      "final_result_canon_n": 3,
+      "symdiff": 6,
+      "only_in_ds": [
+        [
+          "가슴크림",
+          "positive"
+        ],
+        [
+          "부작용",
+          "negative"
+        ],
+        [
+          "미생물 발효기술",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "미생물 발효기술",
+          "neutral"
+        ],
+        [
+          "부작용",
+          "neutral"
+        ],
+        [
+          "가슴크림",
+          "neutral"
+        ]
+      ]
+    },
+    {
+      "text_id": "nikluge-sa-2022-train-02917",
+      "debate_summary_canon_n": 3,
+      "final_result_canon_n": 3,
+      "symdiff": 6,
+      "only_in_ds": [
+        [
+          "수분 공급",
+          "positive"
+        ],
+        [
+          "촉촉함",
+          "positive"
+        ],
+        [
+          "수분보호막",
+          "positive"
+        ]
+      ],
+      "only_in_fr": [
+        [
+          "수분 공급",
+          "neutral"
+        ],
+        [
+          "촉촉하고 생기있게",
+          "neutral"
+        ],
+        [
+          "수분보호막",
+          "neutral"
+        ]
+      ]
+    }
+  ],
+  "invariant_s2_canon_fail": [],
+  "invariant_s1_canon_fail_n": 9,
+  "invariant_s2_canon_fail_n": 0,
+  "interpretation": "If fail_n drops to ~0: 비교 스크립트/표현 문제. If fail_n unchanged: 진짜 동기화/생성 순서 문제."
+}

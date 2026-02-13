@@ -1,0 +1,11 @@
+{
+  "n_samples": 33,
+  "mean_kappa": 0.11503362846681135,
+  "mean_fleiss": -0.18594329944627902,
+  "mean_perfect_agreement": 0.2391304347826087,
+  "mean_majority_agreement": 0.5271739130434783,
+  "conflict_vs_no_conflict": {
+    "has_conflict": 1,
+    "no_conflict": 32
+  }
+}

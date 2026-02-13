@@ -1,12 +1,24 @@
 """
-Derive per-sample scorecards from smoke_outputs.jsonl.
-Outputs: scorecards.jsonl written alongside the smoke file.
-Adds ATE debug info (raw candidates + filtered decisions) for easier diagnosis.
-Extended: run_id, profile, ate, atsa, validator, moderator, stage_delta, latency, flags.
+Derive per-sample scorecards from smoke_outputs.jsonl (or outputs.jsonl).
+Outputs: scorecards.jsonl written to --out or alongside the smoke file.
+Rule: results/<run_id>/scorecards.jsonl is reserved for run_experiments (original).
+Smoke regeneration must use --out results/<run_id>/derived/scorecards/scorecards.smoke.jsonl
+(or scorecards.smoke.gold.jsonl when using --gold) to avoid overwriting.
+Adds meta.scorecard_source, meta.gold_injected, meta.gold_path, meta.outputs_sha256 for traceability.
+
+Scorecard creation: run_experiments.py and this script both use make_scorecard(entry).
+entry = one row of outputs.jsonl (parsed_output); meta.memory is copied to scorecard["memory"]
+and scorecard["meta"]["memory"] for A2 (memory_debate_slot_present_for, memory_access_policy).
+
+A2 검증 (재런 없이): 같은 outputs로 scorecard만 재생성 후 검증만 재실행
+  python scripts/scorecard_from_smoke.py --smoke results/<run_id>/outputs.jsonl --out results/<run_id>/scorecards.jsonl
+  python scripts/pipeline_integrity_verification.py --run_dir results/<run_id> --out reports/pipeline_integrity_verification_<run_id>.json
+  → debate_persona_memory.pass true 확인
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -53,7 +65,7 @@ def load_gold_by_uid(gold_path: Path) -> Dict[str, List[Dict[str, Any]]]:
         uid = row.get("uid") or row.get("text_id") or row.get("id")
         if not uid:
             continue
-        normalized = gold_row_to_tuples(row)
+        normalized, _ = gold_row_to_tuples(row)
         if normalized:
             out[str(uid)] = normalized
     return out
@@ -153,24 +165,80 @@ def _normalize_validator_stage(entry: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _build_stage_delta(entry: Dict[str, Any]) -> Dict[str, Any]:
-    """Build stage_delta: changed, change_type (guided|unguided|none), related_proposal_ids.
-    Override 적용 시 changed=True, debate 적용은 guided로 연결."""
-    flags = entry.get("analysis_flags") or {}
+    """Build stage_delta: changed (SSOT pairs-based), pairs_changed, label_changed, change_type, optional hashes/counts.
+    SSOT: stage_delta.changed = (s1_pairs != final_pairs) or (stage1_label != final_label). Same extract/normalize as aggregator.
+    When changed=0 and selected_stage=stage2: stage2_adopted_but_no_change=1. When changed=1 and no guided → unguided."""
     meta = entry.get("meta") or {}
     correction_log = meta.get("correction_applied_log") or []
     override_stats = (entry.get("debate") or {}).get("override_stats") or meta.get("debate_override_stats") or {}
-    override_applied = int(override_stats.get("applied") or 0)
+    override_applied_count = int(override_stats.get("applied") or 0)
+    override_applied_bool = override_stats.get("override_applied") is True  # Stage2 adoption decision (per-sample)
     stage1_label = (entry.get("stage1_ate") or {}).get("label") or ""
     stage2_label = (entry.get("stage2_ate") or {}).get("label") if entry.get("stage2_ate") else None
     label_changed = stage2_label is not None and stage2_label != stage1_label
-    changed = bool(flags.get("correction_occurred") or label_changed or override_applied > 0)
-    related_ids = [str(i) for i in range(len(correction_log))] if correction_log else []
+
+    # SSOT: pairs-based changed (same extract/normalize as aggregator/triptych)
+    pairs_changed = False
+    n_s1_pairs = 0
+    n_final_pairs = 0
+    try:
+        from scripts.structural_error_aggregator import _extract_stage1_tuples, _extract_final_tuples
+        from metrics.eval_tuple import tuples_to_pairs
+        wrap = {"runtime": {"parsed_output": entry}}
+        s1 = _extract_stage1_tuples(wrap)
+        s2 = _extract_final_tuples(wrap)
+        s1_pairs = tuples_to_pairs(s1) if s1 else set()
+        s2_pairs = tuples_to_pairs(s2) if s2 else set()
+        pairs_changed = s1_pairs != s2_pairs
+        n_s1_pairs = len(s1_pairs)
+        n_final_pairs = len(s2_pairs)
+    except Exception:
+        pass
+    changed = pairs_changed or label_changed
+
+    moderator = entry.get("moderator") or {}
+    selected_stage = (moderator.get("selected_stage") or "").strip().lower()
+    stage2_adopted = selected_stage == "stage2"
+
+    base = {
+        "changed": changed,
+        "pairs_changed": pairs_changed,
+        "label_changed": label_changed,
+        "n_s1_pairs": n_s1_pairs,
+        "n_final_pairs": n_final_pairs,
+        "related_proposal_ids": [str(i) for i in range(len(correction_log))] if correction_log else [],
+    }
+    if override_stats.get("override_candidate") is not None:
+        base["override_candidate"] = bool(override_stats.get("override_candidate"))
+    if override_stats.get("override_applied") is not None:
+        base["override_applied"] = bool(override_stats.get("override_applied"))
+    if override_stats.get("override_reason"):
+        base["override_reason"] = str(override_stats.get("override_reason"))
+    if stage2_adopted and not changed:
+        base["stage2_adopted_but_no_change"] = True
+
     if not changed:
-        return {"changed": False, "change_type": "none", "related_proposal_ids": []}
-    # guided: correction_log에 applied 있거나, debate override 적용됨
-    guided = any(log.get("applied") for log in correction_log if isinstance(log, dict)) or (override_applied > 0)
-    change_type = "guided" if guided else "unguided"
-    return {"changed": True, "change_type": change_type, "related_proposal_ids": related_ids}
+        base["change_type"] = "none"
+        return base
+
+    # CR (conflict_review_v1): guided_by_review when changed and (review_actions or arb_actions) exist
+    protocol_mode = (meta.get("protocol_mode") or "").strip()
+    if protocol_mode == "conflict_review_v1":
+        analysis_flags = entry.get("analysis_flags") or {}
+        review_actions = analysis_flags.get("review_actions") or []
+        arb_actions = analysis_flags.get("arb_actions") or []
+        has_actions = bool(review_actions or arb_actions)
+        base["change_type"] = "guided_by_review" if has_actions else "unguided"
+        return base
+
+    # guided: correction_log applied, or Stage2 adoption (override_applied), or legacy debate override count
+    guided = (
+        any(log.get("applied") for log in correction_log if isinstance(log, dict))
+        or override_applied_bool
+        or (override_applied_count > 0)
+    )
+    base["change_type"] = "guided" if guided else "unguided"
+    return base
 
 def safe_sub(text: str, span: Dict[str, int]) -> str:
     try:
@@ -343,7 +411,11 @@ def build_sentence_sentiment(text: str, entry: Dict[str, Any]):
         "reason": "fallback to final_result",
     }
 
-def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -> Dict[str, Any]:
+def make_scorecard(
+    entry: Dict[str, Any],
+    extra_allow: Set[str] | None = None,
+    meta_extra: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     text = entry.get("meta", {}).get("input_text", "")
     meta_in = entry.get("meta", {}) or {}
     run_id = meta_in.get("run_id", "")
@@ -385,6 +457,7 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
     }
     debate_ctx = meta_in.get("debate_review_context") or {}
     debate_override_stats = meta_in.get("debate_override_stats") or {}
+    debate_override_skip_reasons = meta_in.get("debate_override_skip_reasons") or {}
     mapping_stats = debate_ctx.get("mapping_stats") or {}
     mapping_fail_reasons = debate_ctx.get("mapping_fail_reasons") or {}
     total_maps = sum(int(v) for v in mapping_stats.values()) if mapping_stats else 0
@@ -468,7 +541,10 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
         moderator_block = {k: v for k, v in moderator_block.items()}
     else:
         moderator_block = {}
-    stage_delta = _build_stage_delta(entry)
+    # Use entry.stage_delta from pipeline if present (avoid recompute drift vs run_experiments); else compute
+    stage_delta = entry.get("stage_delta")
+    if not isinstance(stage_delta, dict) or not stage_delta:
+        stage_delta = _build_stage_delta(entry)
     flags_block = {
         "parse_failed": runtime.get("flags", {}).get("parse_failed", False),
         "generate_failed": runtime.get("flags", {}).get("generate_failed", False),
@@ -504,10 +580,12 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
             "manifest_path": manifest_path,
             "cfg_hash": cfg_hash,
             "profile": profile,
+            "protocol_mode": meta_in.get("protocol_mode"),
             "debate_mapping_stats": mapping_stats,
             "debate_mapping_coverage": coverage,
             "debate_mapping_fail_reasons": mapping_fail_reasons,
             "debate_override_stats": debate_override_stats,
+            "debate_override_skip_reasons": debate_override_skip_reasons,
         },
         "debate": {
             "mapping_stats": mapping_stats,
@@ -542,14 +620,29 @@ def make_scorecard(entry: Dict[str, Any], extra_allow: Set[str] | None = None) -
         },
         "runtime": runtime,
     }
-    # C2/C3 memory verification: retrieved_k, retrieved_ids, exposed_to_debate, prompt_injection_chars
+    # C2/C3 memory verification: retrieved_k, retrieved_ids, exposed_to_debate, prompt_injection_chars; OPFB 블록 로그 3개
+    # Source: parsed_output.meta.memory (entry = pipeline output row; run_experiments와 본 스크립트 모두 make_scorecard 사용 → 동일 경로)
+    # mem: 이미 있으면 그대로 재사용 (supervisor가 meta.memory에 기록한 값)
     mem = (meta_in.get("memory") or {}) if isinstance(meta_in.get("memory"), dict) else {}
     scorecard["memory"] = {
         "retrieved_k": mem.get("retrieved_k", 0),
         "retrieved_ids": mem.get("retrieved_ids") if isinstance(mem.get("retrieved_ids"), list) else [],
         "exposed_to_debate": bool(mem.get("exposed_to_debate", False)),
         "prompt_injection_chars": int(mem.get("prompt_injection_chars", 0)),
+        "injection_trigger_reason": (mem.get("injection_trigger_reason") or "") if isinstance(mem.get("injection_trigger_reason"), str) else "",
+        "memory_blocked_episode_n": int(mem.get("memory_blocked_episode_n", 0)),
+        "memory_blocked_advisory_n": int(mem.get("memory_blocked_advisory_n", 0)),
+        "memory_block_reason": (mem.get("memory_block_reason") or "") if isinstance(mem.get("memory_block_reason"), str) else "",
+        "memory_debate_slot_present_for": mem.get("memory_debate_slot_present_for"),
+        "memory_access_policy": mem.get("memory_access_policy"),
     }
+    # A2: 검증 스크립트가 (a) row["memory"] 또는 (b) row["meta"]["memory"] 를 보므로 둘 다 동일 블록으로 채움
+    scorecard["meta"]["memory"] = dict(scorecard["memory"])
+    # Polarity typo policy: aggregator가 polarity_repair_rate, polarity_invalid_rate 산출용으로 row.meta에서 합산
+    scorecard["meta"]["polarity_repair_count"] = int(meta_in.get("polarity_repair_count", 0) or 0)
+    scorecard["meta"]["polarity_invalid_count"] = int(meta_in.get("polarity_invalid_count", 0) or 0)
+    if meta_extra:
+        scorecard.setdefault("meta", {}).update(meta_extra)
     # RQ3 extended stage1/stage2 structural risk (for risk_resolution_rate denominator)
     try:
         from scripts.structural_error_aggregator import has_stage1_structural_risk, has_stage2_structural_risk
@@ -575,19 +668,35 @@ def main():
         default=None,
         help="Optional path to JSON/YAML/CSV file listing aspect terms to force-allow (experiment-scoped).",
     )
+    ap.add_argument(
+        "--out",
+        type=str,
+        default=None,
+        help="Output path for scorecards. If unset, writes to <smoke_dir>/scorecards.jsonl. "
+        "To avoid overwriting run result, use e.g. results/<run_id>/derived/scorecards/scorecards.smoke.gold.jsonl",
+    )
     args = ap.parse_args()
     smoke_path = Path(args.smoke)
-    cards_path = smoke_path.parent / "scorecards.jsonl"
-
+    smoke_path = smoke_path.resolve() if smoke_path.exists() else smoke_path
     uid_to_gold: Dict[str, List[Dict[str, Any]]] = {}
     if args.gold:
         gold_path = Path(args.gold)
         if not gold_path.is_absolute():
-            _root = Path(__file__).resolve().parent.parent
-            gold_path = (_root / gold_path).resolve()
+            gold_path = (_PROJECT_ROOT / gold_path).resolve()
         uid_to_gold = load_gold_by_uid(gold_path)
         if uid_to_gold:
             print(f"Gold: loaded gold_tuples for {len(uid_to_gold)} uids from {gold_path}")
+    if args.out:
+        cards_path = Path(args.out)
+        cards_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        # Avoid overwriting run result: if smoke is results/<run_id>/outputs.jsonl, write to derived/scorecards
+        if smoke_path.name == "outputs.jsonl" and "results" in smoke_path.parts:
+            out_dir = smoke_path.parent / "derived" / "scorecards"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            cards_path = out_dir / ("scorecards.smoke.gold.jsonl" if (args.gold and uid_to_gold) else "scorecards.smoke.jsonl")
+        else:
+            cards_path = smoke_path.parent / "scorecards.jsonl"
 
     allow_terms: Set[str] = set()
     if args.aspect_allowlist:
@@ -615,11 +724,23 @@ def main():
                 print(f"[warn] failed to load allowlist {allow_path}: {e}")
 
     data = load_jsonl(smoke_path)
+    gold_path_resolved = None
+    if args.gold:
+        gold_path_resolved = Path(args.gold)
+        if not gold_path_resolved.is_absolute():
+            gold_path_resolved = (_PROJECT_ROOT / gold_path_resolved).resolve()
     with cards_path.open("w", encoding="utf-8", newline="\n") as f:
         for entry in data:
-            card = make_scorecard(entry, extra_allow=allow_terms)
             uid = (entry.get("meta") or {}).get("text_id") or entry.get("text_id") or entry.get("uid") or ""
-            if uid_to_gold and uid in uid_to_gold:
+            gold_injected = bool(uid_to_gold and uid in uid_to_gold)
+            meta_extra = {
+                "scorecard_source": "scorecard_from_smoke",
+                "gold_injected": gold_injected,
+                "gold_path": str(gold_path_resolved) if gold_path_resolved else None,
+                "outputs_sha256": hashlib.sha256(json.dumps(entry, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
+            }
+            card = make_scorecard(entry, extra_allow=allow_terms, meta_extra=meta_extra)
+            if gold_injected:
                 card.setdefault("inputs", {})["gold_tuples"] = uid_to_gold[uid]
             f.write(json.dumps(card, ensure_ascii=False) + "\n")
     print(f"wrote {cards_path} ({len(data)} records)")

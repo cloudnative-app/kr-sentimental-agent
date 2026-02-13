@@ -103,6 +103,16 @@
         "has_gold": { "type": "boolean" }
       },
       "additionalProperties": false
+    },
+    "risk_type": { "type": ["string", "null"], "description": "L3, conflict, implicit" },
+    "action_taken": { "type": ["string", "null"], "description": "polarity_flip, abstain, defer, confidence_reduce, neutral_fallback" },
+    "outcome_delta": {
+      "type": ["object", "null"],
+      "properties": {
+        "delta_f1": { "type": ["number", "null"] },
+        "conflict_resolved": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": false
     }
   },
   "$defs": {
