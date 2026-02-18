@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import re
+from difflib import SequenceMatcher
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 
@@ -23,9 +25,29 @@ from agents.protocol_conflict_review import (
     ReviewAgentC,
 )
 from tools.backbone_client import BackboneClient
+from metrics.opinion_validation import (
+    validate_aspect_ref,
+    has_english_in_term,
+    is_likely_opinion_word,
+)
 
 
 def _triplet_to_candidate(t: ASTETripletItem, tuple_id: str, origin_agent: str) -> Dict[str, Any]:
+    aspect_term = (t.aspect_term or "").strip()
+    aspect_ref = (t.aspect_ref or "").strip() if t.aspect_ref else ""
+    conf = getattr(t, "confidence", 0.5) or 0.5
+
+    invalid_ref_flag = bool(aspect_ref and not validate_aspect_ref(aspect_ref))
+    invalid_language_flag = has_english_in_term(aspect_term)
+    invalid_target_flag = is_likely_opinion_word(aspect_term)
+
+    if invalid_ref_flag:
+        conf = conf * 0.5
+    if invalid_language_flag:
+        conf = conf * 0.5
+    if invalid_target_flag:
+        conf = conf * 0.5
+
     return {
         "tuple_id": tuple_id,
         "aspect_term": t.aspect_term,
@@ -34,6 +56,10 @@ def _triplet_to_candidate(t: ASTETripletItem, tuple_id: str, origin_agent: str) 
         "evidence": t.evidence,
         "span": t.span,
         "origin_agent": origin_agent,
+        "confidence": conf,
+        "invalid_ref_flag": invalid_ref_flag,
+        "invalid_language_flag": invalid_language_flag,
+        "invalid_target_flag": invalid_target_flag,
     }
 
 
@@ -91,19 +117,102 @@ def _cr_adapters_for_append(
     }
 
 
-def _compute_conflict_flags(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Detect conflicts: same aspect_term with different polarity."""
-    by_term: Dict[str, List[Dict[str, Any]]] = {}
+def _normalize_ote(s: str) -> str:
+    """Normalize OTE for similarity: strip, lower, remove extra spaces/special chars."""
+    s = (s or "").strip().lower()
+    s = re.sub(r"[^\w\s]", "", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def _char_ngrams(s: str, n: int = 3) -> set:
+    """Return set of character n-grams."""
+    s = _normalize_ote(s)
+    if len(s) < n:
+        return {s} if s else set()
+    return {s[i : i + n] for i in range(len(s) - n + 1)}
+
+
+def _ote_similarity(a: str, b: str, theta: float = 0.6) -> bool:
+    """True if OTE similarity >= theta. Uses char 3-gram Jaccard or SequenceMatcher ratio."""
+    na, nb = _normalize_ote(a), _normalize_ote(b)
+    if not na or not nb:
+        return False
+    jaccard = 0.0
+    ga, gb = _char_ngrams(na, 3), _char_ngrams(nb, 3)
+    if ga or gb:
+        jaccard = len(ga & gb) / len(ga | gb) if (ga | gb) else 0.0
+    ratio = SequenceMatcher(None, na, nb).ratio()
+    return jaccard >= theta or ratio >= theta
+
+
+def _compute_conflict_flags(
+    candidates: List[Dict[str, Any]],
+    conflict_mode: str = "primary_secondary",
+    semantic_conflict_enabled: bool = False,
+) -> List[Dict[str, Any]]:
+    """
+    Detect conflicts. Primary: same aspect_ref with different polarity (ref-pol mismatch).
+    Secondary: same aspect_term with different polarity (when ref empty or mode=primary_secondary).
+    Semantic (optional): same ref + opposite polarity + similar OTE → semantic_conflict_candidate.
+    conflict_mode: "primary" (ref only) | "primary_secondary" (ref + term for empty-ref tuples)
+    """
+    flags: List[Dict[str, Any]] = []
+
+    # Primary: group by aspect_ref (non-empty)
+    by_ref: Dict[str, List[Dict[str, Any]]] = {}
+    no_ref: List[Dict[str, Any]] = []
     for c in candidates:
-        term = (c.get("aspect_term") or "").strip() or (c.get("aspect_ref") or "").strip()
-        if not term:
-            continue
-        by_term.setdefault(term, []).append(c)
-    flags = []
-    for term, items in by_term.items():
+        ref = (c.get("aspect_ref") or "").strip()
+        if ref:
+            by_ref.setdefault(ref, []).append(c)
+        else:
+            no_ref.append(c)
+
+    for ref, items in by_ref.items():
         pols = {i.get("polarity") for i in items if i.get("polarity")}
         if len(pols) > 1:
-            flags.append({"aspect_term": term, "tuple_ids": [i.get("tuple_id") for i in items], "conflict_type": "polarity_mismatch"})
+            flags.append({
+                "aspect_ref": ref,
+                "aspect_term": items[0].get("aspect_term") or ref,
+                "tuple_ids": [i.get("tuple_id") for i in items],
+                "conflict_type": "ref_polarity_mismatch",
+            })
+            # Semantic conflict candidate: same ref, opposite polarity, similar OTE
+            if semantic_conflict_enabled:
+                for i, c1 in enumerate(items):
+                    for c2 in items[i + 1 :]:
+                        p1, p2 = c1.get("polarity"), c2.get("polarity")
+                        if p1 and p2 and p1 != p2:
+                            t1 = (c1.get("aspect_term") or "").strip()
+                            t2 = (c2.get("aspect_term") or "").strip()
+                            if t1 and t2 and t1 != t2 and _ote_similarity(t1, t2):
+                                flags.append({
+                                    "aspect_ref": ref,
+                                    "aspect_term": f"{t1}|{t2}",
+                                    "tuple_ids": [c1.get("tuple_id"), c2.get("tuple_id")],
+                                    "conflict_type": "semantic_conflict_candidate",
+                                })
+                                break
+
+    # Secondary: term-level for tuples with empty ref (when primary_secondary)
+    if conflict_mode == "primary_secondary" and no_ref:
+        by_term: Dict[str, List[Dict[str, Any]]] = {}
+        for c in no_ref:
+            term = (c.get("aspect_term") or "").strip()
+            if not term:
+                continue
+            by_term.setdefault(term, []).append(c)
+        for term, items in by_term.items():
+            pols = {i.get("polarity") for i in items if i.get("polarity")}
+            if len(pols) > 1:
+                flags.append({
+                    "aspect_ref": "",
+                    "aspect_term": term,
+                    "tuple_ids": [i.get("tuple_id") for i in items],
+                    "conflict_type": "term_polarity_mismatch",
+                })
+
     return flags
 
 
@@ -224,21 +333,8 @@ def _apply_review_actions(
 
 
 def _finalize_normalize_ref(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Deterministic normalization: unify aspect_ref for tuples with same aspect_term."""
-    by_term: Dict[str, List[Dict[str, Any]]] = {}
-    for c in candidates:
-        term = (c.get("aspect_term") or "").strip() or (c.get("aspect_ref") or "").strip()
-        key = term or "___empty"
-        by_term.setdefault(key, []).append(c)
-
-    result = []
-    for term, items in by_term.items():
-        canonical_ref = (items[0].get("aspect_term") or items[0].get("aspect_ref") or "").strip()
-        for c in items:
-            out = dict(c)
-            out["aspect_ref"] = canonical_ref
-            result.append(out)
-    return result
+    """P1: No-op. aspect_ref를 덮어쓰지 않음. 원본 보존(SSOT). 평가는 term-only이므로 ref 변경이 F1에 영향 없음."""
+    return list(candidates)
 
 
 def run_conflict_review_v1(
@@ -251,6 +347,8 @@ def run_conflict_review_v1(
     demos: Optional[List[str]] = None,
     episodic_orchestrator: Optional[Any] = None,
     episodic_config: Optional[Dict[str, Any]] = None,
+    conflict_mode: str = "primary_secondary",
+    semantic_conflict_enabled: bool = False,
 ) -> FinalOutputSchema:
     text = example.text
     text_id = getattr(example, "uid", "text") or "text"
@@ -270,13 +368,25 @@ def run_conflict_review_v1(
 
     # Merge triplets with tuple_id
     candidates: List[Dict[str, Any]] = []
+    invalid_ref_count = invalid_language_count = invalid_target_count = 0
     idx = 0
     for label, res in [("A", r_neg), ("B", r_imp), ("C", r_lit)]:
         for t in getattr(res.model, "triplets", []) or []:
             tid = f"t{idx}"
             idx += 1
-            candidates.append(_triplet_to_candidate(t, tid, label))
-    conflict_flags = _compute_conflict_flags(candidates)
+            c = _triplet_to_candidate(t, tid, label)
+            if c.get("invalid_ref_flag"):
+                invalid_ref_count += 1
+            if c.get("invalid_language_flag"):
+                invalid_language_count += 1
+            if c.get("invalid_target_flag"):
+                invalid_target_count += 1
+            candidates.append(c)
+    conflict_flags = _compute_conflict_flags(
+        candidates,
+        conflict_mode=conflict_mode,
+        semantic_conflict_enabled=semantic_conflict_enabled,
+    )
     validator_risks: List[Dict[str, Any]] = []
 
     # Episodic memory: retrieve 1x before Review (M0/M1/M2)
@@ -417,6 +527,9 @@ def run_conflict_review_v1(
         "domain_id": domain_id,
         "stage1_perspective_aste": stage1_perspective_aste,
         "memory": meta_memory,
+        "invalid_ref_count": invalid_ref_count,
+        "invalid_language_count": invalid_language_count,
+        "invalid_target_count": invalid_target_count,
     }
     analysis_flags = AnalysisFlags(
         stage2_executed=True,

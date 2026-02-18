@@ -1,0 +1,56 @@
+# CR-M1 v5: conflict_review, read-only retrieve (frozen), ref-level conflict. n=601 (valid.jsonl 전체), seeds [42, 123, 456, 789, 101], concurrency 5.
+# v5: conflict_flags ref 기준 primary, term 기준 secondary, pipeline.conflict_mode 반영
+run_purpose: paper
+run_id: cr_n601_m1_v5
+run_mode: proposed
+
+pipeline:
+  protocol_mode: conflict_review_v1
+  conflict_mode: primary_secondary  # primary | primary_secondary
+  semantic_conflict_enabled: false  # optional: same ref + similar OTE + opposite polarity
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: false
+  enable_debate_override: false
+
+episodic_memory:
+  condition: M1
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: beta_n601/train.csv
+  valid_file: beta_n601/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: beta_n601/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456, 789, 101]
+  concurrency: 5

@@ -11,6 +11,8 @@ Hard rules:
 - Do NOT rewrite the whole list. Only act on tuple_ids referenced by conflict_flags or validator risks.
 - Allowed actions: DROP, MERGE, FLIP, KEEP, FLAG.
 - If unsure, KEEP and optionally FLAG with reason_code.
+- Do NOT DROP merely because multiple refs exist; prefer dropping only when ref violates taxonomy or evidence mismatch.
+- If opposite polarities in same ref are due to contrast, consider setting mixed/keep both unless explicit correction is justified.
 
 For each candidate in conflict_flags or validator_risks:
 1. If negation present:

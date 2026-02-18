@@ -26,7 +26,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REPORT_METRICS_ALWAYS = [
     "n", "N_gold",
     "tuple_f1_s1", "tuple_f1_s2", "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
-    "fix_rate", "break_rate", "net_gain",
+    "fix_rate", "break_rate", "net_gain", "cda",
+    "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+    "aar_majority_rate",
 ]
 
 

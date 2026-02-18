@@ -20,7 +20,8 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 1. **run_pipeline** (M0 → M1 → M2)  
    - `--mode proposed --profile paper --with_metrics --with_aggregate`
 2. **compute_irr** (시드별)  
-   - outputs.jsonl → irr/irr_sample_level.csv, irr_run_summary.json
+   - outputs.jsonl → irr/irr_sample_level.csv, irr_run_summary.json  
+   - Process IRR (action agreement) + Measurement IRR (final_label agreement) — `docs/evaluation_cr_v2.md` 참고
 3. **export_paper_metrics_md** (조건별)  
    - paper_metrics.md, paper_metrics.csv
 4. **export_paper_metrics_aggregated** (조건별)  
@@ -94,7 +95,12 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_aggregated/aggregated_mean_std.csv --run-dirs results/cr_n50_m0__seed42_proposed results/cr_n50_m0__seed123_proposed results/cr_n50_m0__seed456_proposed --out-dir results/cr_n50_m0_paper
 ```
 
-**테이블 구성**: Table 1 (RQ1) | Table 2 (IRR) | Table 3 (Process Evidence)
+**테이블 구성**:
+- Table 1 (RQ1) — ref-pol F1: tuple_f1_s1_refpol, tuple_f1_s2_refpol, delta_f1_refpol, fix_rate_refpol, break_rate_refpol, net_gain_refpol
+- Table 1b (Grounding) — tuple_f1_explicit, invalid_target_rate, invalid_language_rate, invalid_ref_rate
+- Table 2A (Process IRR) — irr_fleiss_kappa, irr_cohen_kappa_mean, irr_perfect_agreement_rate, irr_majority_agreement_rate
+- Table 2B (Measurement IRR) — meas_fleiss_kappa, meas_cohen_kappa_mean, meas_perfect_agreement_rate, meas_majority_agreement_rate
+- Table 3 (Process Evidence) — conflict_detection_rate, pre_to_post_change_rate, review_nontrivial_action_rate, arb_nonkeep_rate
 
 ---
 
@@ -119,7 +125,7 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 | outputs | `results/<run_id>__seed<N>_proposed/outputs.jsonl` |
 | scorecards | `results/<run_id>__seed<N>_proposed/scorecards.jsonl` |
 | 메트릭 | `results/<run_id>__seed<N>_proposed/derived/metrics/structural_metrics.csv` |
-| IRR | `results/<run_id>__seed<N>_proposed/irr/irr_sample_level.csv`, `irr_run_summary.json` |
+| IRR | `results/<run_id>__seed<N>_proposed/irr/irr_sample_level.csv`, `irr_run_summary.json` (Process + Measurement IRR) |
 | Paper metrics (seed) | `results/<run_id>_paper/paper_metrics.md`, `paper_metrics.csv` |
 | Paper metrics (agg) | `results/<run_id>_paper/paper_metrics_aggregated.md` |
 | Aggregated | `results/<run_id>_aggregated/` — merged_scorecards.jsonl, aggregated_mean_std.csv, integrated_report.md |
@@ -134,5 +140,6 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 | [README_cr_v1.md](README_cr_v1.md) | CR v1 개요·에이전트·데이터 플로우 |
 | [run_cr_m0_m1_m2_commands.md](run_cr_m0_m1_m2_commands.md) | CR-M0/M1/M2 실행 명령 |
 | [cr_branch_metrics_spec.md](cr_branch_metrics_spec.md) | CR 메트릭·데이터 플로우 명세 |
+| [evaluation_cr_v2.md](evaluation_cr_v2.md) | CR v2 평가 정의 (ref-pol, IRR, ΔF1 해석) |
 | [protocol_conflict_review_vs_legacy_comparison.md](protocol_conflict_review_vs_legacy_comparison.md) | CR vs Legacy 워크플로우·데이터 플로우 |
 | [how_to_run.md](how_to_run.md) | 전체 파이프라인 실행 가이드 |

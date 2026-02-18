@@ -269,6 +269,8 @@ experiment:
 
 ## 7. 논문용 테이블 생성 (Tables 1–4)
 
+### 7.1 Legacy / C1–C3 파이프라인
+
 모든 조건(C1, C2, C3, C2_eval)의 시드 실행 및 `aggregate_seed_metrics` 완료 후, IP&M 스타일 논문 테이블을 생성한다:
 
 ```powershell
@@ -282,6 +284,19 @@ python scripts/build_paper_tables.py --base_run_id finalexperiment_n50_seed1 --r
 - **입력**: 각 조건별 `results/<base_run_id>_c1__seed42_proposed`, … 등 시드별 `derived/metrics/structural_metrics.csv`
 - **출력**: Table 1 (RQ1 Structural Error Control), Table 2 (RQ2 Inference Stability), Table 3 (Explicit-only F1), Table 4 (Implicit Subset) — mean (SD) over seeds, 최우수 조건 **굵게**
 - **사전 요구**: `aggregate_seed_metrics`는 테이블 생성에 불필요. 시드별 `structural_metrics.csv`만 있으면 됨.
+
+### 7.2 CR (Conflict Review) 파이프라인
+
+CR 실험 시 `export_paper_metrics_aggregated.py` 사용:
+
+```powershell
+# CR 논문용: ref-pol F1, Process/Measurement IRR, Grounding 진단 포함
+python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_aggregated/aggregated_mean_std.csv --run-dirs results/cr_n50_m0__seed42_proposed results/cr_n50_m0__seed123_proposed results/cr_n50_m0__seed456_proposed --out-dir results/cr_n50_m0_paper
+```
+
+**테이블 구성**: Table 1 (ref-pol F1) | Table 1b (Grounding) | Table 2A (Process IRR) | Table 2B (Measurement IRR) | Table 3 (Process Evidence)
+
+**사전 요구**: `compute_irr.py` 시드별 실행 → `irr/irr_run_summary.json`에 Process + Measurement IRR 키 존재. 상세: `docs/how_to_run_cr_v1.md`, `docs/evaluation_cr_v2.md`
 
 ---
 
@@ -301,6 +316,8 @@ python scripts/build_paper_tables.py --base_run_id finalexperiment_n50_seed1 --r
 ## 9. 참고 문서
 
 - **실행 방법 상세**: `docs/how_to_run.md`
+- **CR 실행**: `docs/how_to_run_cr_v1.md`
+- **CR 평가 정의**: `docs/evaluation_cr_v2.md` (ref-pol, IRR, ΔF1)
 - **본실험 데이터 배치**: `experiments/configs/datasets/real/README.md`
 - **Betatest**: `docs/run_betatest_commands.md`
 - **Seed 반복 정책**: `docs/seed_repeat_policy.md`

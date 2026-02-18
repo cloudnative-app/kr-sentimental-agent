@@ -1,0 +1,6 @@
+{
+  "confusion_groups": [],
+  "near_miss_pairs": [],
+  "accept": false,
+  "source": "posthoc_confusion_discovery.py"
+}

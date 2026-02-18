@@ -1,0 +1,166 @@
+{
+  "id": "ROOT",
+  "level": 0,
+  "children": [
+    {
+      "id": "본품",
+      "level": 1,
+      "children": [
+        {
+          "id": "본품#다양성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "본품#디자인",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "본품#일반",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "본품#편의성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "본품#품질",
+          "level": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "브랜드",
+      "level": 1,
+      "children": [
+        {
+          "id": "브랜드#가격",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "브랜드#디자인",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "브랜드#인지도",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "브랜드#일반",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "브랜드#품질",
+          "level": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "제품 전체",
+      "level": 1,
+      "children": [
+        {
+          "id": "제품 전체#가격",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "제품 전체#디자인",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "제품 전체#인지도",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "제품 전체#일반",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "제품 전체#편의성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "제품 전체#품질",
+          "level": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "패키지/구성품",
+      "level": 1,
+      "children": [
+        {
+          "id": "패키지/구성품#다양성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지/구성품#디자인",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지/구성품#일반",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지/구성품#편의성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지/구성품#품질",
+          "level": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "패키지·구성품",
+      "level": 1,
+      "children": [
+        {
+          "id": "패키지·구성품#다양성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지·구성품#디자인",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지·구성품#일반",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지·구성품#편의성",
+          "level": 2,
+          "children": []
+        },
+        {
+          "id": "패키지·구성품#품질",
+          "level": 2,
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@ from metrics.eval_tuple import (
     tuple_sets_match_with_empty_rule,
     tuples_from_list,
     tuples_to_pairs,
+    tuples_to_ref_pairs,
 )
 
 
@@ -166,25 +167,29 @@ def test_normalize_polarity() -> None:
 
 
 def test_precision_recall_f1_empty_aspect_polarity_only() -> None:
-    """When gold aspect_term is "", match by polarity only (1:1)."""
+    """When gold aspect_term is "", match by polarity only (1:1). Uses term-based for implicit matching."""
     # Gold: one implicit (aspect_term="", polarity=positive)
     gold = tuples_from_list([{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive"}])
     # Pred: one concrete (aspect_term=피부톤, polarity=positive)
     pred = tuples_from_list([{"aspect_term": {"term": "피부톤", "span": {"start": 0, "end": 3}}, "polarity": "positive"}])
-    prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_empty_aspect_by_polarity_only=True)
+    prec, rec, f1 = precision_recall_f1_tuple(
+        gold, pred, match_empty_aspect_by_polarity_only=True, match_by_aspect_ref=False
+    )
     assert prec == 1.0
     assert rec == 1.0
     assert f1 == 1.0
-    assert tuple_sets_match_with_empty_rule(gold, pred) is True
+    assert tuple_sets_match_with_empty_rule(gold, pred, match_by_aspect_ref=False) is True
 
 
 def test_precision_recall_f1_empty_aspect_strict_no_match() -> None:
     """When match_empty_aspect_by_polarity_only=False, gold ("", p) does not match pred (t, p)."""
     gold = tuples_from_list([{"aspect_ref": "본품#품질", "aspect_term": "", "polarity": "positive"}])
     pred = tuples_from_list([{"aspect_term": {"term": "피부톤", "span": {"start": 0, "end": 3}}, "polarity": "positive"}])
-    prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_empty_aspect_by_polarity_only=False)
+    prec, rec, f1 = precision_recall_f1_tuple(
+        gold, pred, match_empty_aspect_by_polarity_only=False, match_by_aspect_ref=False
+    )
     assert f1 == 0.0
-    assert tuple_sets_match_with_empty_rule(gold, pred, match_empty_aspect_by_polarity_only=False) is False
+    assert tuple_sets_match_with_empty_rule(gold, pred, match_empty_aspect_by_polarity_only=False, match_by_aspect_ref=False) is False
 
 
 # ---------- Implicit-only F1 and valid/invalid polarity (tuple_f1_s2_implicit_only, implicit_invalid_pred_rate) ----------
@@ -224,6 +229,38 @@ def test_implicit_f1_set_based() -> None:
     assert prec == 1.0
     assert rec == 0.5
     assert abs(f1 - 2.0 / 3.0) < 1e-6
+
+
+def test_tuples_to_ref_pairs_skips_empty_ref() -> None:
+    """Ref-based pairs: (aspect_ref, polarity); tuples with empty aspect_ref are excluded."""
+    gold = {("제품 전체#일반", "아이립밤", "positive"), ("", "맛", "negative")}
+    pairs, invalid = tuples_to_ref_pairs(gold)
+    assert invalid == 1
+    assert ("제품 전체#일반", "positive") in pairs
+    assert ("", "negative") not in pairs  # empty ref skipped
+
+
+def test_precision_recall_f1_ref_based_match() -> None:
+    """CR v2: when both gold and pred have aspect_ref, match on (aspect_ref, polarity)."""
+    gold = {("제품 전체#일반", "아이립밤", "positive")}
+    pred = {("제품 전체#일반", "아이립밤", "positive")}
+    prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_by_aspect_ref=True)
+    assert prec == 1.0
+    assert rec == 1.0
+    assert f1 == 1.0
+
+
+def test_normalize_ref_for_eval_preserves_hash() -> None:
+    """normalize_ref_for_eval preserves # and strips # left/right spaces."""
+    from metrics.eval_tuple import normalize_ref_for_eval
+    assert normalize_ref_for_eval("제품 전체 # 품질") == "제품 전체#품질"
+    assert normalize_ref_for_eval("본품#다양성") == "본품#다양성"
+    gold = tuples_from_list([{"aspect_ref": "제품 전체#품질", "aspect_term": "포장", "polarity": "positive"}])
+    pred = tuples_from_list([{"aspect_ref": "제품 전체#품질", "aspect_term": "포장", "polarity": "positive"}])
+    prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_by_aspect_ref=True)
+    assert prec == 1.0
+    assert rec == 1.0
+    assert f1 == 1.0
 
 
 def test_pred_valid_polarities_rejects_unknown() -> None:

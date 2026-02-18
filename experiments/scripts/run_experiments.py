@@ -523,6 +523,14 @@ def _write_manifest(
     if debate_override_effective is not None:
         manifest["debate_override_effective"] = debate_override_effective
 
+    # CR protocol: stamp conflict_mode and conflict_flags_ref_primary for reproducibility
+    pipeline_cfg = cfg.get("pipeline") or {}
+    if pipeline_cfg.get("protocol_mode") == "conflict_review_v1":
+        conflict_mode = (pipeline_cfg.get("conflict_mode") or "primary_secondary").strip()
+        manifest.setdefault("pipeline", {})["conflict_mode"] = conflict_mode
+        # ref primary only (no term fallback) = true; ref+term = false
+        manifest["conflict_flags_ref_primary"] = conflict_mode == "primary"
+
     last_path = None
     for p in manifest_paths:
         p.parent.mkdir(parents=True, exist_ok=True)

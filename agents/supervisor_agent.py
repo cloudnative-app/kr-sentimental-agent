@@ -404,6 +404,9 @@ class SupervisorAgent:
 
         if self.protocol_mode == "conflict_review_v1":
             from agents.conflict_review_runner import run_conflict_review_v1
+            pipeline_cfg = self.config.get("pipeline") or {}
+            conflict_mode = (pipeline_cfg.get("conflict_mode") or "primary_secondary").strip()
+            semantic_conflict = bool(pipeline_cfg.get("semantic_conflict_enabled", False))
             return run_conflict_review_v1(
                 example,
                 self.backbone,
@@ -413,6 +416,8 @@ class SupervisorAgent:
                 demos=demos,
                 episodic_orchestrator=self._episodic_orchestrator,
                 episodic_config=self.config.get("episodic_memory"),
+                conflict_mode=conflict_mode,
+                semantic_conflict_enabled=semantic_conflict,
             )
 
         stage1 = self._run_stage1(

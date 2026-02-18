@@ -22,7 +22,7 @@
 - 🧭 **Moderator 규칙**: Rule A–D + Rule E(토론 합의 힌트)
 - 📊 **토론 매핑 품질 지표**: mapping coverage/실패 원인 집계
 - 🧪 **Ablation 지원**: debate override on/off 비교
-- 📐 **Tuple 평가**: gold_tuples 기반 (aspect_ref, aspect_term, polarity) F1; `docs/absa_tuple_eval.md` 참고
+- 📐 **Tuple 평가**: CR v2 주평가 = (aspect_ref, polarity); 보조평가 = (aspect_term, polarity) explicit-only. `docs/evaluation_cr_v2.md`, `docs/absa_tuple_eval.md` 참고
 
 ## 🚀 설치 (처음 1회)
 

@@ -2,6 +2,8 @@
 
 Conflict Review v1 프로토콜 개요, 에이전트 워크플로우, 데이터 플로우, 관련 문서를 정리합니다.
 
+**Spec 및 규약**: [cr_v1_spec_and_conventions.md](cr_v1_spec_and_conventions.md) — 작업 원칙, 정규화, 평가, Debug 카운터, Sanity 모드
+
 ---
 
 ## 1. 개요
@@ -44,7 +46,7 @@ text
   FinalResult (stage1_tuples, final_tuples, final_aspects)
 ```
 
-**에이전트 목록 (7개 LLM 호출)**
+**에이전트 목록 (6개 LLM + Arbiter 코드)**
 
 | 순서 | 에이전트 | 역할 | 출력 |
 |------|----------|------|------|
@@ -54,7 +56,7 @@ text
 | 4 | ReviewA | A 관점 리뷰 | review_actions |
 | 5 | ReviewB | B 관점 리뷰 | review_actions |
 | 6 | ReviewC | C 관점 리뷰 | review_actions |
-| 7 | Arbiter | A/B/C 합의 | review_actions |
+| 7 | Arbiter | A/B/C 합의 (코드, LLM 아님) | arb_actions |
 
 ---
 
@@ -95,10 +97,17 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 
 ## 5. 참고 문서
 
+### Spec 및 규약
+
+| 문서 | 설명 |
+|------|------|
+| [cr_v1_spec_and_conventions.md](cr_v1_spec_and_conventions.md) | **CR v1 Spec·규약**: 작업 원칙, 정규화(# 보존), Gold 필터 금지, Debug 카운터, Sanity 모드 |
+
 ### 에이전트·워크플로우
 
 | 문서 | 설명 |
 |------|------|
+| [cr_v1_workflow_metrics_and_rules.md](cr_v1_workflow_metrics_and_rules.md) | **CR v1 통합**: 에이전트 워크플로우, 메트릭 플로우, Arbiter·정규화 규칙, SSOT |
 | [protocol_conflict_review_vs_legacy_comparison.md](protocol_conflict_review_vs_legacy_comparison.md) | CR vs Legacy 에이전트 워크플로우·데이터 플로우 비교 |
 | [protocol_mode_conflict_review.md](protocol_mode_conflict_review.md) | protocol_mode 설정·에이전트 구조 |
 

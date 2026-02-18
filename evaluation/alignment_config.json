@@ -1,0 +1,7 @@
+{
+  "min_freq": 3,
+  "top_k": 100,
+  "string_sim_threshold": 0.7,
+  "score_recommend_threshold": 2,
+  "pilot_min_freq": 2
+}

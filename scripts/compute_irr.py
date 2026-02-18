@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-IRR (Inter-Rater Reliability) module for ReviewA/B/C action agreement.
+IRR (Inter-Rater Reliability) module for ReviewA/B/C.
 
-SSOT: outputs.jsonl. Computes Cohen's κ (pairwise), Fleiss' κ (3-way),
-percent agreement. Writes results to results/<run>/irr/.
+A. Process Reliability (Action IRR): reviewer action agreement (KEEP/DROP/FLIP_*/MERGE/OTHER).
+B. Measurement Reliability: final measurement label agreement (POS/NEG/NEU/DROP).
+   Action→final_label: KEEP→original pol, FLIP_POS→POS, FLIP_NEG→NEG, DROP→DROP, MERGE/OTHER→DROP.
+
+SSOT: outputs.jsonl. Writes results to results/<run>/irr/.
 
 Dependencies:
   - scikit-learn: Cohen's κ
@@ -23,7 +26,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Canonical action labels
+# Canonical action labels (Process Reliability)
 KEEP = "KEEP"
 MERGE = "MERGE"
 DROP = "DROP"
@@ -33,6 +36,12 @@ FLIP = "FLIP"  # fallback when polarity unknown
 OTHER = "OTHER"
 CANONICAL_LABELS = [KEEP, MERGE, DROP, FLIP_POS, FLIP_NEG, FLIP, OTHER]
 LABEL_TO_IDX = {lbl: i for i, lbl in enumerate(CANONICAL_LABELS)}
+
+# Measurement Reliability: final_label ∈ {POS, NEG, NEU, DROP}.
+# Policy: MERGE/OTHER → DROP (측정에서 제외, 해석 용이성).
+POS, NEG, NEU, DROP_LBL = "POS", "NEG", "NEU", "DROP"
+MEASUREMENT_LABELS = [POS, NEG, NEU, DROP_LBL]
+MEAS_LABEL_TO_IDX = {lbl: i for i, lbl in enumerate(MEASUREMENT_LABELS)}
 
 
 def _get_review_actions_from_record(record: Dict[str, Any]) -> Tuple[List[Dict], List[Dict], List[Dict]]:
@@ -120,6 +129,66 @@ def _to_canonical(action: Dict[str, Any]) -> str:
             return FLIP_NEG
         return FLIP
     return atype if atype in CANONICAL_LABELS else OTHER
+
+
+def _get_stage1_polarity_map(record: Dict[str, Any]) -> Dict[str, str]:
+    """Map tuple_id → normalized polarity (positive/negative/neutral). From stage1_tuples."""
+    fr = record.get("final_result") or {}
+    pre = fr.get("final_tuples_pre_review") or fr.get("stage1_tuples") or []
+    out: Dict[str, str] = {}
+    for i, t in enumerate(pre):
+        tid = f"t{i}"
+        if isinstance(t, dict):
+            p = (t.get("polarity") or "").strip().lower()
+            if p in ("positive", "pos"):
+                out[tid] = "positive"
+            elif p in ("negative", "neg"):
+                out[tid] = "negative"
+            elif p in ("neutral", "neu", "mixed"):
+                out[tid] = "neutral"
+            else:
+                out[tid] = "neutral"
+        else:
+            out[tid] = "neutral"
+    return out
+
+
+def _action_to_final_label(action: str, stage1_polarity: str) -> str:
+    """Map reviewer action → final measurement label {POS, NEG, NEU, DROP}. MERGE/OTHER→DROP."""
+    if action == KEEP:
+        if stage1_polarity in ("positive", "pos"):
+            return POS
+        if stage1_polarity in ("negative", "neg"):
+            return NEG
+        return NEU
+    if action == FLIP_POS:
+        return POS
+    if action == FLIP_NEG:
+        return NEG
+    if action == FLIP:
+        return NEU  # unknown flip → NEU
+    if action == DROP:
+        return DROP_LBL
+    if action in (MERGE, OTHER):
+        return DROP_LBL
+    return DROP_LBL
+
+
+def build_measurement_matrix(
+    record: Dict[str, Any],
+    action_matrix: Dict[str, Dict[str, str]],
+) -> Dict[str, Dict[str, str]]:
+    """Build final_label matrix: { tuple_id: { "A": POS/NEG/NEU/DROP, "B": ..., "C": ... } }."""
+    pol_map = _get_stage1_polarity_map(record)
+    out: Dict[str, Dict[str, str]] = {}
+    for tid, acts in action_matrix.items():
+        pol = pol_map.get(tid, "neutral")
+        out[tid] = {
+            "A": _action_to_final_label(acts.get("A", KEEP), pol),
+            "B": _action_to_final_label(acts.get("B", KEEP), pol),
+            "C": _action_to_final_label(acts.get("C", KEEP), pol),
+        }
+    return out
 
 
 def build_action_matrix(record: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -218,6 +287,56 @@ def _percent_agreement(labels_a: List[str], labels_b: List[str], labels_c: List[
     return perfect, majority, none
 
 
+def _compute_cohen_kappa_measurement(labels_a: List[str], labels_b: List[str]) -> Optional[float]:
+    """Cohen's κ for measurement labels (POS, NEG, NEU, DROP)."""
+    try:
+        from sklearn.metrics import cohen_kappa_score
+    except ImportError:
+        return None
+    if not labels_a or not labels_b or len(labels_a) != len(labels_b):
+        return None
+    if labels_a == labels_b:
+        return 1.0
+    k = cohen_kappa_score(labels_a, labels_b, labels=list(MEASUREMENT_LABELS))
+    return float(k) if k is not None and (k == k) else None
+
+
+def _compute_fleiss_kappa_measurement(
+    labels_a: List[str], labels_b: List[str], labels_c: List[str]
+) -> Optional[float]:
+    """Fleiss' κ for 3 raters, measurement labels (POS, NEG, NEU, DROP)."""
+    try:
+        from statsmodels.stats.inter_rater import aggregate_raters, fleiss_kappa
+    except ImportError:
+        return None
+    n = len(labels_a)
+    if n == 0 or len(labels_b) != n or len(labels_c) != n:
+        return None
+    data = []
+    for i in range(n):
+        row = []
+        for lbl in [labels_a[i], labels_b[i], labels_c[i]]:
+            idx = MEAS_LABEL_TO_IDX.get(lbl, -1)
+            if idx < 0:
+                idx = MEAS_LABEL_TO_IDX.get(NEU, 2)
+            row.append(idx)
+        data.append(row)
+    try:
+        import numpy as np
+        arr = np.array(data)
+        table, _ = aggregate_raters(arr)
+        return float(fleiss_kappa(table))
+    except Exception:
+        return None
+
+
+def _percent_agreement_measurement(
+    labels_a: List[str], labels_b: List[str], labels_c: List[str]
+) -> Tuple[int, int, int]:
+    """Return (perfect, majority, none) for measurement labels."""
+    return _percent_agreement(labels_a, labels_b, labels_c)
+
+
 def _has_conflict(record: Dict[str, Any]) -> bool:
     """True if conflict_flags non-empty."""
     flags = record.get("analysis_flags") or {}
@@ -232,29 +351,44 @@ def _get_memory_mode(record: Dict[str, Any]) -> str:
 
 
 def compute_sample_irr(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Compute IRR for one sample. Returns None if not CR or no review data."""
+    """Compute Process (action) and Measurement (final_label) IRR for one sample."""
     meta = record.get("meta") or {}
     if (meta.get("protocol_mode") or "").strip() != "conflict_review_v1":
         return None
 
-    matrix = build_action_matrix(record)
-    if not matrix:
+    action_matrix = build_action_matrix(record)
+    if not action_matrix:
         return None
 
-    tuple_ids = sorted(matrix.keys(), key=lambda t: int(t.lstrip("t")) if t.lstrip("t").isdigit() else 999)
-    labels_a = [matrix[t]["A"] for t in tuple_ids]
-    labels_b = [matrix[t]["B"] for t in tuple_ids]
-    labels_c = [matrix[t]["C"] for t in tuple_ids]
+    tuple_ids = sorted(
+        action_matrix.keys(),
+        key=lambda t: int(t.lstrip("t")) if t.lstrip("t").isdigit() else 999,
+    )
+    labels_a = [action_matrix[t]["A"] for t in tuple_ids]
+    labels_b = [action_matrix[t]["B"] for t in tuple_ids]
+    labels_c = [action_matrix[t]["C"] for t in tuple_ids]
 
+    # Process Reliability (action)
     kappa_ab = _compute_cohen_kappa(labels_a, labels_b)
     kappa_ac = _compute_cohen_kappa(labels_a, labels_c)
     kappa_bc = _compute_cohen_kappa(labels_b, labels_c)
-
     kappas = [k for k in [kappa_ab, kappa_ac, kappa_bc] if k is not None]
     kappa_mean = sum(kappas) / len(kappas) if kappas else None
-
     fleiss_k = _compute_fleiss_kappa(labels_a, labels_b, labels_c)
     perfect, majority, none = _percent_agreement(labels_a, labels_b, labels_c)
+
+    # Measurement Reliability (final_label)
+    meas_matrix = build_measurement_matrix(record, action_matrix)
+    meas_a = [meas_matrix[t]["A"] for t in tuple_ids]
+    meas_b = [meas_matrix[t]["B"] for t in tuple_ids]
+    meas_c = [meas_matrix[t]["C"] for t in tuple_ids]
+    kappa_meas_ab = _compute_cohen_kappa_measurement(meas_a, meas_b)
+    kappa_meas_ac = _compute_cohen_kappa_measurement(meas_a, meas_c)
+    kappa_meas_bc = _compute_cohen_kappa_measurement(meas_b, meas_c)
+    kappas_meas = [k for k in [kappa_meas_ab, kappa_meas_ac, kappa_meas_bc] if k is not None]
+    kappa_mean_measurement = sum(kappas_meas) / len(kappas_meas) if kappas_meas else None
+    fleiss_k_measurement = _compute_fleiss_kappa_measurement(meas_a, meas_b, meas_c)
+    perfect_meas, majority_meas, none_meas = _percent_agreement_measurement(meas_a, meas_b, meas_c)
 
     return {
         "text_id": meta.get("text_id") or meta.get("uid") or "",
@@ -266,6 +400,11 @@ def compute_sample_irr(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "agreement_perfect": perfect,
         "agreement_majority": majority,
         "agreement_none": none,
+        "kappa_mean_measurement": kappa_mean_measurement,
+        "fleiss_kappa_measurement": fleiss_k_measurement,
+        "agreement_perfect_measurement": perfect_meas,
+        "agreement_majority_measurement": majority_meas,
+        "agreement_none_measurement": none_meas,
         "has_conflict": _has_conflict(record),
         "memory_mode": _get_memory_mode(record),
         "n_tuples": len(tuple_ids),
@@ -306,7 +445,9 @@ def main() -> int:
     if not rows:
         print("[WARN] No CR samples with review data found.", file=sys.stderr)
         outdir.joinpath("irr_sample_level.csv").write_text(
-            "text_id,kappa_ab,kappa_ac,kappa_bc,kappa_mean,fleiss_kappa,agreement_perfect,agreement_majority,agreement_none,has_conflict,memory_mode\n",
+            "text_id,kappa_ab,kappa_ac,kappa_bc,kappa_mean,fleiss_kappa,agreement_perfect,agreement_majority,agreement_none,"
+            "kappa_mean_measurement,fleiss_kappa_measurement,agreement_perfect_measurement,agreement_majority_measurement,"
+            "has_conflict,memory_mode\n",
             encoding="utf-8",
         )
         summary = {
@@ -314,13 +455,21 @@ def main() -> int:
             "mean_kappa": None,
             "mean_fleiss": None,
             "mean_perfect_agreement": None,
+            "mean_majority_agreement": None,
+            "mean_kappa_measurement": None,
+            "mean_fleiss_measurement": None,
+            "mean_perfect_agreement_measurement": None,
+            "mean_majority_agreement_measurement": None,
             "conflict_vs_no_conflict": {},
         }
     else:
         # irr_sample_level.csv
         cols = [
             "text_id", "kappa_ab", "kappa_ac", "kappa_bc", "kappa_mean", "fleiss_kappa",
-            "agreement_perfect", "agreement_majority", "agreement_none", "has_conflict", "memory_mode",
+            "agreement_perfect", "agreement_majority", "agreement_none",
+            "kappa_mean_measurement", "fleiss_kappa_measurement",
+            "agreement_perfect_measurement", "agreement_majority_measurement",
+            "has_conflict", "memory_mode",
         ]
         csv_path = outdir / "irr_sample_level.csv"
         with csv_path.open("w", encoding="utf-8", newline="") as f:
@@ -355,6 +504,11 @@ def main() -> int:
         majority_total = sum(r["agreement_majority"] for r in rows)
         total_tuples = sum(r["n_tuples"] for r in rows)
 
+        kappa_meas_vals = [r["kappa_mean_measurement"] for r in rows if _valid_float(r.get("kappa_mean_measurement"))]
+        fleiss_meas_vals = [r["fleiss_kappa_measurement"] for r in rows if _valid_float(r.get("fleiss_kappa_measurement"))]
+        perfect_meas_total = sum(r["agreement_perfect_measurement"] for r in rows)
+        majority_meas_total = sum(r["agreement_majority_measurement"] for r in rows)
+
         conflict_yes = sum(1 for r in rows if r.get("has_conflict"))
         conflict_no = len(rows) - conflict_yes
 
@@ -370,6 +524,10 @@ def main() -> int:
             "mean_fleiss": _safe_mean(fleiss_vals),
             "mean_perfect_agreement": perfect_total / total_tuples if total_tuples else None,
             "mean_majority_agreement": majority_total / total_tuples if total_tuples else None,
+            "mean_kappa_measurement": _safe_mean(kappa_meas_vals),
+            "mean_fleiss_measurement": _safe_mean(fleiss_meas_vals),
+            "mean_perfect_agreement_measurement": perfect_meas_total / total_tuples if total_tuples else None,
+            "mean_majority_agreement_measurement": majority_meas_total / total_tuples if total_tuples else None,
             "conflict_vs_no_conflict": {"has_conflict": conflict_yes, "no_conflict": conflict_no},
         }
 

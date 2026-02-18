@@ -641,6 +641,10 @@ def make_scorecard(
     # Polarity typo policy: aggregator가 polarity_repair_rate, polarity_invalid_rate 산출용으로 row.meta에서 합산
     scorecard["meta"]["polarity_repair_count"] = int(meta_in.get("polarity_repair_count", 0) or 0)
     scorecard["meta"]["polarity_invalid_count"] = int(meta_in.get("polarity_invalid_count", 0) or 0)
+    # CR v2 invalid_flag 로그: Appendix 전용
+    scorecard["meta"]["invalid_ref_count"] = int(meta_in.get("invalid_ref_count", 0) or 0)
+    scorecard["meta"]["invalid_language_count"] = int(meta_in.get("invalid_language_count", 0) or 0)
+    scorecard["meta"]["invalid_target_count"] = int(meta_in.get("invalid_target_count", 0) or 0)
     if meta_extra:
         scorecard.setdefault("meta", {}).update(meta_extra)
     # RQ3 extended stage1/stage2 structural risk (for risk_resolution_rate denominator)

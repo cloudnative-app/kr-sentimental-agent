@@ -2,11 +2,10 @@
 ABSA evaluation Tuple (Aspect, Polarity) contract.
 
 - Tuple = (aspect_ref, aspect_term, polarity). aspect_term = 문장 내 관점 표면형(surface form).
-  Pipeline ATSA output uses aspect_term (AspectTerm: term, span) only; aspect_ref is not used in pipeline.
+- CR v2: 주평가 키 = (aspect_ref, polarity). match_by_aspect_ref=True (default).
+- 보조평가: (aspect_term, polarity) explicit-only — tuples_to_pairs.
 - Gold: gold_tuples (preferred) or gold_triplets with backward compat (opinion_term.term → aspect_term).
-- Scoring (F1): gold pair key is always (aspect_term, polarity). Pred pair key is (aspect_ref or aspect_term, polarity) when match_by_aspect_ref is True (pred only).
-  Gold must not use aspect_ref for the pair key; gold dataset has aspect_term (문장 내 표면형).
-  Samples without gold are excluded from tuple F1. See docs/absa_tuple_eval.md.
+- Samples without gold are excluded from tuple F1. See docs/evaluation_cr_v2.md, docs/absa_tuple_eval.md.
 """
 
 from __future__ import annotations
@@ -49,13 +48,30 @@ def normalize_polarity(s: Optional[str], default_missing: Optional[str] = "neutr
 
 
 def normalize_for_eval(s: Optional[str]) -> str:
-    """Normalize string for matching: strip, lower, collapse whitespace, remove leading/trailing punct. null/None -> ""."""
+    """Normalize string for matching: strip, lower, collapse whitespace, remove leading/trailing punct. null/None -> "".
+    Use for aspect_term only. For aspect_ref use normalize_ref_for_eval (preserves #)."""
     if s is None:
         return ""
     t = (s or "").strip().lower()
     t = re.sub(r"\s+", " ", t).strip()
     t = t.strip(".,;:!?\"'`""''()[]{}")
     return t
+
+
+def normalize_ref_for_eval(ref: Optional[str]) -> str:
+    """Normalize aspect_ref for matching: strip, collapse whitespace, # 좌우 공백 제거.
+    IMPORTANT: # is never removed or altered. No symbol substitution (e.g. / → ·).
+    Gold is never filtered by allowlist; this is surface-only normalization."""
+    if ref is None:
+        return ""
+    s = str(ref).strip()
+    s = " ".join(s.split())  # whitespace collapse
+    if "#" in s:
+        left, right = s.split("#", 1)
+        s = left.strip() + "#" + right.strip()
+    if __debug__ and ref and "#" in str(ref).strip():
+        assert "#" in s, "normalize_ref_for_eval: # must be preserved"
+    return s
 
 
 def _aspect_term_text(sent: Dict[str, Any]) -> str:
@@ -84,7 +100,8 @@ def tuple_from_sent(
     else:
         aspect_term_raw = _aspect_term_text(sent)
         aspect_term = normalize_for_eval(aspect_term_raw) if aspect_term_raw else ""
-    aspect_ref = normalize_for_eval(sent.get("aspect_ref") or sent.get("term"))
+    raw_ref = sent.get("aspect_ref") or sent.get("term")
+    aspect_ref = normalize_ref_for_eval(raw_ref or "")
     polarity = normalize_polarity(sent.get("polarity") or sent.get("label"), default_missing=default_missing_polarity)
     if polarity is None:
         return None
@@ -157,7 +174,7 @@ def final_aspects_from_final_tuples(final_tuples: Any) -> List[Dict[str, Any]]:
         t_raw = _aspect_term_text(it)
         if not t_raw and a_raw:
             t_raw = a_raw
-        a = normalize_for_eval(a_raw)
+        a = normalize_ref_for_eval(a_raw)
         t = normalize_for_eval(t_raw) if t_raw else ""
         p = normalize_polarity(it.get("polarity") or it.get("label"))
         is_impl = it.get("is_implicit", False) or (not (t_raw or a_raw))
@@ -175,17 +192,74 @@ def final_aspects_from_final_tuples(final_tuples: Any) -> List[Dict[str, Any]]:
 
 
 def tuples_to_pairs(tuples_set: Set[EvalTuple]) -> Set[EvalPair]:
-    """Convert EvalTuple set to (aspect_term, polarity) pairs for F1. aspect_ref is ignored. Polarity normalized."""
+    """Convert EvalTuple set to (aspect_term, polarity) pairs for F1. aspect_ref is ignored. Polarity normalized.
+    Used for explicit-only surface-level (SurfaceUnit) auxiliary evaluation."""
     if not tuples_set:
         return set()
     return {(normalize_for_eval(t), normalize_polarity(p)) for (_, t, p) in tuples_set}
 
 
+def tuples_to_ref_pairs(tuples_set: Set[EvalTuple]) -> Tuple[Set[EvalPair], int]:
+    """
+    Convert EvalTuple set to (aspect_ref, polarity) pairs for ref-level F1 (CR v2 primary evaluation).
+    Skips tuples with empty aspect_ref; returns (pairs, invalid_ref_count).
+    Gold typically has aspect_ref; pred with empty ref is excluded.
+    """
+    if not tuples_set:
+        return (set(), 0)
+    pairs: Set[EvalPair] = set()
+    invalid_ref_count = 0
+    for (a, _, p) in tuples_set:
+        ref = normalize_ref_for_eval(a) if a else ""
+        if ref == "":
+            invalid_ref_count += 1
+            continue
+        pairs.add((ref, normalize_polarity(p)))
+    return (pairs, invalid_ref_count)
+
+
+def tuples_to_attr_pairs(
+    tuples_set: Set[EvalTuple],
+    debug_counters: Optional[Dict[str, int]] = None,
+) -> Tuple[Set[EvalPair], int]:
+    """
+    Convert EvalTuple set to (attribute, polarity) pairs for attr-level F1 (Table 1C diagnostic).
+    Uses entity#attribute → attribute only via split("#", 1). Skips tuples with empty/invalid aspect_ref.
+    Returns (pairs, invalid_ref_count).
+    Gold is never filtered by allowlist; invalid_ref_count is diagnostic only.
+    """
+    if not tuples_set:
+        return (set(), 0)
+    counters = debug_counters if debug_counters is not None else {}
+    pairs: Set[EvalPair] = set()
+    invalid_ref_count = 0
+    for (a, _, p) in tuples_set:
+        ref = normalize_ref_for_eval(a or "")
+        if not ref:
+            invalid_ref_count += 1
+            continue
+        if "#" not in ref:
+            counters["attr_split_missing_hash"] = counters.get("attr_split_missing_hash", 0) + 1
+            invalid_ref_count += 1
+            continue
+        parts = ref.split("#", 1)
+        attr = parts[1].strip() if len(parts) == 2 else ""
+        if not attr:
+            invalid_ref_count += 1
+            continue
+        pairs.add((normalize_for_eval(attr), normalize_polarity(p)))
+    return (pairs, invalid_ref_count)
+
+
 def tuples_to_pairs_ref_fallback(tuples_set: Set[EvalTuple]) -> Set[EvalPair]:
-    """Convert to (aspect_ref or aspect_term, polarity) pairs. When aspect_ref is present, use it for matching (avoids term normalization mismatch). Same normalization as tuples_to_pairs."""
+    """Convert to (aspect_ref or aspect_term, polarity) pairs. When aspect_ref is present, use it for matching (avoids term normalization mismatch)."""
     if not tuples_set:
         return set()
-    return {(normalize_for_eval(a or t), normalize_polarity(p)) for (a, t, p) in tuples_set}
+    out: Set[EvalPair] = set()
+    for (a, t, p) in tuples_set:
+        key = normalize_ref_for_eval(a) if a else normalize_for_eval(t or "")
+        out.add((key, normalize_polarity(p)))
+    return out
 
 
 def precision_recall_f1_tuple(
@@ -195,16 +269,22 @@ def precision_recall_f1_tuple(
     match_by_aspect_ref: bool = True,
 ) -> Tuple[float, float, float]:
     """
-    Tuple F1: gold pair key is always (aspect_term, polarity). Pred pair key is (aspect_term, polarity) or (aspect_ref or aspect_term, polarity) when match_by_aspect_ref is True.
-    Gold must use aspect_term only (gold dataset has aspect_term as 문장 내 표면형; aspect_ref is taxonomy and must not flow into the pair key).
-    When match_by_aspect_ref is True (default), pred uses (aspect_ref or aspect_term) so pred with only ref can still match gold term.
-    When match_empty_aspect_by_polarity_only is True (default), gold pairs with aspect=="" match any pred pair with the same polarity (one-to-one).
+    Tuple F1. CR v2: primary evaluation uses (aspect_ref, polarity) — match_by_aspect_ref=True (default).
+    When match_by_aspect_ref is True: gold and pred use tuples_to_ref_pairs; tuples with empty aspect_ref are excluded.
+    When match_by_aspect_ref is False: (aspect_term, polarity) pairs; aspect_ref ignored.
+    When match_empty_aspect_by_polarity_only is True (term mode only): gold pairs with aspect=="" match any pred with same polarity (one-to-one).
+
+    POLICY: Gold is never filtered by allowlist (ALLOWED_REFS). invalid_ref_count applies to pred only (diagnostic).
     """
     if not gold_tuples:
         return (0.0, 0.0, 0.0)
     pred_tuples = pred_tuples or set()
-    gold_pairs = tuples_to_pairs(gold_tuples)
-    pred_pairs = tuples_to_pairs_ref_fallback(pred_tuples) if match_by_aspect_ref else tuples_to_pairs(pred_tuples)
+    if match_by_aspect_ref:
+        gold_pairs, _ = tuples_to_ref_pairs(gold_tuples)
+        pred_pairs, _ = tuples_to_ref_pairs(pred_tuples)
+    else:
+        gold_pairs = tuples_to_pairs(gold_tuples)
+        pred_pairs = tuples_to_pairs(pred_tuples)
 
     if not match_empty_aspect_by_polarity_only:
         tp = len(pred_pairs & gold_pairs)
@@ -294,6 +374,31 @@ def precision_recall_f1_implicit_only(
     rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
     return (prec, rec, f1)
+
+
+def precision_recall_f1_from_pairs(
+    gold_pairs: Set[EvalPair],
+    pred_pairs: Set[EvalPair],
+) -> Tuple[float, float, float]:
+    """F1 from (aspect, polarity) pair sets. Used for attr-pol and custom pair-level eval."""
+    if not gold_pairs:
+        return (0.0, 0.0, 0.0)
+    pred_pairs = pred_pairs or set()
+    tp = len(pred_pairs & gold_pairs)
+    fp = len(pred_pairs - gold_pairs)
+    fn = len(gold_pairs - pred_pairs)
+    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
+    return (prec, rec, f1)
+
+
+def pair_sets_match(gold_pairs: Set[EvalPair], pred_pairs: Set[EvalPair]) -> bool:
+    """True when pred exactly covers gold (prec=1, rec=1)."""
+    if not gold_pairs:
+        return len(pred_pairs or set()) == 0
+    prec, rec, _ = precision_recall_f1_from_pairs(gold_pairs, pred_pairs or set())
+    return prec == 1.0 and rec == 1.0
 
 
 def tuple_sets_match_with_empty_rule(

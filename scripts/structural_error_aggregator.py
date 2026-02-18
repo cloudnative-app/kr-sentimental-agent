@@ -119,12 +119,17 @@ from metrics.eval_tuple import (
     gold_tuple_set_from_record,
     normalize_for_eval,
     normalize_polarity,
+    normalize_ref_for_eval,
+    pair_sets_match,
+    precision_recall_f1_from_pairs,
     precision_recall_f1_implicit_only,
     precision_recall_f1_tuple,
     pred_valid_polarities_from_tuples,
     tuple_from_sent,
     tuples_from_list,
+    tuples_to_attr_pairs,
     tuples_to_pairs,
+    tuples_to_ref_pairs,
     tuple_sets_match_with_empty_rule,
 )
 
@@ -174,6 +179,13 @@ def _split_gold_explicit_implicit(
         else:
             implicit.add((a, t, p))
     return explicit, implicit
+
+
+def _pred_explicit_only(tuples_set: Set[Tuple[str, str, str]]) -> Set[Tuple[str, str, str]]:
+    """Filter pred to explicit only (aspect_term non-empty). For SurfaceUnit (aspect_term, polarity) auxiliary eval."""
+    if not tuples_set:
+        return set()
+    return {(a, t, p) for (a, t, p) in tuples_set if normalize_for_eval((t or "").strip())}
 
 
 def _record_has_forbidden_neutral_fallback(record: Dict[str, Any]) -> bool:
@@ -229,12 +241,220 @@ def _tuples_from_list_of_dicts(items: Any) -> Set[Tuple[str, str, str]]:
     for it in items:
         if not it or not isinstance(it, dict):
             continue
-        a = normalize_for_eval((it.get("aspect_ref") or "").strip())
+        a = normalize_ref_for_eval((it.get("aspect_ref") or "").strip())
         t = _aspect_term_text(it)
         t = normalize_for_eval(t) if t else ""
         p = normalize_polarity(it.get("polarity") or it.get("label"))
         if a or t:
             out.add((a, t, p))
+    return out
+
+
+# AAR/CDA: canonical action labels (aligned with compute_irr)
+_AAR_KEEP = "KEEP"
+_AAR_CHANGE_LABELS = {"DROP", "MERGE", "FLIP_POS", "FLIP_NEG", "FLIP", "OTHER"}
+
+
+def _get_output_from_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Get parsed output from scorecard (runtime.parsed_output) or record itself."""
+    runtime = record.get("runtime") or {}
+    parsed = runtime.get("parsed_output")
+    return parsed if isinstance(parsed, dict) else record
+
+
+def _aar_get_review_actions(output: Dict[str, Any]) -> Tuple[List[Dict], List[Dict], List[Dict]]:
+    """Extract review_actions per A/B/C from output (analysis_flags or process_trace)."""
+    flags = output.get("analysis_flags") or {}
+    combined = flags.get("review_actions") or []
+    actions_a, actions_b, actions_c = [], [], []
+    if combined:
+        for a in combined:
+            actor = (a.get("actor") or "").strip().upper()
+            if actor == "A":
+                actions_a.append(a)
+            elif actor == "B":
+                actions_b.append(a)
+            elif actor == "C":
+                actions_c.append(a)
+    else:
+        for tr in output.get("process_trace") or []:
+            agent = (tr.get("agent") or "").strip()
+            ra_list = (tr.get("output") or {}).get("review_actions") or []
+            if agent == "ReviewA":
+                actions_a = ra_list
+            elif agent == "ReviewB":
+                actions_b = ra_list
+            elif agent == "ReviewC":
+                actions_c = ra_list
+    return actions_a, actions_b, actions_c
+
+
+def _aar_to_canonical(action: Dict[str, Any]) -> str:
+    """Convert action to canonical label (KEEP, DROP, MERGE, FLIP_POS, FLIP_NEG, FLIP, OTHER)."""
+    atype = (action.get("action_type") or "").strip().upper()
+    if atype == "KEEP":
+        return _AAR_KEEP
+    if atype == "MERGE":
+        return "MERGE"
+    if atype == "DROP":
+        return "DROP"
+    if atype == "FLIP":
+        pol = (str((action.get("new_value") or {}).get("polarity") or "")).strip().lower()
+        if pol in ("positive", "pos"):
+            return "FLIP_POS"
+        if pol in ("negative", "neg"):
+            return "FLIP_NEG"
+        return "FLIP"
+    return atype if atype in {"MERGE", "DROP", "FLIP_POS", "FLIP_NEG", "FLIP", "OTHER"} else "OTHER"
+
+
+def _aar_infer_tuple_ids(output: Dict[str, Any]) -> List[str]:
+    """Infer tuple_ids t0, t1, ... from stage1_tuples."""
+    fr = output.get("final_result") or {}
+    pre = fr.get("final_tuples_pre_review") or fr.get("stage1_tuples") or []
+    ids_set: Set[str] = set()
+    for i in range(len(pre)):
+        ids_set.add(f"t{i}")
+    for a in (output.get("analysis_flags") or {}).get("review_actions") or []:
+        for tid in a.get("target_tuple_ids") or []:
+            ids_set.add(tid)
+    return sorted(ids_set, key=lambda x: (int(x.lstrip("t")) if x.lstrip("t").isdigit() else 999))
+
+
+def _build_action_matrix(output: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
+    """Build {tuple_id: {A: label, B: label, C: label}}."""
+    actions_a, actions_b, actions_c = _aar_get_review_actions(output)
+    tuple_ids = _aar_infer_tuple_ids(output)
+
+    def _labels_per_rater(actions: List[Dict]) -> Dict[str, str]:
+        out = {tid: _AAR_KEEP for tid in tuple_ids}
+        for a in actions:
+            for tid in a.get("target_tuple_ids") or []:
+                if tid in out:
+                    out[tid] = _aar_to_canonical(a)
+        return out
+
+    labels_a = _labels_per_rater(actions_a)
+    labels_b = _labels_per_rater(actions_b)
+    labels_c = _labels_per_rater(actions_c)
+    return {tid: {"A": labels_a.get(tid, _AAR_KEEP), "B": labels_b.get(tid, _AAR_KEEP), "C": labels_c.get(tid, _AAR_KEEP)} for tid in tuple_ids}
+
+
+def compute_aar_cda_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    AAR (Action Agreement Rate) and CDA (Correction Directional Accuracy).
+    Paper Metric Realignment Freeze:
+      AAR = n(majority agreement in review actions) / total_tuples.
+        Uses IRR action labels (KEEP/DROP/FLIP_*/MERGE/OTHER); majority = 2+ of 3 raters agree.
+      CDA (ref-pol, action-based): among tuple_ids where majority=CHANGE, helpful (FP removal) vs harmful (TP removal).
+    Gold-based CDA (n(S1 incorrect AND S2 correct) / n(S1 incorrect AND S2 changed)) is computed in compute_stage2_correction_metrics.
+    """
+    out: Dict[str, Any] = {
+        "aar_intervention_majority_rate": None,
+        "aar_intervention_perfect_rate": None,
+        "aar_majority_rate": None,  # n(majority agreement) / total_tuples
+        "cda_refpol": None,
+        "cda_helpful_n": 0,
+        "cda_harmful_n": 0,
+        "cda_eligible_n": 0,
+    }
+    n_flagged = 0
+    n_majority = 0
+    n_perfect = 0
+    n_total_tuples = 0
+    n_majority_all = 0
+    cda_helpful = 0
+    cda_harmful = 0
+    cda_eligible = 0
+
+    for record in rows:
+        output = _get_output_from_record(record)
+        try:
+            matrix = _build_action_matrix(output)
+        except Exception:
+            continue
+        if not matrix:
+            continue
+
+        gold = _extract_gold_tuples(record)
+        if not gold:
+            continue  # CDA requires gold for TP/FP judgment
+        s1 = _extract_stage1_tuples(record)
+        s2 = _extract_final_tuples(record)
+        gold_pairs, _ = tuples_to_ref_pairs(gold)
+        s1_pairs, _ = tuples_to_ref_pairs(s1 or set())
+        s2_pairs, _ = tuples_to_ref_pairs(s2 or set())
+
+        fr = output.get("final_result") or {}
+        pre = fr.get("final_tuples_pre_review") or fr.get("stage1_tuples") or []
+        pre_list: List[Tuple[str, str, str]] = []
+        if pre:
+            for it in pre:
+                if not it or not isinstance(it, dict):
+                    continue
+                a = normalize_ref_for_eval((it.get("aspect_ref") or "").strip())
+                t = _aspect_term_text(it)
+                t = normalize_for_eval(t) if t else ""
+                p = normalize_polarity(it.get("polarity") or it.get("label"))
+                pre_list.append((a, t, p))
+
+        for tid, labels in matrix.items():
+            label_list = list(labels.values())
+            binary = [_AAR_KEEP if l == _AAR_KEEP else "CHANGE" for l in label_list]
+            n_change = binary.count("CHANGE")
+            is_flagged = n_change >= 1
+            n_total_tuples += 1
+            # AAR (paper): majority agreement = 2+ of 3 have same label
+            cnt = {}
+            for lbl in label_list:
+                cnt[lbl] = cnt.get(lbl, 0) + 1
+            if cnt and max(cnt.values()) >= 2:
+                n_majority_all += 1
+            if not is_flagged:
+                continue
+            n_flagged += 1
+            n_keep = binary.count(_AAR_KEEP)
+            if n_keep >= 2 or n_change >= 2:
+                n_majority += 1
+            if len(set(binary)) == 1:
+                n_perfect += 1
+
+            # CDA: only when majority=CHANGE (2+ of 3 said CHANGE); requires gold
+            if n_change < 2 or not gold_pairs:
+                continue
+            try:
+                idx = int(tid.lstrip("t"))
+            except (ValueError, AttributeError):
+                continue
+            if idx >= len(pre_list) or not pre_list:
+                continue
+            tup = pre_list[idx]
+            ref = normalize_for_eval(tup[0]) if tup[0] else ""
+            pol = normalize_polarity(tup[2])
+            if not ref:
+                continue
+            pair = (ref, pol)
+            cda_eligible += 1
+            if pair in s2_pairs:
+                continue  # kept or modified — neutral, exclude
+            if pair not in s1_pairs:
+                continue
+            if pair in gold_pairs:
+                cda_harmful += 1
+            else:
+                cda_helpful += 1
+
+    if n_flagged:
+        out["aar_intervention_majority_rate"] = n_majority / n_flagged
+        out["aar_intervention_perfect_rate"] = n_perfect / n_flagged
+    if n_total_tuples:
+        out["aar_majority_rate"] = n_majority_all / n_total_tuples
+    denom = cda_helpful + cda_harmful
+    if denom:
+        out["cda_refpol"] = cda_helpful / denom
+    out["cda_helpful_n"] = cda_helpful
+    out["cda_harmful_n"] = cda_harmful
+    out["cda_eligible_n"] = cda_eligible
     return out
 
 
@@ -318,7 +538,7 @@ def _get_first_final_tuple(record: Dict[str, Any]) -> Optional[Tuple[str, str, s
             t = "" if it.get("is_implicit") else (_aspect_term_text(it) or "").strip()
             p = (it.get("polarity") or it.get("label") or "").strip()
             if a or t or it.get("is_implicit"):
-                return (normalize_for_eval(a), normalize_for_eval(t) if t else "", normalize_polarity(p))
+                return (normalize_ref_for_eval(a), normalize_for_eval(t) if t else "", normalize_polarity(p))
     final_aspects = final_result.get("final_aspects")
     if final_aspects and isinstance(final_aspects, list):
         for it in final_aspects:
@@ -401,6 +621,7 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     F1 matches on (aspect_term, polarity) only. Rows without gold excluded. See docs/absa_tuple_eval.md."""
     out: Dict[str, Any] = {
         "tuple_f1_s1": None, "tuple_f1_s2": None, "tuple_f1_s2_overall": None, "tuple_f1_s2_explicit_only": None,
+        "tuple_f1_s2_otepol_explicit_only": None,
         "tuple_f1_s2_implicit_only": None,
         "tuple_f1_s2_raw": None, "tuple_f1_s2_after_rep": None,
         "delta_f1": None,
@@ -413,6 +634,8 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         "N_agg_fallback_used": 0,  # CONTRACT-AGG-1: rows where final_tuples was empty/missing and we used final_aspects or inputs
         "implicit_gold_sample_n": 0, "implicit_invalid_sample_n": 0,
         "implicit_invalid_pred_rate": None,
+        "tuple_f1_explicit": None, "precision_explicit": None, "recall_explicit": None,  # Appendix: SurfaceUnit (aspect_term, polarity)
+        "invalid_target_count_total": 0, "invalid_target_rate": None,  # Appendix: opinion→aspect contamination
     }
     # Always: gold pair counts and pred counts from all rows (not gated)
     n_gold_total_pairs = 0
@@ -475,9 +698,45 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     f1_s2_after_rep_list: List[float] = []
     f1_s2_explicit_only_list: List[float] = []
     f1_s2_implicit_only_list: List[float] = []
+    prec_explicit_list: List[float] = []
+    rec_explicit_list: List[float] = []
+    f1_explicit_list: List[float] = []
+    f1_s1_otepol_list: List[float] = []
+    f1_s2_otepol_list: List[float] = []
+    f1_s2_otepol_explicit_only_list: List[float] = []
+    f1_s1_attrpol_list: List[float] = []
+    f1_s2_attrpol_list: List[float] = []
     n_fix = n_break = n_still = n_keep = 0
+    n_still_with_change = 0  # S1 wrong, S2 wrong, but S2 changed (for CDA denominator)
+    n_fix_otepol = n_break_otepol = n_still_otepol = n_keep_otepol = 0
+    n_fix_attrpol = n_break_attrpol = n_still_attrpol = n_keep_attrpol = 0
     n_implicit_gold_samples = 0
     n_implicit_invalid_samples = 0
+    invalid_ref_total = invalid_language_total = invalid_target_total = 0
+    total_stage1_triplets = 0
+    n_pred_with_ref = 0
+    n_pred_valid_ref = 0
+    n_pred_total_ref = 0
+    gold_refs_total = 0
+    gold_refs_covered = 0
+    n_pred_with_ref_s2 = 0
+    n_pred_valid_ref_s2 = 0
+    n_pred_total_ref_s2 = 0
+    gold_refs_covered_s2 = 0
+    n_implicit_coverage_fail = 0
+    n_implicit_null_fail = 0
+    n_implicit_parse_fail = 0
+    # Debug counters (normalization/split integrity)
+    ref_hash_preserved_fail_count = 0
+    pred_ref_empty_count = 0
+    pred_ref_invalid_count = 0
+    attr_split_missing_hash_count = 0
+    gold_unique_refs_seen: Set[str] = set()
+    try:
+        from schemas.taxonomy import is_valid_ref
+    except ImportError:
+        def is_valid_ref(_: str) -> bool:
+            return False
     for record, gold in rows_with_gold:
         gold = gold or set()
         gold_explicit, gold_implicit = _split_gold_explicit_implicit(gold)
@@ -488,6 +747,58 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
 
         s1 = _extract_stage1_tuples(record)
         s2 = _extract_final_tuples(record)
+        meta = record.get("meta") or {}
+        invalid_ref_total += int(meta.get("invalid_ref_count") or 0)
+        invalid_language_total += int(meta.get("invalid_language_count") or 0)
+        invalid_target_total += int(meta.get("invalid_target_count") or 0)
+        total_stage1_triplets += len(s1) if s1 else 0
+        # Ref validity (stage1 pred). POLICY: invalid_ref is pred-only; gold never filtered by allowlist.
+        for (_a, _t, _p) in (s1 or set()):
+            ref = normalize_ref_for_eval(_a) if _a else ""
+            n_pred_total_ref += 1
+            if not ref:
+                pred_ref_empty_count += 1
+            else:
+                n_pred_with_ref += 1
+                if is_valid_ref(ref):
+                    n_pred_valid_ref += 1
+                else:
+                    pred_ref_invalid_count += 1
+        gold_ref_pairs, _ = tuples_to_ref_pairs(gold)
+        gold_refs_total += len(gold_ref_pairs)
+        for (r, _) in gold_ref_pairs:
+            gold_unique_refs_seen.add(r)
+        # ref_hash_preserved_fail: raw had # but norm lost it (safety check)
+        runtime = record.get("runtime") or {}
+        parsed = runtime.get("parsed_output") if isinstance(runtime.get("parsed_output"), dict) else {}
+        final_result = parsed.get("final_result") or {}
+        for lst in (final_result.get("final_tuples"), final_result.get("stage1_tuples")):
+            if not isinstance(lst, list):
+                continue
+            for it in lst:
+                if not it or not isinstance(it, dict):
+                    continue
+                raw = (it.get("aspect_ref") or "").strip()
+                if raw and "#" in raw:
+                    norm = normalize_ref_for_eval(raw)
+                    if "#" not in norm:
+                        ref_hash_preserved_fail_count += 1
+        pred_ref_pairs, _ = tuples_to_ref_pairs(s1 or set())
+        gold_refs_covered += len(gold_ref_pairs & pred_ref_pairs)
+        # Ref validity (stage2 pred)
+        for (_a, _t, _p) in (s2 or set()):
+            ref = normalize_ref_for_eval(_a) if _a else ""
+            n_pred_total_ref_s2 += 1
+            if not ref:
+                pred_ref_empty_count += 1
+            else:
+                n_pred_with_ref_s2 += 1
+                if is_valid_ref(ref):
+                    n_pred_valid_ref_s2 += 1
+                else:
+                    pred_ref_invalid_count += 1
+        pred_ref_pairs_s2, _ = tuples_to_ref_pairs(s2 or set())
+        gold_refs_covered_s2 += len(gold_ref_pairs & pred_ref_pairs_s2)
         s2_after_rep = select_representative_tuples(record)
         _, _, f1_1 = precision_recall_f1_tuple(gold, s1)
         _, _, f1_2 = precision_recall_f1_tuple(gold, s2)
@@ -509,20 +820,76 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
             f1_s2_implicit_only_list.append(f1_implicit)
             parse_fail = _record_parse_failed(record)
             forbidden_fallback = _record_has_forbidden_neutral_fallback(record)
-            invalid_implicit = len(pred_valid_pols) == 0 or parse_fail or forbidden_fallback
+            coverage_fail = len(pred_valid_pols) == 0
+            null_fail = forbidden_fallback
+            invalid_implicit = coverage_fail or parse_fail or null_fail
             if invalid_implicit:
                 n_implicit_invalid_samples += 1
+            if coverage_fail:
+                n_implicit_coverage_fail += 1
+            if null_fail:
+                n_implicit_null_fail += 1
+            if parse_fail:
+                n_implicit_parse_fail += 1
 
         st1 = tuple_sets_match_with_empty_rule(gold, s1)
         st2 = tuple_sets_match_with_empty_rule(gold, s2)
+        s2_changed = (s1 or set()) != (s2 or set())
         if not st1 and st2:
             n_fix += 1
         if st1 and not st2:
             n_break += 1
         if not st1 and not st2:
             n_still += 1
+            if s2_changed:
+                n_still_with_change += 1
         if st1 and st2:
             n_keep += 1
+
+        # OTE-pol (aspect_term, polarity)
+        st1_ote = tuple_sets_match_with_empty_rule(gold, s1, match_by_aspect_ref=False)
+        st2_ote = tuple_sets_match_with_empty_rule(gold, s2, match_by_aspect_ref=False)
+        _, _, f1_1_ote = precision_recall_f1_tuple(gold, s1, match_by_aspect_ref=False)
+        _, _, f1_2_ote = precision_recall_f1_tuple(gold, s2, match_by_aspect_ref=False)
+        f1_s1_otepol_list.append(f1_1_ote)
+        f1_s2_otepol_list.append(f1_2_ote)
+        # OTE-pol explicit-only: gold_explicit vs pred_explicit (aspect_term != "")
+        if gold_explicit:
+            pred_explicit = _pred_explicit_only(s2 or set())
+            if pred_explicit or gold_explicit:
+                _, _, f1_ote_exp = precision_recall_f1_tuple(
+                    gold_explicit, pred_explicit or set(), match_by_aspect_ref=False
+                )
+                f1_s2_otepol_explicit_only_list.append(f1_ote_exp)
+        if not st1_ote and st2_ote:
+            n_fix_otepol += 1
+        if st1_ote and not st2_ote:
+            n_break_otepol += 1
+        if not st1_ote and not st2_ote:
+            n_still_otepol += 1
+        if st1_ote and st2_ote:
+            n_keep_otepol += 1
+
+        # ATTR-pol (attribute, polarity). tuples_to_attr_pairs uses split("#", 1); debug_counters for attr_split_missing_hash.
+        attr_debug: Dict[str, int] = {}
+        gold_attr, _ = tuples_to_attr_pairs(gold, debug_counters=attr_debug)
+        s1_attr, _ = tuples_to_attr_pairs(s1, debug_counters=attr_debug)
+        s2_attr, _ = tuples_to_attr_pairs(s2, debug_counters=attr_debug)
+        attr_split_missing_hash_count += attr_debug.get("attr_split_missing_hash", 0)
+        st1_attr = pair_sets_match(gold_attr, s1_attr)
+        st2_attr = pair_sets_match(gold_attr, s2_attr)
+        _, _, f1_1_attr = precision_recall_f1_from_pairs(gold_attr, s1_attr)
+        _, _, f1_2_attr = precision_recall_f1_from_pairs(gold_attr, s2_attr)
+        f1_s1_attrpol_list.append(f1_1_attr)
+        f1_s2_attrpol_list.append(f1_2_attr)
+        if not st1_attr and st2_attr:
+            n_fix_attrpol += 1
+        if st1_attr and not st2_attr:
+            n_break_attrpol += 1
+        if not st1_attr and not st2_attr:
+            n_still_attrpol += 1
+        if st1_attr and st2_attr:
+            n_keep_attrpol += 1
     if f1_s1_list:
         out["tuple_f1_s1"] = sum(f1_s1_list) / len(f1_s1_list)
         out["triplet_f1_s1"] = out["tuple_f1_s1"]
@@ -532,6 +899,10 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         out["tuple_f1_s2_overall"] = out["tuple_f1_s2"]
     if f1_s2_explicit_only_list:
         out["tuple_f1_s2_explicit_only"] = sum(f1_s2_explicit_only_list) / len(f1_s2_explicit_only_list)
+    if f1_explicit_list:
+        out["tuple_f1_explicit"] = sum(f1_explicit_list) / len(f1_explicit_list)
+        out["precision_explicit"] = sum(prec_explicit_list) / len(prec_explicit_list)
+        out["recall_explicit"] = sum(rec_explicit_list) / len(rec_explicit_list)
     if f1_s2_implicit_only_list:
         out["tuple_f1_s2_implicit_only"] = sum(f1_s2_implicit_only_list) / len(f1_s2_implicit_only_list)
     if f1_s2_raw_list:
@@ -545,9 +916,63 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     keep_break = n_break + n_keep
     out["break_rate"] = _rate(n_break, keep_break) if keep_break else None
     out["net_gain"] = (n_fix - n_break) / N if N else None
+    # CDA (Correction Directional Accuracy): n(S1 incorrect AND S2 correct) / n(S1 incorrect AND S2 changed). Gold-based.
+    # Paper Metric Realignment Freeze: CDA = helpful corrections among samples where S1 was wrong and S2 changed.
+    cda_denom = n_fix + n_still_with_change
+    out["cda"] = _rate(n_fix, cda_denom) if cda_denom else None
+    # refpol aliases (paper Table 1A main; ref-pol = aspect_ref + polarity)
+    out["tuple_f1_s1_refpol"] = out["tuple_f1_s1"]
+    out["tuple_f1_s2_refpol"] = out["tuple_f1_s2"]
+    out["delta_f1_refpol"] = out["delta_f1"]
+    out["fix_rate_refpol"] = out["fix_rate"]
+    out["break_rate_refpol"] = out["break_rate"]
+    out["net_gain_refpol"] = out["net_gain"]
+
+    # ote-pol (Table 1B; aspect_term, polarity)
+    if f1_s1_otepol_list:
+        out["tuple_f1_s1_otepol"] = sum(f1_s1_otepol_list) / len(f1_s1_otepol_list)
+    if f1_s2_otepol_list:
+        out["tuple_f1_s2_otepol"] = sum(f1_s2_otepol_list) / len(f1_s2_otepol_list)
+    if f1_s1_otepol_list and f1_s2_otepol_list:
+        out["delta_f1_otepol"] = (out["tuple_f1_s2_otepol"] or 0.0) - (out["tuple_f1_s1_otepol"] or 0.0)
+    if f1_s2_otepol_explicit_only_list:
+        out["tuple_f1_s2_otepol_explicit_only"] = sum(f1_s2_otepol_explicit_only_list) / len(f1_s2_otepol_explicit_only_list)
+    need_fix_ote = n_fix_otepol + n_still_otepol
+    out["fix_rate_otepol"] = _rate(n_fix_otepol, need_fix_ote) if need_fix_ote else None
+    keep_break_ote = n_break_otepol + n_keep_otepol
+    out["break_rate_otepol"] = _rate(n_break_otepol, keep_break_ote) if keep_break_ote else None
+    out["net_gain_otepol"] = (n_fix_otepol - n_break_otepol) / N if N else None
+
+    # attr-pol (Table 1C; attribute, polarity)
+    if f1_s1_attrpol_list:
+        out["tuple_f1_s1_attrpol"] = sum(f1_s1_attrpol_list) / len(f1_s1_attrpol_list)
+    if f1_s2_attrpol_list:
+        out["tuple_f1_s2_attrpol"] = sum(f1_s2_attrpol_list) / len(f1_s2_attrpol_list)
+    if f1_s1_attrpol_list and f1_s2_attrpol_list:
+        out["delta_f1_attrpol"] = (out["tuple_f1_s2_attrpol"] or 0.0) - (out["tuple_f1_s1_attrpol"] or 0.0)
+    need_fix_attr = n_fix_attrpol + n_still_attrpol
+    out["fix_rate_attrpol"] = _rate(n_fix_attrpol, need_fix_attr) if need_fix_attr else None
+    keep_break_attr = n_break_attrpol + n_keep_attrpol
+    out["break_rate_attrpol"] = _rate(n_break_attrpol, keep_break_attr) if keep_break_attr else None
+    out["net_gain_attrpol"] = (n_fix_attrpol - n_break_attrpol) / N if N else None
     out["implicit_gold_sample_n"] = n_implicit_gold_samples
     out["implicit_invalid_sample_n"] = n_implicit_invalid_samples
     out["implicit_invalid_pred_rate"] = _rate(n_implicit_invalid_samples, n_implicit_gold_samples) if n_implicit_gold_samples else 0.0
+    out["invalid_ref_count_total"] = invalid_ref_total
+    out["invalid_ref_rate"] = _rate(invalid_ref_total, total_stage1_triplets) if total_stage1_triplets else None
+    out["invalid_language_count_total"] = invalid_language_total
+    out["invalid_language_rate"] = _rate(invalid_language_total, total_stage1_triplets) if total_stage1_triplets else None
+    out["invalid_target_count_total"] = invalid_target_total
+    out["invalid_target_rate"] = _rate(invalid_target_total, total_stage1_triplets) if total_stage1_triplets else None
+    out["ref_fill_rate"] = _rate(n_pred_with_ref, n_pred_total_ref) if n_pred_total_ref else None
+    out["ref_valid_rate"] = _rate(n_pred_valid_ref, n_pred_with_ref) if n_pred_with_ref else None
+    out["ref_coverage_rate"] = _rate(gold_refs_covered, gold_refs_total) if gold_refs_total else None
+    out["ref_fill_rate_s2"] = _rate(n_pred_with_ref_s2, n_pred_total_ref_s2) if n_pred_total_ref_s2 else None
+    out["ref_valid_rate_s2"] = _rate(n_pred_valid_ref_s2, n_pred_with_ref_s2) if n_pred_with_ref_s2 else None
+    out["ref_coverage_rate_s2"] = _rate(gold_refs_covered_s2, gold_refs_total) if gold_refs_total else None
+    out["implicit_coverage_fail_rate"] = _rate(n_implicit_coverage_fail, n_implicit_gold_samples) if n_implicit_gold_samples else None
+    out["implicit_null_fail_rate"] = _rate(n_implicit_null_fail, n_implicit_gold_samples) if n_implicit_gold_samples else None
+    out["implicit_parse_fail_rate"] = _rate(n_implicit_parse_fail, n_implicit_gold_samples) if n_implicit_gold_samples else None
     out["N_gold_explicit"] = n_gold_explicit
     out["N_gold_implicit"] = n_gold_implicit
     out["N_gold_total_pairs"] = n_gold_total_pairs
@@ -558,6 +983,12 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     out["N_pred_inputs_aspect_sentiments"] = n_pred_inputs
     out["N_pred_used"] = n_pred_used_total
     out["N_agg_fallback_used"] = n_agg_fallback_used
+    # Debug counters (normalization/split integrity)
+    out["ref_hash_preserved_fail_count"] = ref_hash_preserved_fail_count
+    out["pred_ref_empty_count"] = pred_ref_empty_count
+    out["pred_ref_invalid_count"] = pred_ref_invalid_count
+    out["attr_split_missing_hash_count"] = attr_split_missing_hash_count
+    out["gold_ref_filtered_suspect_flag"] = False  # Gold is never filtered by allowlist
     return out
 
 
@@ -892,44 +1323,25 @@ def select_representative_tuples(record: Dict[str, Any]) -> Set[Tuple[str, str, 
 
 
 def has_polarity_conflict_raw(record: Dict[str, Any]) -> bool:
-    """Conflict without representative selection: same aspect_term with ≥2 distinct polarities (raw final tuples)."""
-    raw = _get_final_tuples_raw(record)
-    if not raw:
+    """Conflict: same aspect_ref with ≥2 distinct polarities (ref-level, CR v2 aligned).
+    Uses _extract_final_tuples (EvalTuple). Empty ref excluded. DROP된 tuple은 이미 final_tuples에 없음."""
+    tuples_set = _extract_final_tuples(record)
+    if not tuples_set:
         return False
-    by_aspect: Dict[str, Set[str]] = {}
-    for it in raw:
-        key = (it.get("aspect_term_norm") or "").strip()
-        pol = it.get("polarity_norm") or "neutral"
-        by_aspect.setdefault(key, set()).add(pol)
-    return any(len(pols) > 1 for pols in by_aspect.values())
+    by_ref: Dict[str, Set[str]] = {}
+    for (a, _t, p) in tuples_set:
+        ref = normalize_ref_for_eval(a) if a else ""
+        if ref == "":
+            continue
+        pol = normalize_polarity(p)
+        by_ref.setdefault(ref, set()).add(pol)
+    return any(len(pols) > 1 for pols in by_ref.values())
 
 
 def has_polarity_conflict_after_representative(record: Dict[str, Any]) -> bool:
-    """RQ2 정규화: 대표 tuple 선택 후에도 상충 극성이 남을 경우만 conflict.
-    Per aspect: select representative (explicit > implicit, confidence, no drop_reason); conflict iff ≥2 distinct polarities."""
-    raw = _get_final_tuples_raw(record)
-    if not raw:
-        return False
-    by_aspect: Dict[str, List[Dict[str, Any]]] = {}
-    for it in raw:
-        key = (it.get("aspect_term_norm") or "").strip() or ""
-        if key not in by_aspect:
-            by_aspect[key] = []
-        by_aspect[key].append(it)
-    def _key(x: Dict[str, Any]) -> Tuple[bool, float, bool]:
-        g = (x.get("grounding") or "implicit").strip().lower()
-        c = float(x.get("confidence") or 0)
-        dr = (x.get("drop_reason") or "").strip()
-        return (g == "explicit", c, not bool(dr))
-
-    for _aspect_norm, items in by_aspect.items():
-        if len(items) < 2:
-            continue
-        items_sorted = sorted(items, key=_key, reverse=True)
-        rep_pol = items_sorted[0].get("polarity_norm") or "neutral"
-        if any((it.get("polarity_norm") or "neutral") != rep_pol for it in items_sorted[1:]):
-            return True
-    return False
+    """RQ2 정규화: ref-level conflict. Same aspect_ref with ≥2 distinct polarities.
+    Ref-level에서는 대표 선택 없이 동일 ref 내 polarity set > 1 이면 conflict."""
+    return has_polarity_conflict_raw(record)
 
 
 def has_stage_mismatch(record: Dict[str, Any]) -> bool:
@@ -1551,15 +1963,29 @@ def aggregate_single_run(
         "tuple_f1_s1", "tuple_f1_s2", "tuple_f1_s2_overall", "tuple_f1_s2_explicit_only", "tuple_f1_s2_implicit_only",
         "tuple_f1_s2_raw", "tuple_f1_s2_after_rep",
         "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
-        "fix_rate", "break_rate", "net_gain",
+        "fix_rate", "break_rate", "net_gain", "cda",
+        "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+        "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
+        "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
         "N_gold", "N_gold_total", "N_gold_explicit", "N_gold_implicit",
         "N_gold_total_pairs", "N_gold_explicit_pairs", "N_gold_implicit_pairs", "gold_available",
         "N_pred_final_tuples", "N_pred_final_aspects", "N_pred_inputs_aspect_sentiments", "N_pred_used",
         "N_agg_fallback_used",
         "implicit_gold_sample_n", "implicit_invalid_sample_n", "implicit_invalid_pred_rate",
+        "tuple_f1_explicit", "precision_explicit", "recall_explicit",
+        "invalid_ref_count_total", "invalid_ref_rate", "invalid_language_count_total", "invalid_language_rate",
+        "invalid_target_count_total", "invalid_target_rate",
+        "ref_fill_rate", "ref_valid_rate", "ref_coverage_rate",
+        "ref_fill_rate_s2", "ref_valid_rate_s2", "ref_coverage_rate_s2",
+        "implicit_coverage_fail_rate", "implicit_null_fail_rate", "implicit_parse_fail_rate",
     ):
         if k in correction:
             out[k] = correction[k]
+    # AAR / CDA (Table 3C)
+    aar_cda = compute_aar_cda_metrics(rows)
+    for k in ("aar_intervention_majority_rate", "aar_intervention_perfect_rate", "aar_majority_rate", "cda_refpol", "cda_helpful_n", "cda_harmful_n", "cda_eligible_n"):
+        if k in aar_cda:
+            out[k] = aar_cda[k]
     # Outcome (RQ): Severe Polarity Error L3 — aspect match, polarity mismatch only
     rows_with_gold_list = [r for r in rows if _extract_gold_tuples(r) is not None]
     N_gold = len(rows_with_gold_list)
@@ -1634,7 +2060,10 @@ CANONICAL_METRIC_KEYS = [
     "tuple_f1_s1", "tuple_f1_s2", "tuple_f1_s2_overall", "tuple_f1_s2_explicit_only", "tuple_f1_s2_implicit_only",
     "tuple_f1_s2_raw", "tuple_f1_s2_after_rep",
     "implicit_gold_sample_n", "implicit_invalid_sample_n", "implicit_invalid_pred_rate",
-    "triplet_f1_s1", "triplet_f1_s2", "delta_f1", "fix_rate", "break_rate", "net_gain",
+    "triplet_f1_s1", "triplet_f1_s2", "delta_f1", "fix_rate", "break_rate", "net_gain", "cda",
+    "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+    "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
+    "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
     "N_gold", "N_gold_total", "N_gold_explicit", "N_gold_implicit",
     "N_gold_total_pairs", "N_gold_explicit_pairs", "N_gold_implicit_pairs", "gold_available",
     "N_pred_final_tuples", "N_pred_final_aspects", "N_pred_inputs_aspect_sentiments", "N_pred_used",
@@ -1658,6 +2087,7 @@ CANONICAL_METRIC_KEYS = [
     "drift_cause_n_changed", "drift_cause_stage2_selected_n", "drift_cause_same_stage_tuples_differ_n", "drift_cause_stage_delta_missing_n",
     "drift_cause_stage2_selected_rate", "drift_cause_same_stage_tuples_differ_rate", "drift_cause_stage_delta_missing_rate",
     "drift_cause_memory_used_changed_n", "drift_cause_memory_unused_changed_n", "drift_cause_memory_retrieved_changed_n",
+    "aar_intervention_majority_rate", "aar_intervention_perfect_rate", "aar_majority_rate", "cda_refpol", "cda_helpful_n", "cda_harmful_n", "cda_eligible_n",
     "drift_any_change_n", "drift_conflict_relevant_change_n", "drift_any_change_rate", "drift_conflict_relevant_change_rate",
     "n_stage2_selected", "n_stage2_selected_and_pairs_changed", "mean_delta_pairs_count_given_stage2_selected",
     "parse_generate_failure_rate",
@@ -1671,6 +2101,11 @@ CANONICAL_METRIC_KEYS = [
     "override_applied_and_adopted_rate", "override_applied_but_ev_rejected_rate", "override_harm_rate",
     "override_hint_invalid_total", "override_hint_repair_total", "override_hint_invalid_rate",
     "polarity_repair_n", "polarity_invalid_n", "polarity_repair_rate", "polarity_invalid_rate",
+    "invalid_ref_count_total", "invalid_ref_rate", "invalid_language_count_total", "invalid_language_rate",
+    "invalid_target_count_total", "invalid_target_rate",  # Appendix: taxonomy/language/opinion drift
+    "ref_fill_rate", "ref_valid_rate", "ref_coverage_rate",  # Ref validity (construct, stage1)
+    "ref_fill_rate_s2", "ref_valid_rate_s2", "ref_coverage_rate_s2",  # Ref validity stage2
+    "implicit_coverage_fail_rate", "implicit_null_fail_rate", "implicit_parse_fail_rate",  # Implicit invalid 세분화
     "override_skipped_conflict_n", "override_skipped_conflict_delta_f1_mean", "override_skipped_conflict_unsupported_polarity_rate", "override_skipped_conflict_negation_contrast_failure_rate",
     "override_skipped_conflict_action_ambiguity", "override_skipped_conflict_L3_conservative", "override_skipped_conflict_implicit_soft_only",
     "override_skipped_conflict_low_confidence",     "override_skipped_conflict_contradictory_memory",
@@ -2167,7 +2602,7 @@ def _triptych_row(
     include_text: bool = True,
     include_debug: bool = False,
 ) -> Dict[str, Any]:
-    """Build one row for the Triptych table (read-only from scorecard). Uses _extract_*_with_source and tuples_to_pairs."""
+    """Build one row for the Triptych table (read-only from scorecard). Uses _extract_*_with_source and tuples_to_ref_pairs (CR v2 ref-level)."""
     meta = record.get("meta") or {}
     inputs = record.get("inputs") or {}
     text_id = meta.get("text_id") or meta.get("case_id") or record.get("text_id") or ""
@@ -2179,11 +2614,11 @@ def _triptych_row(
     gold_tuples = _extract_gold_tuples(record)
     gold_src = _gold_tuple_source(record) if gold_tuples is not None else ""
 
-    s1_pairs = tuples_to_pairs(s1_tuples) if s1_tuples else set()
-    s2_pairs = tuples_to_pairs(s2_tuples) if s2_tuples else set()
+    s1_pairs, _ = tuples_to_ref_pairs(s1_tuples) if s1_tuples else (set(), 0)
+    s2_pairs, _ = tuples_to_ref_pairs(s2_tuples) if s2_tuples else (set(), 0)
     s2_after_rep = select_representative_tuples(record)
-    s2_pairs_after_rep = tuples_to_pairs(s2_after_rep) if s2_after_rep else set()
-    gold_pairs = tuples_to_pairs(gold_tuples) if gold_tuples else set()
+    s2_pairs_after_rep, _ = tuples_to_ref_pairs(s2_after_rep) if s2_after_rep else (set(), 0)
+    gold_pairs, _ = tuples_to_ref_pairs(gold_tuples) if gold_tuples else (set(), 0)
 
     # Gold type: explicit (all gold pairs have non-empty term) vs implicit (at least one empty term)
     gold_explicit, gold_implicit = _split_gold_explicit_implicit(gold_tuples) if gold_tuples else (set(), set())
@@ -2407,7 +2842,7 @@ def write_triptych_risk_details(
 
 # ---------- Eval policy continuity (metric continuity note) ----------
 EVAL_POLICY_STRING = (
-    "normalize_polarity;normalize_for_eval;match_empty_aspect_by_polarity_only=True;"
+    "normalize_polarity;normalize_for_eval;normalize_ref_for_eval(# preserved);match_empty_aspect_by_polarity_only=True;"
     "gold=gold_tuples;stage1=stage1_tuples|trace_atsa;final=final_tuples|final_aspects|inputs.aspect_sentiments"
 )
 
@@ -2427,9 +2862,9 @@ def write_snapshot_eval_inputs(rows: List[Dict[str, Any]], out_path: Path, sampl
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     def _tuples_to_json_list(tuples_set: Set[Tuple[str, str, str]]) -> List[Dict[str, str]]:
-        """Normalized (aspect_term, polarity) pairs for JSON; aspect_ref omitted for comparison."""
-        pairs = tuples_to_pairs(tuples_set)
-        return [{"aspect_term": t, "polarity": p} for (t, p) in sorted(pairs)]
+        """Normalized (aspect_ref, polarity) pairs for JSON (CR v2 ref-level)."""
+        pairs, _ = tuples_to_ref_pairs(tuples_set)
+        return [{"aspect_ref": r, "polarity": p} for (r, p) in sorted(pairs)]
 
     payload: List[Dict[str, Any]] = []
     for r in rows[:sample_n]:
@@ -2453,25 +2888,95 @@ def write_snapshot_eval_inputs(rows: List[Dict[str, Any]], out_path: Path, sampl
     print(f"Wrote snapshot_eval_inputs: {out_path} (n={len(payload)})")
 
 
+def run_sanity_mode(
+    rows: List[Dict[str, Any]],
+    mode: str,
+    sample_n: int,
+    out_path: Path,
+) -> bool:
+    """Run sanity mode (gold_gold|pred_pred|ref_split). Writes sanity_checks.md. Returns True if pass."""
+    take = min(sample_n, len(rows))
+    subset = rows[:take]
+    lines: List[str] = [f"# Sanity Mode: {mode}", "", f"Sample n={take}", ""]
+    ok = True
+
+    if mode == "gold_gold":
+        for i, r in enumerate(subset):
+            gold = _extract_gold_tuples(r)
+            if gold is None or len(gold) == 0:
+                continue
+            _, _, f1_ref = precision_recall_f1_tuple(gold, gold, match_by_aspect_ref=True)
+            _, _, f1_ote = precision_recall_f1_tuple(gold, gold, match_by_aspect_ref=False)
+            gold_attr, _ = tuples_to_attr_pairs(gold)
+            _, _, f1_attr = precision_recall_f1_from_pairs(gold_attr, gold_attr)
+            if abs(f1_ref - 1.0) > 1e-6 or abs(f1_ote - 1.0) > 1e-6 or abs(f1_attr - 1.0) > 1e-6:
+                lines.append(f"FAIL row {i}: ref-pol F1={f1_ref}, ote-pol F1={f1_ote}, attr-pol F1={f1_attr}")
+                ok = False
+        lines.append("PASS: gold→gold ref-pol/ote-pol/attr-pol F1=1.0" if ok else "FAIL: see above")
+
+    elif mode == "pred_pred":
+        for i, r in enumerate(subset):
+            s1 = _extract_stage1_tuples(r)
+            s2 = _extract_final_tuples(r)
+            if not s1 or not s2:
+                continue
+            # Force s2=s1 to get delta=0
+            _, _, f1 = precision_recall_f1_tuple(s1, s1, match_by_aspect_ref=False)
+            if abs(f1 - 1.0) > 1e-6:
+                lines.append(f"FAIL row {i}: pred→pred F1={f1}")
+                ok = False
+        lines.append("PASS: pred→pred F1=1.0, delta=0" if ok else "FAIL: see above")
+
+    elif mode == "ref_split":
+        refs: List[str] = []
+        for r in subset:
+            gold = _extract_gold_tuples(r)
+            if gold:
+                for (a, _, _) in gold:
+                    if a and "#" in a:
+                        refs.append(a)
+                        if len(refs) >= 20:
+                            break
+            if len(refs) >= 20:
+                break
+        for ref in refs[:20]:
+            norm = normalize_ref_for_eval(ref)
+            join_back = norm.split("#", 1)
+            left = join_back[0].strip() if len(join_back) > 0 else ""
+            right = join_back[1].strip() if len(join_back) > 1 else ""
+            rejoined = f"{left}#{right}" if right else left
+            match = "OK" if (norm == rejoined and "#" in norm) else "MISMATCH"
+            lines.append(f"  {ref!r} -> {norm!r} -> rejoin={rejoined!r} {match}")
+            if match != "OK":
+                ok = False
+        lines.append("PASS: ref split/join-back identity" if ok else "FAIL: see above")
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Wrote {out_path}")
+    return ok
+
+
 def run_sanity_checks(rows: List[Dict[str, Any]]) -> bool:
     """Sanity check: gold→gold F1=1, stage1→stage1 F1=1, final→final F1=1. Returns True if all pass."""
     for i, r in enumerate(rows):
         gold = _extract_gold_tuples(r)
         if gold is not None:
-            # gold→gold: both sides use aspect_term (match_by_aspect_ref=False). Else gold has (a,t) with both set → ref_fallback picks a → key mismatch → F1=0.
-            _, _, f1 = precision_recall_f1_tuple(gold, gold, match_by_aspect_ref=False)
+            # gold→gold: CR v2 uses (aspect_ref, polarity); gold has aspect_ref.
+            _, _, f1 = precision_recall_f1_tuple(gold, gold, match_by_aspect_ref=True)
             if abs(f1 - 1.0) > 1e-6:
                 print(f"Sanity check FAIL: row {i} gold→gold F1={f1} (expected 1.0)")
                 return False
         stage1 = _extract_stage1_tuples(r)
         if stage1:
-            _, _, f1 = precision_recall_f1_tuple(stage1, stage1)
+            # stage1/final may lack aspect_ref (CR pipeline); use term-based for self-consistency check.
+            _, _, f1 = precision_recall_f1_tuple(stage1, stage1, match_by_aspect_ref=False)
             if abs(f1 - 1.0) > 1e-6:
                 print(f"Sanity check FAIL: row {i} stage1→stage1 F1={f1} (expected 1.0)")
                 return False
         final = _extract_final_tuples(r)
         if final:
-            _, _, f1 = precision_recall_f1_tuple(final, final)
+            _, _, f1 = precision_recall_f1_tuple(final, final, match_by_aspect_ref=False)
             if abs(f1 - 1.0) > 1e-6:
                 print(f"Sanity check FAIL: row {i} final→final F1={f1} (expected 1.0)")
                 return False
@@ -2488,6 +2993,8 @@ def main():
     ap.add_argument("--log_tuple_sources", default=None, help="Write tuple extraction path log (stage1/final/gold source + N) for first N samples")
     ap.add_argument("--log_sample_n", type=int, default=10, help="Number of samples for tuple source log (default 10)")
     ap.add_argument("--sanity_check", action="store_true", help="Run sanity check: gold→gold F1=1, final→final F1=1")
+    ap.add_argument("--sanity-mode", choices=["gold_gold", "pred_pred", "ref_split"], default=None, help="Sanity mode: gold_gold (F1=1), pred_pred (delta=0), ref_split (join-back check). Writes sanity_checks.md, exit 1 on fail.")
+    ap.add_argument("--sanity-sample-n", type=int, default=50, help="Max samples for sanity-mode (default 50)")
     ap.add_argument("--snapshot_eval_inputs", default=None, help="Regression snapshot: save gold/stage1/final tuple sets (normalized) for first N samples as JSON")
     ap.add_argument("--snapshot_sample_n", type=int, default=5, help="Number of samples for snapshot_eval_inputs (default 5)")
     ap.add_argument("--export_triptych_table", default=None, help="Write per-sample Triptych table (TSV or CSV); path .csv → CSV, else TSV")
@@ -2503,6 +3010,16 @@ def main():
     rows = load_jsonl(path)
     if not rows:
         print(f"No records in {path}")
+        return
+
+    # Sanity mode (fail-fast, writes sanity_checks.md)
+    if args.sanity_mode:
+        outdir = Path(args.outdir)
+        sanity_path = outdir / "sanity_checks.md"
+        if not run_sanity_mode(rows, args.sanity_mode, args.sanity_sample_n, sanity_path):
+            print(f"Sanity mode {args.sanity_mode} FAIL. See {sanity_path}")
+            sys.exit(1)
+        print(f"Sanity mode {args.sanity_mode} PASS.")
         return
 
     # B1) Sanity check (fail-fast): gold→gold F1=1, final→final F1=1. Fail => 채점 로직/정규화/추출 경로 충돌.
