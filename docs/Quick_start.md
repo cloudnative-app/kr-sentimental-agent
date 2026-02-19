@@ -207,6 +207,7 @@ python scripts/consistency_checklist.py --run_dir results/<base>_c1_aggregated/m
 | 정합성 | pipeline_integrity_verification.py | ❌ | ✅ 수동 |
 | 정합성 | consistency_checklist.py | ❌ | ✅ 수동 |
 | 논문 테이블 | build_paper_tables.py | ❌ | ✅ (논문 작성 시) |
+| CR v2 Paper Table | build_cr_v2_paper_table.py | ❌ | ✅ (CR v2 M0 vs M1) |
 | RUN 요약 | run_summary.py | ✅ | ✅ |
 
 ---
@@ -298,6 +299,18 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 
 **사전 요구**: `compute_irr.py` 시드별 실행 → `irr/irr_run_summary.json`에 Process + Measurement IRR 키 존재. 상세: `docs/how_to_run_cr_v1.md`, `docs/evaluation_cr_v2.md`
 
+### 7.3 CR v2 Paper Table (M0 vs M1)
+
+CR v2 M0 vs M1 비교 논문용 테이블. aggregate + compute_irr (--scorecards) 완료 후 실행.
+
+```powershell
+python scripts/build_cr_v2_paper_table.py --agg-m0 results/cr_v2_n100_m0_v4_aggregated/aggregated_mean_std.csv --agg-m1 results/cr_v2_n100_m1_v4_aggregated/aggregated_mean_std.csv --run-dirs-m0 results/cr_v2_n100_m0_v4__seed42_proposed results/cr_v2_n100_m0_v4__seed123_proposed results/cr_v2_n100_m0_v4__seed456_proposed --run-dirs-m1 results/cr_v2_n100_m1_v4__seed42_proposed results/cr_v2_n100_m1_v4__seed123_proposed results/cr_v2_n100_m1_v4__seed456_proposed --out reports/cr_v2_paper_table.md
+```
+
+**출력**: `reports/cr_v2_paper_table.md` — Table 1 (F1), Table 2 (Schema/Error, fix/break/net_gain, subset IRR, subset_n, CDA, AAR), Appendix (A~G: seed-by-seed, bootstrap, break subtype, event count 등).
+
+**사전 요구**: `compute_irr.py --scorecards` 시드별 실행 (subset IRR implicit/negation용). 상세: `docs/run_cr_v2_n100_m0_m1_v3_commands.md`
+
 ---
 
 ## 8. 산출물 경로
@@ -317,6 +330,7 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 
 - **실행 방법 상세**: `docs/how_to_run.md`
 - **CR 실행**: `docs/how_to_run_cr_v1.md`
+- **CR v2 M0 vs M1**: `docs/run_cr_v2_n100_m0_m1_v3_commands.md`
 - **CR 평가 정의**: `docs/evaluation_cr_v2.md` (ref-pol, IRR, ΔF1)
 - **본실험 데이터 배치**: `experiments/configs/datasets/real/README.md`
 - **Betatest**: `docs/run_betatest_commands.md`

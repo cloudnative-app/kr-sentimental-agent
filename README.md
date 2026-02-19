@@ -23,6 +23,7 @@
 - 📊 **토론 매핑 품질 지표**: mapping coverage/실패 원인 집계
 - 🧪 **Ablation 지원**: debate override on/off 비교
 - 📐 **Tuple 평가**: CR v2 주평가 = (aspect_ref, polarity); 보조평가 = (aspect_term, polarity) explicit-only. `docs/evaluation_cr_v2.md`, `docs/absa_tuple_eval.md` 참고
+- 📋 **CR v2 Paper Table**: M0 vs M1 비교 테이블. Table 1 (F1), Table 2 (Schema/Error, fix/break/net_gain, subset IRR, CDA, AAR), Appendix (break subtype, event count). `scripts/build_cr_v2_paper_table.py` → `reports/cr_v2_paper_table.md`. 사전 요구: `compute_irr --scorecards`, `aggregate_seed_metrics`. `docs/run_cr_v2_n100_m0_m1_v3_commands.md` 참고
 
 ## 🚀 설치 (처음 1회)
 
@@ -240,10 +241,13 @@ kr-sentimental-agent/
 │       └── run_experiments.py       # 실험 루프, scorecards(원본), gold 주입
 ├── scripts/                         # 파이프라인·메트릭·진단
 │   ├── run_pipeline.py             # 통합 CLI (실험 → 스냅샷 → 리포트 → 메트릭)
+│   ├── run_cr_m0_m1_m2_pipeline.py  # CR v1 M0/M1/M2 통합 실행
+│   ├── build_cr_v2_paper_table.py   # CR v2 M0 vs M1 paper table (reports/cr_v2_paper_table.md)
 │   ├── scorecard_from_smoke.py       # outputs → scorecards (--out 필수로 원본 덮어쓰기 방지)
 │   ├── structural_error_aggregator.py  # structural_metrics, triptych, inconsistency_flags
 │   ├── build_metric_report.py       # metric_report.html
-│   ├── aggregate_seed_metrics.py    # 시드 머징, 평균±표준편차
+│   ├── aggregate_seed_metrics.py    # 시드 머징, 평균±표준편차, break subtype, subset IRR, event count
+│   ├── compute_irr.py              # IRR (Process/Measurement), subset IRR (--scorecards)
 │   ├── consistency_checklist.py    # GO/NO-GO 정합성 체크리스트
 │   └── run_real_n100_c1_c2_c3.ps1   # real n100 C1→C2→C3 순차 + 머지
 ├── analysis/                        # 메모리 성장·플롯
@@ -277,7 +281,9 @@ kr-sentimental-agent/
 ## 📚 관련 문서
 
 - **실행·설정**: `docs/how_to_run.md` (run_pipeline, 시드 반복, 머징·경로, real n100 C1/C2/C3)
-- **Tuple 평가**: `docs/absa_tuple_eval.md` (gold_tuples, tuple_f1)
+- **CR v1**: `docs/README_cr_v1.md`, `docs/how_to_run_cr_v1.md` (Conflict Review 에이전트·실행)
+- **CR v2 M0 vs M1**: `docs/run_cr_v2_n100_m0_m1_v3_commands.md` (파이프라인·IRR·aggregate·paper table)
+- **Tuple 평가**: `docs/absa_tuple_eval.md` (gold_tuples, tuple_f1), `docs/evaluation_cr_v2.md` (ref-pol, IRR)
 - **Scorecard 경로·정합성**: `docs/scorecard_path_and_consistency_checklist.md` (덮어쓰기 금지, meta.source, consistency_checklist)
 - **실제 런 명령어 (real n100)**: `docs/run_real_n100_c1_c2_c3_commands.md`
 - **mini2/mini3**: `docs/experiment_mini2_two_seeds_two_runs.md`, `experiments/configs/experiment_mini3.yaml`

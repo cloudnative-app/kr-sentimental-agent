@@ -95,7 +95,20 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 
 ---
 
-## 5. 참고 문서
+## 5. CR v2 (M0 vs M1)
+
+**CR v2**는 메모리 OFF(M0) vs 메모리 ON(M1) 비교 실험입니다. Recheck 레이어, 에피소딕 메모리 검색·주입 포함.
+
+| 항목 | 설명 |
+|------|------|
+| **Config** | `cr_v2_n100_m0_v3.yaml`, `cr_v2_n100_m1_v3.yaml` (run-id v4로 저장) |
+| **실행** | `run_pipeline` → `compute_irr --scorecards` (subset IRR용) → `aggregate_seed_metrics` → `build_cr_v2_paper_table` |
+| **Paper Table** | `scripts/build_cr_v2_paper_table.py` → `reports/cr_v2_paper_table.md` (Table 1 F1, Table 2 Schema/Error/IRR/subset IRR, Appendix) |
+| **명령어** | [run_cr_v2_n100_m0_m1_v3_commands.md](run_cr_v2_n100_m0_m1_v3_commands.md) |
+
+---
+
+## 6. 참고 문서
 
 ### Spec 및 규약
 
@@ -125,6 +138,7 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 |------|------|
 | [how_to_run_cr_v1.md](how_to_run_cr_v1.md) | CR v1 실행 방법 (통합 스크립트 포함) |
 | [run_cr_m0_m1_m2_commands.md](run_cr_m0_m1_m2_commands.md) | CR-M0/M1/M2 실행 명령 |
+| [run_cr_v2_n100_m0_m1_v3_commands.md](run_cr_v2_n100_m0_m1_v3_commands.md) | CR v2 M0 vs M1 (파이프라인·IRR·aggregate·paper table) |
 | [exp_lm_cr_m0_m1_m2_run_commands.md](exp_lm_cr_m0_m1_m2_run_commands.md) | L-M0 vs CR-M0, CR-M0 vs CR-M1 vs CR-M2 실험 가이드 |
 
 ### 기타

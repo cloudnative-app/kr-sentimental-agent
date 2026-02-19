@@ -58,10 +58,13 @@ python scripts/run_pipeline.py --config experiments/configs/cr_n50_m2.yaml --run
 ### 2.2 compute_irr (시드별)
 
 ```bash
-# 예: cr_n50_m0
+# 예: cr_n50_m0 (기본)
 python scripts/compute_irr.py --input results/cr_n50_m0__seed42_proposed/outputs.jsonl --outdir results/cr_n50_m0__seed42_proposed/irr/
 python scripts/compute_irr.py --input results/cr_n50_m0__seed123_proposed/outputs.jsonl --outdir results/cr_n50_m0__seed123_proposed/irr/
 python scripts/compute_irr.py --input results/cr_n50_m0__seed456_proposed/outputs.jsonl --outdir results/cr_n50_m0__seed456_proposed/irr/
+
+# CR v2: subset IRR (implicit/negation) 산출 시 --scorecards 필수
+python scripts/compute_irr.py --input results/cr_v2_n100_m0_v4__seed42_proposed/outputs.jsonl --outdir results/cr_v2_n100_m0_v4__seed42_proposed/irr --scorecards results/cr_v2_n100_m0_v4__seed42_proposed/scorecards.jsonl
 ```
 
 ### 2.3 export_paper_metrics_md
@@ -133,12 +136,26 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_n50_m0_a
 
 ---
 
-## 5. 참고 문서
+## 5. CR v2 (M0 vs M1)
+
+CR v2는 메모리 OFF(M0) vs 메모리 ON(M1) 비교 실험입니다. Recheck, 에피소딕 메모리, subset IRR 포함.
+
+| 항목 | 설명 |
+|------|------|
+| **Config** | `cr_v2_n100_m0_v3.yaml`, `cr_v2_n100_m1_v3.yaml` (run-id v4) |
+| **실행 순서** | run_pipeline → compute_irr (--scorecards, subset IRR용) → aggregate_seed_metrics → build_cr_v2_paper_table |
+| **Paper Table** | `scripts/build_cr_v2_paper_table.py` → `reports/cr_v2_paper_table.md` (Table 1 F1, Table 2 Schema/Error/IRR/subset IRR, Appendix) |
+| **명령어** | [run_cr_v2_n100_m0_m1_v3_commands.md](run_cr_v2_n100_m0_m1_v3_commands.md) |
+
+---
+
+## 6. 참고 문서
 
 | 문서 | 설명 |
 |------|------|
 | [README_cr_v1.md](README_cr_v1.md) | CR v1 개요·에이전트·데이터 플로우 |
 | [run_cr_m0_m1_m2_commands.md](run_cr_m0_m1_m2_commands.md) | CR-M0/M1/M2 실행 명령 |
+| [run_cr_v2_n100_m0_m1_v3_commands.md](run_cr_v2_n100_m0_m1_v3_commands.md) | CR v2 M0 vs M1 실행·IRR·aggregate·paper table |
 | [cr_branch_metrics_spec.md](cr_branch_metrics_spec.md) | CR 메트릭·데이터 플로우 명세 |
 | [evaluation_cr_v2.md](evaluation_cr_v2.md) | CR v2 평가 정의 (ref-pol, IRR, ΔF1 해석) |
 | [protocol_conflict_review_vs_legacy_comparison.md](protocol_conflict_review_vs_legacy_comparison.md) | CR vs Legacy 워크플로우·데이터 플로우 |

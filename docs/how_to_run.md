@@ -180,7 +180,31 @@ python scripts/consistency_checklist.py --run_dir results/experiment_real_n100_s
 
 - **필수 체크**: meta.scorecard_source, gold_injected ⇒ inputs.gold_tuples, structural_metrics N_pred_*, sanity(gold→gold/final→final F1=1), inconsistency_flags==0, triptych 존재. 상세: `docs/scorecard_path_and_consistency_checklist.md`.
 
-### 2.10 Real N100 C1/C2/C3 순차 실행
+### 2.10 CR v2 M0 vs M1 (Conflict Review v2)
+
+CR v2는 메모리 OFF(M0) vs 메모리 ON(M1) 비교 실험입니다. 파이프라인 실행 후 IRR·aggregate·paper table 생성.
+
+```powershell
+# 1. 파이프라인 실행 (M0, M1 각각)
+python scripts/run_pipeline.py --config experiments/configs/cr_v2_n100_m0_v3.yaml --run-id cr_v2_n100_m0_v4 --mode proposed --profile paper --with_metrics --with_aggregate --seed_concurrency 3
+python scripts/run_pipeline.py --config experiments/configs/cr_v2_n100_m1_v3.yaml --run-id cr_v2_n100_m1_v4 --mode proposed --profile paper --with_metrics --with_aggregate --seed_concurrency 3
+
+# 2. IRR 계산 (시드별, --scorecards 필수: subset IRR implicit/negation용)
+python scripts/compute_irr.py --input results/cr_v2_n100_m0_v4__seed42_proposed/outputs.jsonl --outdir results/cr_v2_n100_m0_v4__seed42_proposed/irr --scorecards results/cr_v2_n100_m0_v4__seed42_proposed/scorecards.jsonl
+# (M0/M1 각 시드 반복)
+
+# 3. 시드 머징·집계
+python scripts/aggregate_seed_metrics.py --run_dirs results/cr_v2_n100_m0_v4__seed42_proposed,... --outdir results/cr_v2_n100_m0_v4_aggregated
+python scripts/aggregate_seed_metrics.py --run_dirs results/cr_v2_n100_m1_v4__seed42_proposed,... --outdir results/cr_v2_n100_m1_v4_aggregated
+
+# 4. Paper Table 생성
+python scripts/build_cr_v2_paper_table.py --agg-m0 results/cr_v2_n100_m0_v4_aggregated/aggregated_mean_std.csv --agg-m1 results/cr_v2_n100_m1_v4_aggregated/aggregated_mean_std.csv --run-dirs-m0 ... --run-dirs-m1 ... --out reports/cr_v2_paper_table.md
+```
+
+- **상세 명령·경로**: `docs/run_cr_v2_n100_m0_m1_v3_commands.md`
+- **Paper Table 출력**: `reports/cr_v2_paper_table.md` (Table 1 F1, Table 2 Schema/Error, fix/break/net_gain, subset IRR, subset_n, CDA, AAR, Appendix A~G)
+
+### 2.11 Real N100 C1/C2/C3 순차 실행
 
 메모리 조건별 real n100 실험을 C1 → C2 → C3 순으로 돌리고 머지할 때:
 
@@ -193,7 +217,7 @@ python scripts/consistency_checklist.py --run_dir results/experiment_real_n100_s
 - 설정: `experiments/configs/experiment_real_n100_seed1_c1.yaml`, `_c2.yaml`, `_c3.yaml`.  
 - 상세 명령·경로: `docs/run_real_n100_c1_c2_c3_commands.md`.
 
-### 2.11 Real N100 C2 → C3 순차 실행 (run ID: c2_1, c3_1)
+### 2.12 Real N100 C2 → C3 순차 실행 (run ID: c2_1, c3_1)
 
 C2(advisory) 다음 C3(retrieval-only)만 순차 실행하고, run ID를 **c2_1**, **c3_1**로 둘 때 (paper 프로파일 + 메트릭 포함):
 
@@ -467,6 +491,7 @@ demo:
 - **Tuple 평가 정의 (gold_tuples, tuple_f1)**: `docs/absa_tuple_eval.md`
 - **Scorecard 경로·정합성 체크리스트**: `docs/scorecard_path_and_consistency_checklist.md` (덮어쓰기 금지, meta.source, consistency_checklist)
 - **Real N100 C1/C2/C3 실행 명령**: `docs/run_real_n100_c1_c2_c3_commands.md`
+- **CR v2 M0 vs M1**: `docs/run_cr_v2_n100_m0_m1_v3_commands.md` (파이프라인·IRR·aggregate·paper table)
 - **Betatest (C1/C2/C3/C2_eval, betatest_n50, seed=99)**: `docs/run_betatest_commands.md`
 - **본실험 데이터 배치·생성**: `experiments/configs/datasets/real/README.md`, `experiments/configs/datasets/real_n100_seed1/`
 - **README**: `README.md` (프로젝트 구조, 결과·경로 규칙, 관련 문서)
