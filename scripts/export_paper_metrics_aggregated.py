@@ -58,6 +58,9 @@ PAPER_METRICS_TABLE_2 = [
 PAPER_METRICS_TABLE_3A = [
     "fix_rate_refpol",
     "break_rate_refpol",
+    "break_rate_implicit_refpol",
+    "break_rate_negation_refpol",
+    "break_rate_simple_refpol",
     "net_gain_refpol",
     "cda",
 ]
@@ -141,6 +144,9 @@ PAPER_METRICS_CORE_FALLBACK = {
     "delta_f1_refpol": "delta_f1",
     "fix_rate_refpol": "fix_rate",
     "break_rate_refpol": "break_rate",
+    "break_rate_implicit_refpol": "break_rate_implicit",
+    "break_rate_negation_refpol": "break_rate_negation",
+    "break_rate_simple_refpol": "break_rate_simple",
     "net_gain_refpol": "net_gain",
     "tuple_f1_s1_otepol": "tuple_f1_s1",
     "tuple_f1_s2_otepol": "tuple_f1_s2",
@@ -568,7 +574,7 @@ def main() -> int:
     md_lines.append(to_markdown_table(t2_rows, ["metric", "value"]))
     md_lines.append(f"\n{TABLE_NOTES['TABLE_2']}\n")
 
-    md_lines.append("\n## Table 3 — Error Control\n")
+    md_lines.append("\n## Table 3 — Process (fix/break)\n")
     md_lines.append("\n### 3A Error Reduction\n")
     md_lines.append(to_markdown_table(t3a_rows, ["metric", "value"]))
     md_lines.append(f"\n{TABLE_NOTES['TABLE_3A']}\n")
@@ -577,7 +583,39 @@ def main() -> int:
     md_lines.append(to_markdown_table(t3b_rows, ["metric", "value"]))
     md_lines.append(f"\n{TABLE_NOTES['TABLE_3B']}\n")
 
-    md_lines.append("\n### 3C Stability\n")
+    # Subset IRR (conflict, implicit, negation) — aggregate across run_dirs when multiple seeds
+    subset_irr_rows: list[dict] = []
+    if args.run_dirs:
+        run_dirs = [d.resolve() if d.is_absolute() else (PROJECT_ROOT / d).resolve() for d in args.run_dirs]
+        by_subset: dict[str, list[dict]] = {}
+        for d in run_dirs:
+            subset_path = d / "irr" / "irr_subset_summary.json"
+            if subset_path.exists():
+                try:
+                    data = json.loads(subset_path.read_text(encoding="utf-8"))
+                    for subset_name, sub in (data or {}).items():
+                        if isinstance(sub, dict) and sub.get("n", 0) > 0:
+                            by_subset.setdefault(subset_name, []).append(sub)
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    pass
+        for subset_name, subs in by_subset.items():
+            meas_vals = [v for s in subs for v in [s.get("meas_cohen_kappa_mean")] if v is not None and v == v]
+            irr_vals = [v for s in subs for v in [s.get("irr_cohen_kappa_mean")] if v is not None and v == v]
+            n_total = sum(s.get("n", 0) for s in subs)
+            meas_mean = mean(meas_vals) if meas_vals else None
+            irr_mean = mean(irr_vals) if irr_vals else None
+            subset_irr_rows.append({
+                "subset": subset_name,
+                "n": n_total,
+                "Measurement IRR": f"{meas_mean:.4f}" if meas_mean is not None and meas_mean == meas_mean else "N/A",
+                "Action IRR": f"{irr_mean:.4f}" if irr_mean is not None and irr_mean == irr_mean else "N/A",
+            })
+    if subset_irr_rows:
+        md_lines.append("\n## Subset IRR\n")
+        md_lines.append(to_markdown_table(subset_irr_rows, ["subset", "n", "Measurement IRR", "Action IRR"]))
+        md_lines.append("\n**Note.** Subset IRR: conflict cases, implicit cases, negation cases. Measurement IRR = final decision agreement. Action IRR = reviewer action agreement.\n")
+
+    md_lines.append("\n## Overall IRR\n")
     md_lines.append(to_markdown_table(t3c_rows, ["metric", "value"]))
     md_lines.append(f"\n{TABLE_NOTES['TABLE_3C']}\n")
 

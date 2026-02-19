@@ -98,7 +98,7 @@ conditions:
       memory_mode: "on"
       retrieval_execute: true
       injection_mask: false
-      store_write: false
+      store_write: true
   M2:
     episodic_memory:
       memory_mode: "on"

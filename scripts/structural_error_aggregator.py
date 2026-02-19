@@ -634,6 +634,7 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         "N_agg_fallback_used": 0,  # CONTRACT-AGG-1: rows where final_tuples was empty/missing and we used final_aspects or inputs
         "implicit_gold_sample_n": 0, "implicit_invalid_sample_n": 0,
         "implicit_invalid_pred_rate": None,
+        "implicit_invalid_count": 0, "conflict_count": 0, "break_count": 0,
         "tuple_f1_explicit": None, "precision_explicit": None, "recall_explicit": None,  # Appendix: SurfaceUnit (aspect_term, polarity)
         "invalid_target_count_total": 0, "invalid_target_rate": None,  # Appendix: opinion→aspect contamination
     }
@@ -707,11 +708,13 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     f1_s1_attrpol_list: List[float] = []
     f1_s2_attrpol_list: List[float] = []
     n_fix = n_break = n_still = n_keep = 0
+    n_break_implicit = n_break_negation = n_break_simple = 0
     n_still_with_change = 0  # S1 wrong, S2 wrong, but S2 changed (for CDA denominator)
     n_fix_otepol = n_break_otepol = n_still_otepol = n_keep_otepol = 0
     n_fix_attrpol = n_break_attrpol = n_still_attrpol = n_keep_attrpol = 0
     n_implicit_gold_samples = 0
     n_implicit_invalid_samples = 0
+    n_conflict_count = 0
     invalid_ref_total = invalid_language_total = invalid_target_total = 0
     total_stage1_triplets = 0
     n_pred_with_ref = 0
@@ -739,6 +742,10 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
             return False
     for record, gold in rows_with_gold:
         gold = gold or set()
+        output = _get_output_from_record(record)
+        cf = (output.get("analysis_flags") or {}).get("conflict_flags") or []
+        if cf:
+            n_conflict_count += 1
         gold_explicit, gold_implicit = _split_gold_explicit_implicit(gold)
         if gold_explicit:
             n_gold_explicit += 1
@@ -839,6 +846,14 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
             n_fix += 1
         if st1 and not st2:
             n_break += 1
+            implicit_flag = bool(gold_implicit)
+            negation_flag = count_negation_contrast_risks(record) > 0
+            if implicit_flag:
+                n_break_implicit += 1
+            elif negation_flag:
+                n_break_negation += 1
+            else:
+                n_break_simple += 1
         if not st1 and not st2:
             n_still += 1
             if s2_changed:
@@ -915,6 +930,9 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     out["fix_rate"] = _rate(n_fix, need_fix) if need_fix else None
     keep_break = n_break + n_keep
     out["break_rate"] = _rate(n_break, keep_break) if keep_break else None
+    out["break_rate_implicit"] = _rate(n_break_implicit, keep_break) if keep_break else None
+    out["break_rate_negation"] = _rate(n_break_negation, keep_break) if keep_break else None
+    out["break_rate_simple"] = _rate(n_break_simple, keep_break) if keep_break else None
     out["net_gain"] = (n_fix - n_break) / N if N else None
     # CDA (Correction Directional Accuracy): n(S1 incorrect AND S2 correct) / n(S1 incorrect AND S2 changed). Gold-based.
     # Paper Metric Realignment Freeze: CDA = helpful corrections among samples where S1 was wrong and S2 changed.
@@ -926,6 +944,9 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     out["delta_f1_refpol"] = out["delta_f1"]
     out["fix_rate_refpol"] = out["fix_rate"]
     out["break_rate_refpol"] = out["break_rate"]
+    out["break_rate_implicit_refpol"] = out["break_rate_implicit"]
+    out["break_rate_negation_refpol"] = out["break_rate_negation"]
+    out["break_rate_simple_refpol"] = out["break_rate_simple"]
     out["net_gain_refpol"] = out["net_gain"]
 
     # ote-pol (Table 1B; aspect_term, polarity)
@@ -957,6 +978,9 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     out["net_gain_attrpol"] = (n_fix_attrpol - n_break_attrpol) / N if N else None
     out["implicit_gold_sample_n"] = n_implicit_gold_samples
     out["implicit_invalid_sample_n"] = n_implicit_invalid_samples
+    out["implicit_invalid_count"] = n_implicit_invalid_samples
+    out["conflict_count"] = n_conflict_count
+    out["break_count"] = n_break
     out["implicit_invalid_pred_rate"] = _rate(n_implicit_invalid_samples, n_implicit_gold_samples) if n_implicit_gold_samples else 0.0
     out["invalid_ref_count_total"] = invalid_ref_total
     out["invalid_ref_rate"] = _rate(invalid_ref_total, total_stage1_triplets) if total_stage1_triplets else None
@@ -1816,18 +1840,17 @@ def aggregate_single_run(
     override_applied_and_adopted_rate = _rate(n_applied_and_adopted, N)
     override_applied_but_ev_rejected_rate = _rate(n_ev_rejected, N)
     override_harm_rate = _rate(n_override_harm, n_applied_and_adopted) if n_applied_and_adopted else None
-    # C: memory gate coverage — memory_used_rate (retrieved>0 AND exposed_to_debate), injection_trigger_reason_counts, memory_used_changed_rate
-    n_retrieved_and_exposed = 0
+    # C: memory — memory_used_rate = mean(retrieved_k > 0); exposed_to_debate 기반 계산 제거
+    retrieved_vals: List[int] = []
     n_injected = 0
     n_injected_and_changed = 0
     injection_trigger_counts: Dict[str, int] = {"conflict": 0, "validator": 0, "alignment": 0, "explicit_grounding_failure": 0}
     for r in rows:
         mem = r.get("memory") or (r.get("meta") or {}).get("memory") or {}
         retrieved_n = int(mem.get("retrieved_k") or 0) or len(mem.get("retrieved_ids") or [])
+        retrieved_vals.append(retrieved_n)
         exposed = bool(mem.get("exposed_to_debate", False))
         inj_chars = int(mem.get("prompt_injection_chars") or 0)
-        if retrieved_n > 0 and exposed:
-            n_retrieved_and_exposed += 1
         if exposed and inj_chars > 0:
             n_injected += 1
             changed = bool((r.get("stage_delta") or {}).get("changed", False))
@@ -1836,7 +1859,13 @@ def aggregate_single_run(
             reason = (mem.get("injection_trigger_reason") or "").strip().lower()
             if reason in injection_trigger_counts:
                 injection_trigger_counts[reason] += 1
-    memory_used_rate = _rate(n_retrieved_and_exposed, N)
+    n_retrieved_gt0 = sum(1 for v in retrieved_vals if v > 0)
+    memory_used_rate = _rate(n_retrieved_gt0, N)  # mean(retrieved_k > 0)
+    memory_retrieval_mean_k = sum(retrieved_vals) / len(retrieved_vals) if retrieved_vals else None
+    memory_retrieval_std_k = (
+        (sum((x - (memory_retrieval_mean_k or 0)) ** 2 for x in retrieved_vals) / len(retrieved_vals)) ** 0.5
+        if retrieved_vals and len(retrieved_vals) > 1 else 0.0
+    ) if memory_retrieval_mean_k is not None else None
     memory_used_changed_rate = _rate(n_injected_and_changed, n_injected) if n_injected else None
     # RQ3: override_applied_rate = 적용된 샘플 비율; override_success_rate = 적용된 케이스 중 risk 개선 비율(정답 아님, risk 감소+안전)
     override_applied_rate = _rate(n_applied, N)
@@ -1924,6 +1953,8 @@ def aggregate_single_run(
         "override_skipped_conflict_low_confidence": skip_reasons_agg.get("low_confidence", 0),
         "override_skipped_conflict_contradictory_memory": skip_reasons_agg.get("contradictory_memory", 0),
         "memory_used_rate": memory_used_rate,
+        "memory_retrieval_mean_k": memory_retrieval_mean_k,
+        "memory_retrieval_std_k": memory_retrieval_std_k,
         "memory_used_changed_rate": memory_used_changed_rate,
         "injection_trigger_conflict_n": injection_trigger_counts.get("conflict", 0),
         "injection_trigger_validator_n": injection_trigger_counts.get("validator", 0),
@@ -1963,8 +1994,8 @@ def aggregate_single_run(
         "tuple_f1_s1", "tuple_f1_s2", "tuple_f1_s2_overall", "tuple_f1_s2_explicit_only", "tuple_f1_s2_implicit_only",
         "tuple_f1_s2_raw", "tuple_f1_s2_after_rep",
         "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
-        "fix_rate", "break_rate", "net_gain", "cda",
-        "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+        "fix_rate", "break_rate", "break_rate_implicit", "break_rate_negation", "break_rate_simple", "net_gain", "cda",
+        "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "break_rate_implicit_refpol", "break_rate_negation_refpol", "break_rate_simple_refpol", "net_gain_refpol",
         "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
         "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
         "N_gold", "N_gold_total", "N_gold_explicit", "N_gold_implicit",
@@ -1972,6 +2003,7 @@ def aggregate_single_run(
         "N_pred_final_tuples", "N_pred_final_aspects", "N_pred_inputs_aspect_sentiments", "N_pred_used",
         "N_agg_fallback_used",
         "implicit_gold_sample_n", "implicit_invalid_sample_n", "implicit_invalid_pred_rate",
+        "implicit_invalid_count", "conflict_count", "break_count",
         "tuple_f1_explicit", "precision_explicit", "recall_explicit",
         "invalid_ref_count_total", "invalid_ref_rate", "invalid_language_count_total", "invalid_language_rate",
         "invalid_target_count_total", "invalid_target_rate",
@@ -2060,8 +2092,9 @@ CANONICAL_METRIC_KEYS = [
     "tuple_f1_s1", "tuple_f1_s2", "tuple_f1_s2_overall", "tuple_f1_s2_explicit_only", "tuple_f1_s2_implicit_only",
     "tuple_f1_s2_raw", "tuple_f1_s2_after_rep",
     "implicit_gold_sample_n", "implicit_invalid_sample_n", "implicit_invalid_pred_rate",
-    "triplet_f1_s1", "triplet_f1_s2", "delta_f1", "fix_rate", "break_rate", "net_gain", "cda",
-    "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+    "implicit_invalid_count", "conflict_count", "break_count",
+    "triplet_f1_s1", "triplet_f1_s2", "delta_f1",     "fix_rate", "break_rate", "break_rate_implicit", "break_rate_negation", "break_rate_simple", "net_gain", "cda",
+    "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "break_rate_implicit_refpol", "break_rate_negation_refpol", "break_rate_simple_refpol", "net_gain_refpol",
     "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
     "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
     "N_gold", "N_gold_total", "N_gold_explicit", "N_gold_implicit",
@@ -2111,7 +2144,7 @@ CANONICAL_METRIC_KEYS = [
     "override_skipped_conflict_low_confidence",     "override_skipped_conflict_contradictory_memory",
     "override_reason_risk_resolved_n", "override_reason_debate_action_n", "override_reason_grounding_improved_n",
     "override_reason_conflict_blocked_n", "override_reason_low_signal_n", "override_reason_ev_below_threshold_n",
-    "memory_used_rate", "memory_used_changed_rate",
+    "memory_used_rate", "memory_retrieval_mean_k", "memory_retrieval_std_k", "memory_used_changed_rate",
     "injection_trigger_conflict_n", "injection_trigger_validator_n", "injection_trigger_alignment_n", "injection_trigger_explicit_grounding_failure_n",
     "self_consistency_exact", "self_consistency_eligible", "n_trials",
     "risk_set_consistency", "flip_flop_rate", "variance",
@@ -2666,8 +2699,8 @@ def _triptych_row(
     validator_s1_risk_ids = ";".join(s1_risk_ids) if s1_risk_ids else ""
     validator_s2_risk_ids = ";".join(s2_risk_ids) if s2_risk_ids else ""
 
-    # Memory observation columns (C2/C3: retrieval vs injection)
-    mem = record.get("memory") or {}
+    # Memory observation columns (C2/C3/CR: retrieval-based; exposed_to_debate 기반 계산 제거)
+    mem = record.get("memory") or (record.get("meta") or {}).get("memory") or {}
     run_id = (record.get("meta") or {}).get("run_id") or record.get("run_id") or ""
     memory_retrieved_n = int(mem.get("retrieved_k") or 0) or len(mem.get("retrieved_ids") or [])
     memory_injected_chars = int(mem.get("prompt_injection_chars") or 0)
@@ -2676,8 +2709,8 @@ def _triptych_row(
     memory_retrieved = 1 if memory_retrieved_n > 0 else 0
     # memory_injected = 프롬프트에 실제 주입 (C2:1 when gating ok, C3:0 always, C1:0)
     memory_injected = 1 if (memory_exposed_to_debate and memory_injected_chars > 0) else 0
-    # memory_used = 분석/집계용, injected와 동일 (C3: memory_retrieved=1, memory_injected=0, memory_used=0)
-    memory_used = memory_injected
+    # memory_used = mean(retrieved_k > 0) — Pretest: exposed_to_debate 기반 제거, retrieval hit 기반
+    memory_used = 1 if memory_retrieved_n > 0 else 0
     memory_enabled = 1 if ("c2" in run_id.lower() or "c3" in run_id.lower() or memory_retrieved_n > 0) else 0
     retrieved_ids = mem.get("retrieved_ids") or []
     memory_ids_or_hash = ";".join(str(x) for x in retrieved_ids[:3]) if retrieved_ids else ""

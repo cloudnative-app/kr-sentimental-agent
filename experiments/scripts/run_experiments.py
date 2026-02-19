@@ -931,6 +931,9 @@ def main():
                 fr = payload.get("final_result") or {}
                 if fr.get("final_tuples") and not (fr.get("final_aspects") and len(fr.get("final_aspects") or [])):
                     payload.setdefault("final_result", {})["final_aspects"] = final_aspects_from_final_tuples(fr["final_tuples"])
+                # Inject gold_tuples into outputs for compute_irr subset (implicit/negation) classification
+                if uid_to_gold and normalized.uid in uid_to_gold:
+                    payload.setdefault("inputs", {})["gold_tuples"] = uid_to_gold[normalized.uid]
                 f_out.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
                 case_trace = _build_case_trace(

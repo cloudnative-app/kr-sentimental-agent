@@ -113,13 +113,17 @@ def main() -> int:
                     print(f"[WARN] skipping IRR (no outputs): {rd.name}", file=sys.stderr)
                     continue
                 outdir = rd / "irr"
+                scorecards = rd / "scorecards.jsonl"
+                cmd = [
+                    sys.executable,
+                    "scripts/compute_irr.py",
+                    "--input", str(outputs),
+                    "--outdir", str(outdir),
+                ]
+                if scorecards.exists():
+                    cmd.extend(["--scorecards", str(scorecards)])
                 if not run_cmd(
-                    [
-                        sys.executable,
-                        "scripts/compute_irr.py",
-                        "--input", str(outputs),
-                        "--outdir", str(outdir),
-                    ],
+                    cmd,
                     cwd=PROJECT_ROOT,
                     desc=f"compute_irr {rd.name}",
                 ):

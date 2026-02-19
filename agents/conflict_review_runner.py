@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import json
 import re
+from collections import Counter, defaultdict
 from difflib import SequenceMatcher
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 
 from tools.data_tools import InternalExample
+from tools.llm_runner import run_structured, StructuredResult
+from tools.backbone_client import BackboneClient
+from agents.prompts import load_prompt
 from schemas import FinalOutputSchema, FinalResult, ProcessTrace, AnalysisFlags
 from schemas.protocol_conflict_review import (
     ASTETripletItem,
@@ -24,7 +28,6 @@ from agents.protocol_conflict_review import (
     ReviewAgentB,
     ReviewAgentC,
 )
-from tools.backbone_client import BackboneClient
 from metrics.opinion_validation import (
     validate_aspect_ref,
     has_english_in_term,
@@ -146,6 +149,44 @@ def _ote_similarity(a: str, b: str, theta: float = 0.6) -> bool:
     return jaccard >= theta or ratio >= theta
 
 
+def _detect_granularity_overlap(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    동일 polarity + 동일 attribute에서
+    상위 ref(제품 전체#X)와 하위 ref(본품#X, 패키지·구성품#X)가 동시 존재하면 flag.
+    """
+    UPPER_ENTITIES = frozenset({"제품 전체"})
+
+    attr_groups: Dict[tuple, List[Dict[str, Any]]] = defaultdict(list)
+    for c in candidates:
+        ref = (c.get("aspect_ref") or "").strip()
+        pol = c.get("polarity")
+        if not ref or not pol or "#" not in ref:
+            continue
+        parts = ref.split("#", 1)
+        entity = (parts[0] or "").strip()
+        attr = (parts[1] or "").strip()
+        attr_groups[(attr, pol)].append({
+            "tuple_id": c.get("tuple_id"),
+            "entity": entity,
+            "ref": ref,
+        })
+
+    flags: List[Dict[str, Any]] = []
+    for (attr, polarity), items in attr_groups.items():
+        entities = {i["entity"] for i in items if i.get("entity")}
+        has_upper = bool(entities & UPPER_ENTITIES)
+        has_lower = bool(entities - UPPER_ENTITIES)
+
+        if has_upper and has_lower:
+            flags.append({
+                "aspect_ref": "|".join(i["ref"] for i in items if i.get("ref")),
+                "aspect_term": "",
+                "tuple_ids": [i["tuple_id"] for i in items if i.get("tuple_id")],
+                "conflict_type": "granularity_overlap_candidate",
+            })
+    return flags
+
+
 def _compute_conflict_flags(
     candidates: List[Dict[str, Any]],
     conflict_mode: str = "primary_secondary",
@@ -213,6 +254,7 @@ def _compute_conflict_flags(
                     "conflict_type": "term_polarity_mismatch",
                 })
 
+    flags.extend(_detect_granularity_overlap(candidates))
     return flags
 
 
@@ -243,24 +285,138 @@ def _group_actions_by_tuple(
 
 # Structural reason codes: when only 1 reviewer proposes FLIP, adopt if structural.
 _STRUCTURAL_REASON_CODES = frozenset({"NEGATION_SCOPE", "CONTRAST_CLAUSE", "STRUCTURAL_INCONSISTENT"})
+# DROP justified: when 1 FLIP + 1 DROP + 1 KEEP, prefer DROP if reason in this set.
+_DROP_JUSTIFIED = frozenset({"WEAK_EVIDENCE", "REDUNDANT_UPPER_REF"})
+# Facet priority: conflict_type/reason -> preferred actor (C = P-LIT). ARB excluded from minority checks.
+_FACET_PRIORITY: Dict[str, str] = {
+    "granularity_overlap_candidate": "C",
+    "REDUNDANT_UPPER_REF": "C",
+}
+
+
+def _is_incomplete_revise(action_item: Any) -> tuple[bool, str]:
+    """
+    Check if FLIP/MERGE action is incomplete (missing required fields).
+    Returns (True, "FORMAT_INCOMPLETE") if incomplete, else (False, "").
+    """
+    if not action_item or not isinstance(action_item, dict):
+        return (False, "")
+    atype = (action_item.get("action_type") or action_item.get("type") or "KEEP").strip().upper()
+    if atype not in {"FLIP", "MERGE"}:
+        return (False, "")
+    tids = action_item.get("target_tuple_ids") or []
+    if not tids:
+        return (True, "FORMAT_INCOMPLETE")
+    nv = action_item.get("new_value") or {}
+    if atype == "FLIP":
+        if not (isinstance(nv, dict) and (nv.get("polarity") or "").strip()):
+            return (True, "FORMAT_INCOMPLETE")
+    elif atype == "MERGE":
+        if not (isinstance(nv, dict) and (nv.get("normalized_ref") or "").strip()):
+            return (True, "FORMAT_INCOMPLETE")
+    return (False, "")
+
+
+def _run_recheck(
+    backbone: BackboneClient,
+    text: str,
+    text_id: str,
+    run_id: str,
+    mode: str,
+    tid: str,
+    conflict_type: str,
+    candidate_tuples: List[Dict[str, Any]],
+    prior_votes: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """
+    Run targeted re-check for one tuple. Returns single action dict (actor=ARB) or None on failure.
+    """
+    raw = load_prompt("review_recheck_action")
+    if "---USER---" in raw:
+        system_part, user_tmpl = raw.split("---USER---", 1)
+        system_part = system_part.strip()
+        user_tmpl = user_tmpl.strip()
+    else:
+        system_part = raw.strip()
+        user_tmpl = ""
+    candidate_tuples_json = json.dumps(candidate_tuples, ensure_ascii=False)
+    prior_votes_json = json.dumps(prior_votes, ensure_ascii=False)
+    user_text = user_tmpl.replace("{text}", text)
+    user_text = user_text.replace("{conflict_type}", conflict_type)
+    user_text = user_text.replace("{candidate_tuples_json}", candidate_tuples_json)
+    user_text = user_text.replace("{prior_votes_json}", prior_votes_json)
+    try:
+        res = run_structured(
+            backbone=backbone,
+            system_prompt=system_part,
+            user_text=user_text,
+            schema=ReviewOutputSchema,
+            max_retries=2,
+            run_id=run_id,
+            text_id=text_id,
+            stage="ReviewRecheck",
+            mode=mode,
+            use_mock=(getattr(backbone, "provider", "mock") == "mock"),
+        )
+        actions = res.model.review_actions or []
+        if not actions:
+            return None
+        a = actions[0]
+        out = {
+            "action_type": (a.action_type or "KEEP").strip().upper(),
+            "target_tuple_ids": list(a.target_tuple_ids or [tid]),
+            "new_value": (a.new_value or {}) if isinstance(a.new_value, dict) else {},
+            "reason_code": (a.reason_code or "").strip(),
+            "actor": "ARB",
+        }
+        if out["action_type"] == "MERGE":
+            out["action_type"] = "KEEP"
+        return out
+    except Exception:
+        return None
 
 
 def _arbiter_vote(
     actions_by_tuple: Dict[str, Dict[str, Any]],
+    conflict_flags: Optional[List[Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     """
     Deterministic Arbiter: No A>B>C authority. Aggregation by majority and reason_code.
 
-    Rule 1: ≥2 identical → adopt.
-    Rule 2: All disagree → KEEP + FLAG.
-    Rule 3: 1 FLIP + 1 DROP + 1 KEEP: if FLIP has structural reason_code → FLIP; else FLAG.
+    Rule 1: ≥2 identical → adopt; unless minority actor matches _FACET_PRIORITY → FLAG (FACET_MINORITY_SIGNAL).
+    Rule 2: All disagree → KEEP + FLAG; granularity tie → REDUNDANT_REF_UNCERTAIN.
+    Rule 3: 1 FLIP + 1 DROP + 1 KEEP: FLIP structural → FLIP; DROP justified → DROP; else FLAG.
     Rule 4: Arbiter does NOT output MERGE (moved to Finalize).
     """
     from collections import Counter
 
+    tid_to_conflict: Dict[str, str] = {}
+    for f in conflict_flags or []:
+        for tid in f.get("tuple_ids", []):
+            tid_to_conflict[tid] = (f.get("conflict_type") or "").strip()
+
     output: List[Dict[str, Any]] = []
+    emitted_tids: set = set()
     for tid, acts in actions_by_tuple.items():
+        arb_recheck = acts.get("ARB")
+        if arb_recheck:
+            tids_in_action = arb_recheck.get("target_tuple_ids") or [tid]
+            if emitted_tids & set(tids_in_action):
+                continue
+            emitted_tids.update(tids_in_action)
+            out = {
+                "action_type": (arb_recheck.get("action_type") or "KEEP").strip().upper(),
+                "target_tuple_ids": tids_in_action,
+                "actor": "ARB",
+                "reason_code": (arb_recheck.get("reason_code") or "").strip(),
+            }
+            if out["action_type"] == "FLIP" and arb_recheck.get("new_value"):
+                out["new_value"] = arb_recheck.get("new_value")
+            output.append(out)
+            continue
+
         votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
+        actor_keys = ["A", "B", "C"]
         votes = [_norm_atype(v) if v else "KEEP" for v in votes_raw]
         votes_adopted = [v if v != "MERGE" else "KEEP" for v in votes]
 
@@ -268,29 +424,65 @@ def _arbiter_vote(
         most_common = cnt.most_common(1)[0] if cnt else ("KEEP", 0)
         majority_action, majority_count = most_common[0], most_common[1]
 
+        # Minority: actor whose vote differs from majority
+        minority_actors: List[str] = []
+        minority_actions: List[Dict[str, Any]] = []
+        for i, (k, v) in enumerate(zip(actor_keys, votes_raw)):
+            atype = votes_adopted[i] if i < len(votes_adopted) else "KEEP"
+            if atype != majority_action and v:
+                minority_actors.append(k)
+                minority_actions.append(v)
+
+        conflict_type = tid_to_conflict.get(tid, "")
+        preferred = _FACET_PRIORITY.get(conflict_type)
+
         add_flag = False
+        flag_reason = "POLARITY_UNCERTAIN"
+
         if majority_count >= 2:
-            final_action = majority_action
+            # Rule 1: facet-weighted minority protection
+            if preferred and minority_actors and preferred in minority_actors:
+                final_action = "FLAG"
+                add_flag = True
+                flag_reason = "FACET_MINORITY_SIGNAL"
+            else:
+                final_action = majority_action
         else:
-            # No majority: check for single FLIP with structural reason (Rule 3)
+            # No majority
             if set(votes_adopted) == {"FLIP", "DROP", "KEEP"}:
+                # Rule 3
                 flip_action = next((v for v in votes_raw if v and _norm_atype(v) == "FLIP"), None)
-                reason = (flip_action.get("reason_code") or "").strip().upper() if flip_action else ""
-                if reason and reason in _STRUCTURAL_REASON_CODES:
+                drop_action = next((v for v in votes_raw if v and _norm_atype(v) == "DROP"), None)
+                flip_reason = (flip_action.get("reason_code") or "").strip().upper() if flip_action else ""
+                drop_reason = (drop_action.get("reason_code") or "").strip().upper() if drop_action else ""
+
+                if flip_reason and flip_reason in _STRUCTURAL_REASON_CODES:
                     final_action = "FLIP"
+                    add_flag = False
+                elif drop_reason and drop_reason in _DROP_JUSTIFIED:
+                    final_action = "DROP"
                     add_flag = False
                 else:
                     final_action = "FLAG"
                     add_flag = True
+                    if conflict_type == "granularity_overlap_candidate":
+                        flag_reason = "REDUNDANT_REF_UNCERTAIN"
+                    else:
+                        flag_reason = "TIE_UNRESOLVED"
             else:
+                # Rule 2: all disagree
                 final_action = "FLAG"
-                add_flag = True  # Rule 2: all disagree → FLAG
+                add_flag = True
+                if conflict_type == "granularity_overlap_candidate":
+                    flag_reason = "REDUNDANT_REF_UNCERTAIN"
+                else:
+                    flag_reason = "POLARITY_UNCERTAIN"
 
         out: Dict[str, Any] = {
             "action_type": final_action,
             "target_tuple_ids": [tid],
             "actor": "ARB",
-            "reason_code": "POLARITY_UNCERTAIN" if add_flag else "",
+            "reason_code": flag_reason if add_flag else "",
         }
         if final_action == "FLIP":
             for v in votes_raw:
@@ -407,7 +599,7 @@ def run_conflict_review_v1(
             text, adapter_ate, None, None, language_code=language_code
         )
         meta_memory["retrieved_k"] = memory_meta.get("retrieved_k", 0)
-        meta_memory["write_enabled"] = condition == "M2"
+        meta_memory["write_enabled"] = getattr(episodic_orchestrator, "_flags", {}).get("store_write", False)
         meta_memory["store_id"] = str(getattr(episodic_orchestrator._store, "path", ""))
         slot_name = getattr(episodic_orchestrator, "_slot_name", "DEBATE_CONTEXT__MEMORY")
         memory_context = _format_memory_context(slot_dict or {}, slot_name)
@@ -424,7 +616,52 @@ def run_conflict_review_v1(
     # Deterministic Arbiter: Majority First, FLIP restricted, no MERGE
     all_tids = [c.get("tuple_id") for c in candidates if c.get("tuple_id")]
     actions_by_tuple = _group_actions_by_tuple(actions_a, actions_b, actions_c, all_tids)
-    arb_actions_list = _arbiter_vote(actions_by_tuple)
+
+    tid_to_conflict: Dict[str, str] = {}
+    for f in conflict_flags or []:
+        for tid in f.get("tuple_ids", []):
+            tid_to_conflict[tid] = (f.get("conflict_type") or "").strip()
+
+    recheck_count = 0
+    recheck_done_for_conflict: set = set()
+    for tid in all_tids:
+        acts = actions_by_tuple.get(tid, {})
+        need_recheck = False
+        for v in [acts.get("A"), acts.get("B"), acts.get("C")]:
+            if v and _is_incomplete_revise(v)[0]:
+                need_recheck = True
+                break
+        if not need_recheck:
+            conflict_type = tid_to_conflict.get(tid, "")
+            if conflict_type == "granularity_overlap_candidate":
+                votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
+                votes = [_norm_atype(v) if v else "KEEP" for v in votes_raw]
+                votes_adopted = [v if v != "MERGE" else "KEEP" for v in votes]
+                cnt = Counter(votes_adopted)
+                majority_count = cnt.most_common(1)[0][1] if cnt else 0
+                if majority_count < 2:
+                    need_recheck = True
+        if need_recheck:
+            flag = next((f for f in (conflict_flags or []) if tid in (f.get("tuple_ids") or [])), None)
+            tuple_ids_in_conflict = tuple(sorted(flag.get("tuple_ids") or [tid])) if flag else (tid,)
+            conflict_key = tuple_ids_in_conflict
+            if conflict_key in recheck_done_for_conflict:
+                continue
+            conflict_type = tid_to_conflict.get(tid, "")
+            candidate_tuples = [c for c in candidates if c.get("tuple_id") in tuple_ids_in_conflict]
+            prior_votes = {"A": acts.get("A"), "B": acts.get("B"), "C": acts.get("C")}
+            arb_action = _run_recheck(
+                backbone, text, text_id, run_id, "proposed",
+                tid, conflict_type, candidate_tuples, prior_votes,
+            )
+            if arb_action:
+                recheck_done_for_conflict.add(conflict_key)
+                recheck_count += 1
+                for t in tuple_ids_in_conflict:
+                    if t in actions_by_tuple:
+                        actions_by_tuple[t]["ARB"] = arb_action
+
+    arb_actions_list = _arbiter_vote(actions_by_tuple, conflict_flags)
     arb_output = ReviewOutputSchema(review_actions=[ReviewActionItem(**a) for a in arb_actions_list])
     res_arb = SimpleNamespace(model=arb_output, meta=SimpleNamespace(to_notes_str=lambda: "deterministic_vote"))
 
@@ -434,15 +671,39 @@ def run_conflict_review_v1(
     final_candidates = _apply_review_actions(candidates, arb_actions_list)
     final_candidates = _finalize_normalize_ref(final_candidates)
 
-    # M2: append episode to store (if episodic_orchestrator and condition M2)
+    # M1/M2: append episode to store when store_write enabled
     if episodic_orchestrator and episodic_config:
-        condition = (episodic_config.get("condition") or "M0").strip()
-        if condition == "M2":
+        store_write = getattr(episodic_orchestrator, "_flags", {}).get("store_write", False)
+        if store_write:
             adapters = _cr_adapters_for_append(candidates, final_candidates)
             conflict_resolved = bool(conflict_flags and arb_actions_list)
             moderator_summary = {"conflict_resolved": conflict_resolved}
             if conflict_resolved:
                 moderator_summary["outcome_delta"] = {"conflict_resolved": True}
+            # arbiter_reason_code, facet_dissent for EvaluationV1_1
+            arb_reasons = [a.get("reason_code") or "" for a in arb_actions_list if (a.get("reason_code") or "").strip()]
+            moderator_summary["arbiter_reason_code"] = arb_reasons[0] if arb_reasons else ""
+            facet_dissent_list: List[Dict[str, Any]] = []
+            for a in arb_actions_list:
+                tids = a.get("target_tuple_ids") or []
+                final_atype = (a.get("action_type") or "").strip().upper()
+                for tid in tids:
+                    acts = actions_by_tuple.get(tid, {})
+                    votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
+                    actor_keys = ["A", "B", "C"]
+                    for i, (k, v) in enumerate(zip(actor_keys, votes_raw)):
+                        if not v:
+                            continue
+                        atype = (v.get("action_type") or v.get("type") or "KEEP").strip().upper()
+                        if atype == "MERGE":
+                            atype = "KEEP"
+                        if atype != final_atype:
+                            facet_dissent_list.append({
+                                "actor": k,
+                                "action_type": atype,
+                                "reason_code": (v.get("reason_code") or "").strip(),
+                            })
+            moderator_summary["facet_dissent"] = facet_dissent_list
             episodic_orchestrator.append_episode_if_needed(
                 text,
                 text_id,
@@ -521,6 +782,7 @@ def run_conflict_review_v1(
         "text_id": text_id,
         "mode": "proposed",
         "protocol_mode": "conflict_review_v1",
+        "recheck_triggered_count": recheck_count,
         "case_type": getattr(example, "case_type", "unknown"),
         "split": getattr(example, "split", "unknown"),
         "language_code": language_code,

@@ -228,6 +228,8 @@ class EpisodicOrchestrator:
             override_applied=bool(ms.get("override_applied", False)),
             override_success=bool(ms.get("override_success", False)),
             override_harm=bool(ms.get("override_harm", False)),
+            arbiter_reason_code=(ms.get("arbiter_reason_code") or "").strip(),
+            facet_dissent=ms.get("facet_dissent") or [],
         )
         provenance = ProvenanceV1_1(
             created_from_split=split or "",

@@ -1,8 +1,7 @@
-# CR-M1 v7: M0 v6 시드 42,123,456과 비교용. seeds [42, 123, 456], concurrency 3.
-# v5 기준: conflict_flags ref primary, term secondary
-# Memory v2: conditions_memory_v1_2 (M1 read+write both true)
+# CR-M0 v7: conflict_review, ref-level conflict, no memory. n=601, seeds [42, 123, 456], concurrency 3.
+# Memory: M0 (read/write 모두 사용 안 함)
 run_purpose: paper
-run_id: cr_n601_m1_v7
+run_id: cr_n601_m0_v7
 run_mode: proposed
 
 pipeline:
@@ -16,8 +15,7 @@ pipeline:
   enable_debate_override: false
 
 episodic_memory:
-  condition: M1
-  conditions_path: experiments/configs/conditions_memory_v1_2.yaml
+  condition: M0
 
 data:
   dataset_root: experiments/configs/datasets
@@ -55,5 +53,4 @@ experiment:
   repeat:
     mode: seed
     seeds: [42, 123, 456]
-    concurrency: 3
   concurrency: 3

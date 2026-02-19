@@ -102,12 +102,12 @@ conditions:
       injection_mask: true
       store_write: false
   M1:
-    description: "CR: read-only retrieve (frozen), no write"
+    description: "CR: read+write retrieve (adaptive)"
     episodic_memory:
       memory_mode: "on"
       retrieval_execute: true
       injection_mask: false
-      store_write: false
+      store_write: true
   M2:
     description: "CR: read+write retrieve (adaptive)"
     episodic_memory:

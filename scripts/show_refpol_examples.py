@@ -92,6 +92,7 @@ def main():
     ap.add_argument("--input", required=True, type=Path, help="scorecards.jsonl")
     ap.add_argument("--n", type=int, default=10, help="예시 개수")
     ap.add_argument("--out", type=Path, help="Output markdown path")
+    ap.add_argument("--wrong-only", action="store_true", help="오답만 (FN>0 또는 FP>0인 샘플)")
     args = ap.parse_args()
 
     rows = load_jsonl(args.input)
@@ -109,14 +110,30 @@ def main():
         print("[ERROR] No rows with gold_tuples", file=sys.stderr)
         sys.exit(1)
 
+    if args.wrong_only:
+        wrong_rows = []
+        for r in rows_with_gold:
+            gold_raw = _extract_gold_tuples_raw(r)
+            s2_raw = _extract_final_tuples_raw(r)
+            gold_tuples = _tuple_to_tuple_set(gold_raw)
+            s2_tuples = _tuple_to_tuple_set(s2_raw)
+            gold_pairs, _ = tuples_to_ref_pairs(gold_tuples)
+            s2_pairs, _ = tuples_to_ref_pairs(s2_tuples)
+            fn = len(gold_pairs - s2_pairs)
+            fp = len(s2_pairs - gold_pairs)
+            if fn > 0 or fp > 0:
+                wrong_rows.append(r)
+        rows_with_gold = wrong_rows
+
     take = min(args.n, len(rows_with_gold))
     selected = rows_with_gold[:take]
 
+    title = "ref-level 산출물 Gold vs Pred 오답 예시" if args.wrong_only else "ref-level 산출물 Gold vs Pred 예시"
     lines = [
-        "# ref-level 산출물 Gold vs Pred 예시",
+        f"# {title}",
         "",
         f"**입력**: {args.input}",
-        f"**예시 수**: {take}",
+        f"**예시 수**: {take}" + (" (오답만)" if args.wrong_only else ""),
         "",
         "---",
         "",
@@ -141,9 +158,9 @@ def main():
         s1_pairs, _ = tuples_to_ref_pairs(s1_tuples)
         s2_pairs, _ = tuples_to_ref_pairs(s2_tuples)
 
-        tp = len(gold_pairs & s1_pairs)
-        fp = len(s1_pairs - gold_pairs)
-        fn = len(gold_pairs - s1_pairs)
+        tp = len(gold_pairs & s2_pairs)
+        fp = len(s2_pairs - gold_pairs)
+        fn = len(gold_pairs - s2_pairs)
 
         lines.extend([
             f"## 예시 {i}: {text_id}",

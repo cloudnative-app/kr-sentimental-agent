@@ -9,6 +9,7 @@ Hard rules:
 - Do NOT create new tuples.
 - Only act on tuple_ids referenced by conflict_flags or validator risks.
 - Allowed actions: DROP, MERGE, FLIP, KEEP, FLAG.
+- FLIP/MERGE must include target_tuple_ids (non-empty) and required new_value: FLIP requires {"polarity":"..."}; MERGE requires {"normalized_ref":"..."}. Otherwise use FLAG with reason_code="FORMAT_INCOMPLETE".
 - If unsure, KEEP and FLAG.
 - Do NOT DROP merely because multiple refs exist; prefer dropping only when ref violates taxonomy or evidence mismatch.
 - If opposite polarities in same ref are due to contrast, consider setting mixed/keep both unless explicit correction is justified.

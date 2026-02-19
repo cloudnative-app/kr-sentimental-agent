@@ -60,11 +60,14 @@ def normalize_for_eval(s: Optional[str]) -> str:
 
 def normalize_ref_for_eval(ref: Optional[str]) -> str:
     """Normalize aspect_ref for matching: strip, collapse whitespace, # 좌우 공백 제거.
-    IMPORTANT: # is never removed or altered. No symbol substitution (e.g. / → ·).
-    Gold is never filtered by allowlist; this is surface-only normalization."""
+    IMPORTANT: # is never removed or altered.
+    Gold is never filtered by allowlist; this is surface-only normalization.
+    Entity canonicalize: 패키지/구성품 → 패키지·구성품 (gold 호환)."""
     if ref is None:
         return ""
-    s = str(ref).strip()
+    s = str(ref)
+    s = s.replace("패키지/구성품", "패키지·구성품")
+    s = s.strip()
     s = " ".join(s.split())  # whitespace collapse
     if "#" in s:
         left, right = s.split("#", 1)

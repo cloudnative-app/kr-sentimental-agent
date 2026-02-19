@@ -74,6 +74,13 @@ If no explicit surface target exists, omit the triplet.
 🔹 P-LIT 전용: Literal cues must be tied to an explicit surface target.
 Do not create triplets based solely on evaluative adjectives.
 
+[Empty-output prevention rule]
+If the input contains explicit evaluative cues (positive or negative sentiment) but you cannot confidently assign a specific schema ref,
+you must output at least one pair using the fallback ref "제품 전체#일반" with the corresponding polarity.
+- Only apply this rule when evaluative cues are explicit.
+- If the input is purely informational/advertising without clear evaluation, empty output is allowed.
+- Do not add extra refs without evidence; keep outputs minimal.
+
 ---USER---
 
 Text:

@@ -263,6 +263,16 @@ def test_normalize_ref_for_eval_preserves_hash() -> None:
     assert f1 == 1.0
 
 
+def test_normalize_ref_package_component_slash_to_midpoint() -> None:
+    """패키지/구성품 → 패키지·구성품 canonicalize for gold compatibility."""
+    from metrics.eval_tuple import normalize_ref_for_eval, precision_recall_f1_tuple, tuples_from_list
+    assert normalize_ref_for_eval("패키지/구성품#일반") == "패키지·구성품#일반"
+    gold = tuples_from_list([{"aspect_ref": "패키지/구성품#일반", "aspect_term": "x", "polarity": "positive"}])
+    pred = tuples_from_list([{"aspect_ref": "패키지·구성품#일반", "aspect_term": "x", "polarity": "positive"}])
+    prec, rec, f1 = precision_recall_f1_tuple(gold, pred, match_by_aspect_ref=True)
+    assert prec == 1.0 and rec == 1.0 and f1 == 1.0
+
+
 def test_pred_valid_polarities_rejects_unknown() -> None:
     """Pred with polarity unknown/missing → valid list empty or partial, invalid count increased."""
     pred_unknown = {("", "x", "unknown")}

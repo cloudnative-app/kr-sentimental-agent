@@ -56,6 +56,8 @@ class EvaluationV1_1(BaseModel):
     override_applied: bool = False
     override_success: bool = False
     override_harm: bool = False
+    arbiter_reason_code: str = ""
+    facet_dissent: List[Dict[str, Any]] = Field(default_factory=list, description="Minority actor/action/reason for process logging")
 
 
 class ProvenanceV1_1(BaseModel):

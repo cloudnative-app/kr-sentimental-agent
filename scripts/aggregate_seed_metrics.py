@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -27,7 +28,11 @@ REPORT_METRICS_ALWAYS = [
     "n", "N_gold",
     "tuple_f1_s1", "tuple_f1_s2", "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
     "fix_rate", "break_rate", "net_gain", "cda",
+    "break_rate_implicit", "break_rate_negation", "break_rate_simple",
     "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "net_gain_refpol",
+    "break_rate_implicit_refpol", "break_rate_negation_refpol", "break_rate_simple_refpol",
+    "subset_irr_conflict", "subset_irr_implicit", "subset_irr_negation",
+    "implicit_invalid_count", "conflict_count", "break_count",
     "aar_majority_rate",
 ]
 
@@ -50,8 +55,26 @@ def parse_float(v: Any) -> Optional[float]:
         return None
 
 
+def _load_irr_subset(seed_dir: Path) -> Dict[str, float]:
+    """Load subset IRR from irr/irr_subset_summary.json. Returns subset_irr_* values."""
+    out: Dict[str, float] = {}
+    subset_path = seed_dir / "irr" / "irr_subset_summary.json"
+    if not subset_path.exists():
+        return out
+    try:
+        data = json.loads(subset_path.read_text(encoding="utf-8"))
+        for key in ("conflict", "implicit", "negation"):
+            if key in data and isinstance(data[key], dict):
+                val = data[key].get("irr_cohen_kappa_mean")
+                if val is not None:
+                    out[f"subset_irr_{key}"] = float(val)
+    except (json.JSONDecodeError, TypeError, ValueError, OSError):
+        pass
+    return out
+
+
 def collect_per_seed_metrics(run_dirs: List[Path], metrics_path: str = "derived/metrics/structural_metrics.csv") -> List[Dict[str, Any]]:
-    """Collect one row per run_dir from <run_dir>/derived/metrics/structural_metrics.csv."""
+    """Collect one row per run_dir from <run_dir>/derived/metrics/structural_metrics.csv + irr_subset_summary.json."""
     rows = []
     for d in run_dirs:
         path = d / metrics_path if not Path(metrics_path).is_absolute() else Path(metrics_path)
@@ -62,6 +85,8 @@ def collect_per_seed_metrics(run_dirs: List[Path], metrics_path: str = "derived/
         if r is not None:
             r["_run_dir"] = str(d)
             r["_seed"] = d.name
+            for k, v in _load_irr_subset(d).items():
+                r[k] = v
             rows.append(r)
     return rows
 

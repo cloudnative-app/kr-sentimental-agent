@@ -1,8 +1,7 @@
-# CR-M1 v7: M0 v6 시드 42,123,456과 비교용. seeds [42, 123, 456], concurrency 3.
-# v5 기준: conflict_flags ref primary, term secondary
-# Memory v2: conditions_memory_v1_2 (M1 read+write both true)
+# CR v2 M0 v1: conflict_review (cr_v2_patch), n=100, seed 3, concurrency 3.
+# Memory: M0 (read/write 모두 사용 안 함)
 run_purpose: paper
-run_id: cr_n601_m1_v7
+run_id: cr_v2_n100_m0_v1
 run_mode: proposed
 
 pipeline:
@@ -16,22 +15,21 @@ pipeline:
   enable_debate_override: false
 
 episodic_memory:
-  condition: M1
-  conditions_path: experiments/configs/conditions_memory_v1_2.yaml
+  condition: M0
 
 data:
   dataset_root: experiments/configs/datasets
   allowed_roots: ["experiments/configs/datasets"]
   input_format: csv
-  train_file: beta_n601/train.csv
-  valid_file: beta_n601/valid.csv
+  train_file: beta_n100/train.csv
+  valid_file: beta_n100/valid.csv
   text_column: text
   label_column: null
   target_column: null
   max_length: 192
 
 eval:
-  gold_valid_jsonl: beta_n601/valid.gold.jsonl
+  gold_valid_jsonl: beta_n100/valid.gold.jsonl
 
 backbone:
   provider: openai
@@ -55,5 +53,4 @@ experiment:
   repeat:
     mode: seed
     seeds: [42, 123, 456]
-    concurrency: 3
   concurrency: 3

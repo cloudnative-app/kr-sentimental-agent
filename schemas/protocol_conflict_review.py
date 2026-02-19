@@ -115,7 +115,16 @@ REASON_CODES = frozenset({
     "WEAK_INFERENCE",
     "EXPLICIT_NOT_REQUIRED",
     "STRUCTURAL_INCONSISTENT",
+    # Granularity / process logging (cr_v2)
+    "REDUNDANT_UPPER_REF",      # DROP 가능
+    "REDUNDANT_REF_UNCERTAIN",  # FLAG
+    "FACET_MINORITY_SIGNAL",    # FLAG
+    "TIE_UNRESOLVED",           # FLAG (Rule 3 fallback)
 })
+
+
+# Valid polarity strings for FLIP new_value normalization
+_POLARITY_STRINGS = frozenset({"positive", "negative", "neutral", "mixed"})
 
 
 class ReviewActionItem(BaseModel):
@@ -126,6 +135,25 @@ class ReviewActionItem(BaseModel):
     new_value: Optional[Dict[str, Any]] = Field(default=None)
     reason_code: str = Field(default="")
     actor: str = Field(default="", description="A|B|C|ARB")
+
+    @field_validator("new_value", mode="before")
+    @classmethod
+    def normalize_new_value(cls, v: Any) -> Optional[Dict[str, Any]]:
+        """
+        LLM sometimes returns new_value as string (e.g. 'positive') for FLIP.
+        Normalize to {"polarity": value} so downstream expects dict with polarity key.
+        """
+        if v is None:
+            return None
+        if isinstance(v, dict):
+            return v
+        if isinstance(v, str):
+            pol = v.strip().lower()
+            if pol in _POLARITY_STRINGS:
+                return {"polarity": pol}
+            # Unknown string: wrap as polarity anyway (fail-soft)
+            return {"polarity": pol} if pol else None
+        return None
 
 
 class ReviewOutputSchema(BaseModel):

@@ -20,11 +20,19 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# Lexical cues for negation/contrast subset (outputs-based, no gold/validator required)
+NEGATION_PATTERNS = [
+    r"\b안\b", r"\b못\b", r"않", r"없",
+    r"\b아니\b", r"지만", r"그러나",
+    r"반면", r"\b근데\b", r"\b는데\b",
+]
 
 # Canonical action labels (Process Reliability)
 KEEP = "KEEP"
@@ -344,6 +352,34 @@ def _has_conflict(record: Dict[str, Any]) -> bool:
     return len(cf) > 0
 
 
+def _is_implicit_case(record: Dict[str, Any]) -> bool:
+    """True if gold has at least one implicit tuple (aspect_term empty). Uses _gold_tuples or inputs.gold_tuples."""
+    gold = record.get("_gold_tuples") or (record.get("inputs") or {}).get("gold_tuples") or []
+    if not gold:
+        return False
+    for t in gold:
+        if not isinstance(t, dict):
+            continue
+        term = (t.get("aspect_term") or "")
+        if isinstance(term, dict):
+            term = term.get("term") or ""
+        if (term or "").strip() in ("", None):
+            return True
+    return False
+
+
+def _has_negation_case(record: Dict[str, Any]) -> bool:
+    """True if input text contains negation/contrast lexical cues (outputs-based)."""
+    meta = record.get("meta") or {}
+    text = meta.get("input_text") or record.get("input_text") or record.get("text") or ""
+    if not isinstance(text, str):
+        text = str(text)
+    for pat in NEGATION_PATTERNS:
+        if re.search(pat, text):
+            return True
+    return False
+
+
 def _get_memory_mode(record: Dict[str, Any]) -> str:
     """Extract memory mode from meta."""
     meta = record.get("meta") or {}
@@ -406,15 +442,39 @@ def compute_sample_irr(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "agreement_majority_measurement": majority_meas,
         "agreement_none_measurement": none_meas,
         "has_conflict": _has_conflict(record),
+        "is_implicit": _is_implicit_case(record),
+        "has_negation": _has_negation_case(record),
         "memory_mode": _get_memory_mode(record),
         "n_tuples": len(tuple_ids),
     }
+
+
+def _load_uid_to_gold(scorecards_path: Path) -> Dict[str, List[Dict[str, Any]]]:
+    """Load uid -> gold_tuples from scorecards.jsonl (for implicit subset when outputs lack inputs)."""
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    if not scorecards_path.exists():
+        return out
+    for line in scorecards_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            sc = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        uid = (sc.get("meta") or {}).get("text_id") or (sc.get("meta") or {}).get("uid") or ""
+        gold = (sc.get("inputs") or {}).get("gold_tuples") or []
+        if uid and gold:
+            out[uid] = gold
+    return out
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Compute IRR for ReviewA/B/C from outputs.jsonl")
     ap.add_argument("--input", type=Path, required=True, help="outputs.jsonl path")
     ap.add_argument("--outdir", type=Path, required=True, help="Output directory (e.g. results/<run>/irr/)")
+    ap.add_argument("--scorecards", type=Path, default=None, help="scorecards.jsonl to merge gold_tuples for implicit subset (when outputs lack inputs)")
+    ap.add_argument("--scorecards_path", type=Path, default=None, help="Alias for --scorecards")
     args = ap.parse_args()
 
     inp = args.input.resolve()
@@ -429,6 +489,16 @@ def main() -> int:
         outdir = (PROJECT_ROOT / outdir).resolve()
     outdir.mkdir(parents=True, exist_ok=True)
 
+    uid_to_gold: Dict[str, List[Dict[str, Any]]] = {}
+    scorecards_path = args.scorecards or args.scorecards_path
+    if scorecards_path:
+        sp = Path(scorecards_path).resolve()
+        if not sp.is_absolute():
+            sp = (PROJECT_ROOT / sp).resolve()
+        uid_to_gold = _load_uid_to_gold(sp)
+        if uid_to_gold:
+            print(f"[OK] Loaded gold_tuples for {len(uid_to_gold)} uids from scorecards")
+
     rows: List[Dict[str, Any]] = []
     for line in inp.read_text(encoding="utf-8").splitlines():
         line = line.strip()
@@ -438,6 +508,13 @@ def main() -> int:
             record = json.loads(line)
         except json.JSONDecodeError:
             continue
+        # Merge gold_tuples from scorecards for implicit subset (when outputs lack inputs)
+        if uid_to_gold:
+            uid = (record.get("meta") or {}).get("text_id") or (record.get("meta") or {}).get("uid") or ""
+            if uid in uid_to_gold:
+                gold_tuples = uid_to_gold[uid]
+                record.setdefault("inputs", {})["gold_tuples"] = gold_tuples
+                record["_gold_tuples"] = gold_tuples
         result = compute_sample_irr(record)
         if result:
             rows.append(result)
@@ -469,7 +546,7 @@ def main() -> int:
             "agreement_perfect", "agreement_majority", "agreement_none",
             "kappa_mean_measurement", "fleiss_kappa_measurement",
             "agreement_perfect_measurement", "agreement_majority_measurement",
-            "has_conflict", "memory_mode",
+            "has_conflict", "is_implicit", "has_negation", "memory_mode",
         ]
         csv_path = outdir / "irr_sample_level.csv"
         with csv_path.open("w", encoding="utf-8", newline="") as f:
@@ -530,6 +607,36 @@ def main() -> int:
             "mean_majority_agreement_measurement": majority_meas_total / total_tuples if total_tuples else None,
             "conflict_vs_no_conflict": {"has_conflict": conflict_yes, "no_conflict": conflict_no},
         }
+
+        # Subset IRR: conflict, implicit, negation
+        def _subset_mean(rows_sub: List[Dict], key: str) -> Optional[float]:
+            vals = [r[key] for r in rows_sub if _valid_float(r.get(key))]
+            return _safe_mean(vals)
+
+        rows_conflict = [r for r in rows if r.get("has_conflict")]
+        rows_implicit = [r for r in rows if r.get("is_implicit")]
+        rows_negation = [r for r in rows if r.get("has_negation")]
+
+        subset_summary = {
+            "conflict": {
+                "n": len(rows_conflict),
+                "meas_cohen_kappa_mean": _subset_mean(rows_conflict, "kappa_mean_measurement"),
+                "irr_cohen_kappa_mean": _subset_mean(rows_conflict, "kappa_mean"),
+            },
+            "implicit": {
+                "n": len(rows_implicit),
+                "meas_cohen_kappa_mean": _subset_mean(rows_implicit, "kappa_mean_measurement"),
+                "irr_cohen_kappa_mean": _subset_mean(rows_implicit, "kappa_mean"),
+            },
+            "negation": {
+                "n": len(rows_negation),
+                "meas_cohen_kappa_mean": _subset_mean(rows_negation, "kappa_mean_measurement"),
+                "irr_cohen_kappa_mean": _subset_mean(rows_negation, "kappa_mean"),
+            },
+        }
+        subset_path = outdir / "irr_subset_summary.json"
+        subset_path.write_text(json.dumps(subset_summary, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"[OK] wrote: {subset_path}")
 
     summary_path = outdir / "irr_run_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
