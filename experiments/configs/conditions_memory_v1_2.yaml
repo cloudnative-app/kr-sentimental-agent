@@ -115,3 +115,12 @@ conditions:
       retrieval_execute: true
       injection_mask: false
       store_write: true
+
+  # S0: Single-pass baseline (no review, no arbiter, no memory). For Δ_refinement = M0 − S0.
+  S0_single_pass:
+    description: "CR S0: single-pass baseline, no review, no memory"
+    episodic_memory:
+      memory_mode: "off"
+      retrieval_execute: false
+      injection_mask: true
+      store_write: false

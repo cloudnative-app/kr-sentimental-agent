@@ -29,6 +29,22 @@ class AnalysisFlags(BaseModel):
         default_factory=list,
         description="Conflict flags (polarity_mismatch etc.) for SSOT.",
     )
+    skip_review_flag: bool = Field(
+        default=False,
+        description="True when review/arbiter were skipped (S0 single-pass baseline).",
+    )
+    skip_arbiter_flag: bool = Field(
+        default=False,
+        description="True when arbiter was skipped (S0 single-pass baseline).",
+    )
+    memory_enabled: bool = Field(
+        default=False,
+        description="True when episodic memory retrieval/write was enabled.",
+    )
+    conflict_flags_mode: Optional[str] = Field(
+        default=None,
+        description="intra_output_only (S0) | default (M0/M1 multi-facet merge).",
+    )
 
 
 class FinalResult(BaseModel):

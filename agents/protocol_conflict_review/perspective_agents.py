@@ -125,3 +125,39 @@ class PerspectiveAgentPlit:
             use_mock=(getattr(self.backbone, "provider", "mock") == "mock"),
             prompt_spec=spec,
         )
+
+
+class PerspectiveAgentS0SingleIntegrated:
+    """S0 baseline: single-pass agent that internally considers NEG/IMP/LIT lenses, returns one integrated output."""
+
+    def __init__(self, backbone: Optional[BackboneClient] = None):
+        self.backbone = backbone or BackboneClient()
+
+    def run_stage1(
+        self,
+        text: str,
+        *,
+        run_id: str,
+        text_id: str,
+        mode: str = "proposed",
+        demos: list[str] | None = None,
+        language_code: str = "unknown",
+        domain_id: str = "unknown",
+    ) -> StructuredResult[PerspectiveASTEStage1Schema]:
+        raw = load_prompt("perspective_s0_single_integrated_stage1")
+        system, user_tmpl = _split_system_user(raw)
+        user_text = user_tmpl.replace("{text}", text)
+        spec = PromptSpec(system=[system], user=user_text, demos=[DemoExample(text=d) for d in (demos or [])], language_code=language_code, domain_id=domain_id)
+        return run_structured(
+            backbone=self.backbone,
+            system_prompt=system,
+            user_text=user_text,
+            schema=PerspectiveASTEStage1Schema,
+            max_retries=2,
+            run_id=run_id,
+            text_id=text_id,
+            stage="S0SingleIntegrated",
+            mode=mode,
+            use_mock=(getattr(self.backbone, "provider", "mock") == "mock"),
+            prompt_spec=spec,
+        )

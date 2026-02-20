@@ -404,9 +404,16 @@ class SupervisorAgent:
 
         if self.protocol_mode == "conflict_review_v1":
             from agents.conflict_review_runner import run_conflict_review_v1
-            pipeline_cfg = self.config.get("pipeline") or {}
+            pipeline_cfg = self.config.get("pipeline") or self.config
             conflict_mode = (pipeline_cfg.get("conflict_mode") or "primary_secondary").strip()
             semantic_conflict = bool(pipeline_cfg.get("semantic_conflict_enabled", False))
+            enable_review = pipeline_cfg.get("enable_review", True)
+            enable_memory = pipeline_cfg.get("enable_memory", True)
+            stage1_mode = (pipeline_cfg.get("stage1_mode") or "multi_facet").strip()
+            conflict_flags_mode = pipeline_cfg.get("conflict_flags_mode")
+            compute_conflict_flags = pipeline_cfg.get("compute_conflict_flags", True)
+            episodic_orch = self._episodic_orchestrator if enable_memory else None
+            episodic_cfg = self.config.get("episodic_memory") if enable_memory else None
             return run_conflict_review_v1(
                 example,
                 self.backbone,
@@ -414,10 +421,15 @@ class SupervisorAgent:
                 language_code=language_code,
                 domain_id=domain_id,
                 demos=demos,
-                episodic_orchestrator=self._episodic_orchestrator,
-                episodic_config=self.config.get("episodic_memory"),
+                episodic_orchestrator=episodic_orch,
+                episodic_config=episodic_cfg,
                 conflict_mode=conflict_mode,
                 semantic_conflict_enabled=semantic_conflict,
+                enable_review=enable_review,
+                enable_memory=enable_memory,
+                stage1_mode=stage1_mode,
+                conflict_flags_mode=conflict_flags_mode,
+                compute_conflict_flags=compute_conflict_flags,
             )
 
         stage1 = self._run_stage1(

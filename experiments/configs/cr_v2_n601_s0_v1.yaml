@@ -1,0 +1,63 @@
+# CR v2 S0 v1: Single-pass baseline (no review, no arbiter, no memory).
+# For Δ_refinement = M0 − S0 (multi-agent refinement effect).
+# stage1_mode: single_integrated (one agent, internal NEG/IMP/LIT lenses)
+run_purpose: paper
+run_id: cr_v2_n601_s0_v1
+run_mode: proposed
+
+pipeline:
+  protocol_mode: conflict_review_v1
+  conflict_mode: primary_secondary
+  semantic_conflict_enabled: false
+  stage1_mode: single_integrated
+  enable_review: false
+  enable_arbiter: false
+  enable_memory: false
+  compute_conflict_flags: true
+  conflict_flags_mode: intra_output_only
+  temperature: 0
+  enable_stage2: false
+  enable_validator: true
+  enable_debate: false
+  enable_debate_override: false
+
+episodic_memory:
+  condition: S0_single_pass
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: beta_n601/train.csv
+  valid_file: beta_n601/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: beta_n601/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456]
+  concurrency: 3

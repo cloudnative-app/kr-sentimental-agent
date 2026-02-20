@@ -62,7 +62,7 @@ class EpisodicOrchestrator:
         config: { "condition": "C1"|"C2"|"C2_silent"|"C2_eval_only", optional "store_path", "topk", "slot_name", "conditions_path" }
         """
         self.condition = (config.get("condition") or "C1").strip()
-        if self.condition not in ("C1", "C2", "C2_silent", "C2_eval_only", "M0", "M1", "M2"):
+        if self.condition not in ("C1", "C2", "C2_silent", "C2_eval_only", "M0", "M1", "M2", "S0_single_pass"):
             self.condition = "C1"
         cond_path = config.get("conditions_path")
         conditions_cfg = _load_conditions(Path(cond_path) if cond_path else None)

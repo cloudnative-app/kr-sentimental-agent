@@ -24,6 +24,7 @@ from agents.protocol_conflict_review import (
     PerspectiveAgentPneg,
     PerspectiveAgentPimp,
     PerspectiveAgentPlit,
+    PerspectiveAgentS0SingleIntegrated,
     ReviewAgentA,
     ReviewAgentB,
     ReviewAgentC,
@@ -541,32 +542,43 @@ def run_conflict_review_v1(
     episodic_config: Optional[Dict[str, Any]] = None,
     conflict_mode: str = "primary_secondary",
     semantic_conflict_enabled: bool = False,
+    enable_review: bool = True,
+    enable_memory: bool = True,
+    stage1_mode: str = "multi_facet",
+    conflict_flags_mode: Optional[str] = None,
+    compute_conflict_flags: bool = True,
 ) -> FinalOutputSchema:
     text = example.text
     text_id = getattr(example, "uid", "text") or "text"
     trace: List[ProcessTrace] = []
     demos = demos or []
 
-    # Stage1: P-NEG, P-IMP, P-LIT
-    pneg = PerspectiveAgentPneg(backbone)
-    pimp = PerspectiveAgentPimp(backbone)
-    plit = PerspectiveAgentPlit(backbone)
-    r_neg = pneg.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
-    r_imp = pimp.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
-    r_lit = plit.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
-
-    for name, res in [("P-NEG", r_neg), ("P-IMP", r_imp), ("P-LIT", r_lit)]:
-        trace.append(ProcessTrace(stage="stage1", agent=name, input_text=text, output=res.model.model_dump(), notes=res.meta.to_notes_str()))
+    # Stage1: multi_facet (P-NEG, P-IMP, P-LIT) or single_integrated (S0)
+    r_neg = r_imp = r_lit = None
+    r_s0 = None
+    if (stage1_mode or "").strip() == "single_integrated":
+        agent_s0 = PerspectiveAgentS0SingleIntegrated(backbone)
+        r_s0 = agent_s0.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
+        trace.append(ProcessTrace(stage="stage1", agent="S0", input_text=text, output=r_s0.model.model_dump(), notes=r_s0.meta.to_notes_str()))
+    else:
+        pneg = PerspectiveAgentPneg(backbone)
+        pimp = PerspectiveAgentPimp(backbone)
+        plit = PerspectiveAgentPlit(backbone)
+        r_neg = pneg.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
+        r_imp = pimp.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
+        r_lit = plit.run_stage1(text, run_id=run_id, text_id=text_id, demos=demos, language_code=language_code, domain_id=domain_id)
+        for name, res in [("P-NEG", r_neg), ("P-IMP", r_imp), ("P-LIT", r_lit)]:
+            trace.append(ProcessTrace(stage="stage1", agent=name, input_text=text, output=res.model.model_dump(), notes=res.meta.to_notes_str()))
 
     # Merge triplets with tuple_id
     candidates: List[Dict[str, Any]] = []
     invalid_ref_count = invalid_language_count = invalid_target_count = 0
     idx = 0
-    for label, res in [("A", r_neg), ("B", r_imp), ("C", r_lit)]:
-        for t in getattr(res.model, "triplets", []) or []:
+    if r_s0 is not None:
+        for t in getattr(r_s0.model, "triplets", []) or []:
             tid = f"t{idx}"
             idx += 1
-            c = _triplet_to_candidate(t, tid, label)
+            c = _triplet_to_candidate(t, tid, "S0")
             if c.get("invalid_ref_flag"):
                 invalid_ref_count += 1
             if c.get("invalid_language_flag"):
@@ -574,14 +586,30 @@ def run_conflict_review_v1(
             if c.get("invalid_target_flag"):
                 invalid_target_count += 1
             candidates.append(c)
-    conflict_flags = _compute_conflict_flags(
-        candidates,
-        conflict_mode=conflict_mode,
-        semantic_conflict_enabled=semantic_conflict_enabled,
-    )
+    else:
+        for label, res in [("A", r_neg), ("B", r_imp), ("C", r_lit)]:
+            for t in getattr(res.model, "triplets", []) or []:
+                tid = f"t{idx}"
+                idx += 1
+                c = _triplet_to_candidate(t, tid, label)
+                if c.get("invalid_ref_flag"):
+                    invalid_ref_count += 1
+                if c.get("invalid_language_flag"):
+                    invalid_language_count += 1
+                if c.get("invalid_target_flag"):
+                    invalid_target_count += 1
+                candidates.append(c)
+
+    conflict_flags: List[Dict[str, Any]] = []
+    if compute_conflict_flags:
+        conflict_flags = _compute_conflict_flags(
+            candidates,
+            conflict_mode=conflict_mode,
+            semantic_conflict_enabled=semantic_conflict_enabled,
+        )
     validator_risks: List[Dict[str, Any]] = []
 
-    # Episodic memory: retrieve 1x before Review (M0/M1/M2)
+    # Episodic memory: retrieve 1x before Review (M0/M1/M2). S0: skip when enable_memory=False.
     memory_context = ""
     meta_memory: Dict[str, Any] = {
         "mode": "M0",
@@ -591,7 +619,7 @@ def run_conflict_review_v1(
         "retrieval_stage": "review_only",
     }
     slot_dict: Optional[Dict[str, Any]] = None
-    if episodic_orchestrator and episodic_config:
+    if enable_memory and episodic_orchestrator and episodic_config:
         condition = (episodic_config.get("condition") or "M0").strip()
         meta_memory["mode"] = condition
         adapter_ate = _cr_adapter_for_slot(candidates)
@@ -603,121 +631,132 @@ def run_conflict_review_v1(
         meta_memory["store_id"] = str(getattr(episodic_orchestrator._store, "path", ""))
         slot_name = getattr(episodic_orchestrator, "_slot_name", "DEBATE_CONTEXT__MEMORY")
         memory_context = _format_memory_context(slot_dict or {}, slot_name)
+    elif not enable_review:
+        meta_memory["mode"] = "S0"
 
-    # Review: A, B, C, Arbiter (deterministic voting)
-    ra, rb, rc = ReviewAgentA(backbone), ReviewAgentB(backbone), ReviewAgentC(backbone)
-    res_a = ra.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
-    res_b = rb.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
-    res_c = rc.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
-    actions_a = [a.model_dump() for a in (res_a.model.review_actions or [])]
-    actions_b = [a.model_dump() for a in (res_b.model.review_actions or [])]
-    actions_c = [a.model_dump() for a in (res_c.model.review_actions or [])]
-
-    # Deterministic Arbiter: Majority First, FLIP restricted, no MERGE
-    all_tids = [c.get("tuple_id") for c in candidates if c.get("tuple_id")]
-    actions_by_tuple = _group_actions_by_tuple(actions_a, actions_b, actions_c, all_tids)
-
-    tid_to_conflict: Dict[str, str] = {}
-    for f in conflict_flags or []:
-        for tid in f.get("tuple_ids", []):
-            tid_to_conflict[tid] = (f.get("conflict_type") or "").strip()
-
+    # Stage2: Review + Arbiter (skip when enable_review=False for S0 single-pass baseline)
     recheck_count = 0
-    recheck_done_for_conflict: set = set()
-    for tid in all_tids:
-        acts = actions_by_tuple.get(tid, {})
-        need_recheck = False
-        for v in [acts.get("A"), acts.get("B"), acts.get("C")]:
-            if v and _is_incomplete_revise(v)[0]:
-                need_recheck = True
-                break
-        if not need_recheck:
-            conflict_type = tid_to_conflict.get(tid, "")
-            if conflict_type == "granularity_overlap_candidate":
-                votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
-                votes = [_norm_atype(v) if v else "KEEP" for v in votes_raw]
-                votes_adopted = [v if v != "MERGE" else "KEEP" for v in votes]
-                cnt = Counter(votes_adopted)
-                majority_count = cnt.most_common(1)[0][1] if cnt else 0
-                if majority_count < 2:
+    actions_a: List[Dict[str, Any]] = []
+    actions_b: List[Dict[str, Any]] = []
+    actions_c: List[Dict[str, Any]] = []
+    arb_actions_list: List[Dict[str, Any]] = []
+    final_candidates = candidates  # S0: final = pre_review (no refinement)
+
+    if enable_review:
+        # Review: A, B, C, Arbiter (deterministic voting)
+        ra, rb, rc = ReviewAgentA(backbone), ReviewAgentB(backbone), ReviewAgentC(backbone)
+        res_a = ra.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
+        res_b = rb.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
+        res_c = rc.run(text, candidates, conflict_flags, validator_risks, run_id=run_id, text_id=text_id, memory_context=memory_context)
+        actions_a = [a.model_dump() for a in (res_a.model.review_actions or [])]
+        actions_b = [a.model_dump() for a in (res_b.model.review_actions or [])]
+        actions_c = [a.model_dump() for a in (res_c.model.review_actions or [])]
+
+        # Deterministic Arbiter: Majority First, FLIP restricted, no MERGE
+        all_tids = [c.get("tuple_id") for c in candidates if c.get("tuple_id")]
+        actions_by_tuple = _group_actions_by_tuple(actions_a, actions_b, actions_c, all_tids)
+
+        tid_to_conflict: Dict[str, str] = {}
+        for f in conflict_flags or []:
+            for tid in f.get("tuple_ids", []):
+                tid_to_conflict[tid] = (f.get("conflict_type") or "").strip()
+
+        recheck_count = 0
+        recheck_done_for_conflict: set = set()
+        for tid in all_tids:
+            acts = actions_by_tuple.get(tid, {})
+            need_recheck = False
+            for v in [acts.get("A"), acts.get("B"), acts.get("C")]:
+                if v and _is_incomplete_revise(v)[0]:
                     need_recheck = True
-        if need_recheck:
-            flag = next((f for f in (conflict_flags or []) if tid in (f.get("tuple_ids") or [])), None)
-            tuple_ids_in_conflict = tuple(sorted(flag.get("tuple_ids") or [tid])) if flag else (tid,)
-            conflict_key = tuple_ids_in_conflict
-            if conflict_key in recheck_done_for_conflict:
-                continue
-            conflict_type = tid_to_conflict.get(tid, "")
-            candidate_tuples = [c for c in candidates if c.get("tuple_id") in tuple_ids_in_conflict]
-            prior_votes = {"A": acts.get("A"), "B": acts.get("B"), "C": acts.get("C")}
-            arb_action = _run_recheck(
-                backbone, text, text_id, run_id, "proposed",
-                tid, conflict_type, candidate_tuples, prior_votes,
-            )
-            if arb_action:
-                recheck_done_for_conflict.add(conflict_key)
-                recheck_count += 1
-                for t in tuple_ids_in_conflict:
-                    if t in actions_by_tuple:
-                        actions_by_tuple[t]["ARB"] = arb_action
-
-    arb_actions_list = _arbiter_vote(actions_by_tuple, conflict_flags)
-    arb_output = ReviewOutputSchema(review_actions=[ReviewActionItem(**a) for a in arb_actions_list])
-    res_arb = SimpleNamespace(model=arb_output, meta=SimpleNamespace(to_notes_str=lambda: "deterministic_vote"))
-
-    for name, res in [("ReviewA", res_a), ("ReviewB", res_b), ("ReviewC", res_c), ("Arbiter", res_arb)]:
-        trace.append(ProcessTrace(stage="review", agent=name, input_text=text, output=res.model.model_dump(), notes=res.meta.to_notes_str()))
-
-    final_candidates = _apply_review_actions(candidates, arb_actions_list)
-    final_candidates = _finalize_normalize_ref(final_candidates)
-
-    # M1/M2: append episode to store when store_write enabled
-    if episodic_orchestrator and episodic_config:
-        store_write = getattr(episodic_orchestrator, "_flags", {}).get("store_write", False)
-        if store_write:
-            adapters = _cr_adapters_for_append(candidates, final_candidates)
-            conflict_resolved = bool(conflict_flags and arb_actions_list)
-            moderator_summary = {"conflict_resolved": conflict_resolved}
-            if conflict_resolved:
-                moderator_summary["outcome_delta"] = {"conflict_resolved": True}
-            # arbiter_reason_code, facet_dissent for EvaluationV1_1
-            arb_reasons = [a.get("reason_code") or "" for a in arb_actions_list if (a.get("reason_code") or "").strip()]
-            moderator_summary["arbiter_reason_code"] = arb_reasons[0] if arb_reasons else ""
-            facet_dissent_list: List[Dict[str, Any]] = []
-            for a in arb_actions_list:
-                tids = a.get("target_tuple_ids") or []
-                final_atype = (a.get("action_type") or "").strip().upper()
-                for tid in tids:
-                    acts = actions_by_tuple.get(tid, {})
+                    break
+            if not need_recheck:
+                conflict_type = tid_to_conflict.get(tid, "")
+                if conflict_type == "granularity_overlap_candidate":
                     votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
-                    actor_keys = ["A", "B", "C"]
-                    for i, (k, v) in enumerate(zip(actor_keys, votes_raw)):
-                        if not v:
-                            continue
-                        atype = (v.get("action_type") or v.get("type") or "KEEP").strip().upper()
-                        if atype == "MERGE":
-                            atype = "KEEP"
-                        if atype != final_atype:
-                            facet_dissent_list.append({
-                                "actor": k,
-                                "action_type": atype,
-                                "reason_code": (v.get("reason_code") or "").strip(),
-                            })
-            moderator_summary["facet_dissent"] = facet_dissent_list
-            episodic_orchestrator.append_episode_if_needed(
-                text,
-                text_id,
-                adapters["stage1_ate"],
-                adapters["stage1_atsa"],
-                adapters["stage1_validator"],
-                adapters["stage2_ate"],
-                adapters["stage2_atsa"],
-                adapters["stage2_validator"],
-                adapters["moderator_out"],
-                language_code=language_code,
-                split=getattr(example, "split", "unknown"),
-                moderator_summary=moderator_summary,
-            )
+                    votes = [_norm_atype(v) if v else "KEEP" for v in votes_raw]
+                    votes_adopted = [v if v != "MERGE" else "KEEP" for v in votes]
+                    cnt = Counter(votes_adopted)
+                    majority_count = cnt.most_common(1)[0][1] if cnt else 0
+                    if majority_count < 2:
+                        need_recheck = True
+            if need_recheck:
+                flag = next((f for f in (conflict_flags or []) if tid in (f.get("tuple_ids") or [])), None)
+                tuple_ids_in_conflict = tuple(sorted(flag.get("tuple_ids") or [tid])) if flag else (tid,)
+                conflict_key = tuple_ids_in_conflict
+                if conflict_key in recheck_done_for_conflict:
+                    continue
+                conflict_type = tid_to_conflict.get(tid, "")
+                candidate_tuples = [c for c in candidates if c.get("tuple_id") in tuple_ids_in_conflict]
+                prior_votes = {"A": acts.get("A"), "B": acts.get("B"), "C": acts.get("C")}
+                arb_action = _run_recheck(
+                    backbone, text, text_id, run_id, "proposed",
+                    tid, conflict_type, candidate_tuples, prior_votes,
+                )
+                if arb_action:
+                    recheck_done_for_conflict.add(conflict_key)
+                    recheck_count += 1
+                    for t in tuple_ids_in_conflict:
+                        if t in actions_by_tuple:
+                            actions_by_tuple[t]["ARB"] = arb_action
+
+        arb_actions_list = _arbiter_vote(actions_by_tuple, conflict_flags)
+        arb_output = ReviewOutputSchema(review_actions=[ReviewActionItem(**a) for a in arb_actions_list])
+        res_arb = SimpleNamespace(model=arb_output, meta=SimpleNamespace(to_notes_str=lambda: "deterministic_vote"))
+
+        for name, res in [("ReviewA", res_a), ("ReviewB", res_b), ("ReviewC", res_c), ("Arbiter", res_arb)]:
+            trace.append(ProcessTrace(stage="review", agent=name, input_text=text, output=res.model.model_dump(), notes=res.meta.to_notes_str()))
+
+        final_candidates = _apply_review_actions(candidates, arb_actions_list)
+        final_candidates = _finalize_normalize_ref(final_candidates)
+
+        # M1/M2: append episode to store when store_write enabled
+        if episodic_orchestrator and episodic_config:
+            store_write = getattr(episodic_orchestrator, "_flags", {}).get("store_write", False)
+            if store_write:
+                adapters = _cr_adapters_for_append(candidates, final_candidates)
+                conflict_resolved = bool(conflict_flags and arb_actions_list)
+                moderator_summary = {"conflict_resolved": conflict_resolved}
+                if conflict_resolved:
+                    moderator_summary["outcome_delta"] = {"conflict_resolved": True}
+                # arbiter_reason_code, facet_dissent for EvaluationV1_1
+                arb_reasons = [a.get("reason_code") or "" for a in arb_actions_list if (a.get("reason_code") or "").strip()]
+                moderator_summary["arbiter_reason_code"] = arb_reasons[0] if arb_reasons else ""
+                facet_dissent_list: List[Dict[str, Any]] = []
+                for a in arb_actions_list:
+                    tids = a.get("target_tuple_ids") or []
+                    final_atype = (a.get("action_type") or "").strip().upper()
+                    for tid in tids:
+                        acts = actions_by_tuple.get(tid, {})
+                        votes_raw = [acts.get("A"), acts.get("B"), acts.get("C")]
+                        actor_keys = ["A", "B", "C"]
+                        for i, (k, v) in enumerate(zip(actor_keys, votes_raw)):
+                            if not v:
+                                continue
+                            atype = (v.get("action_type") or v.get("type") or "KEEP").strip().upper()
+                            if atype == "MERGE":
+                                atype = "KEEP"
+                            if atype != final_atype:
+                                facet_dissent_list.append({
+                                    "actor": k,
+                                    "action_type": atype,
+                                    "reason_code": (v.get("reason_code") or "").strip(),
+                                })
+                moderator_summary["facet_dissent"] = facet_dissent_list
+                episodic_orchestrator.append_episode_if_needed(
+                    text,
+                    text_id,
+                    adapters["stage1_ate"],
+                    adapters["stage1_atsa"],
+                    adapters["stage1_validator"],
+                    adapters["stage2_ate"],
+                    adapters["stage2_atsa"],
+                    adapters["stage2_validator"],
+                    adapters["moderator_out"],
+                    language_code=language_code,
+                    split=getattr(example, "split", "unknown"),
+                    moderator_summary=moderator_summary,
+                )
 
     # Build FinalResult
     def _tup(d: Dict[str, Any]) -> Dict[str, str]:
@@ -746,24 +785,34 @@ def run_conflict_review_v1(
         elif len(set(pols)) > 1:
             label = "mixed"
 
-    # SSOT: stage1_perspective_aste (A/B/C triplets)
-    stage1_perspective_aste = {
-        "P_NEG": {
-            "agent_name": "P-NEG",
-            "n_triplets": len(getattr(r_neg.model, "triplets", []) or []),
-            "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_neg.model, "triplets", []) or [])],
-        },
-        "P_IMP": {
-            "agent_name": "P-IMP",
-            "n_triplets": len(getattr(r_imp.model, "triplets", []) or []),
-            "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_imp.model, "triplets", []) or [])],
-        },
-        "P_LIT": {
-            "agent_name": "P-LIT",
-            "n_triplets": len(getattr(r_lit.model, "triplets", []) or []),
-            "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_lit.model, "triplets", []) or [])],
-        },
-    }
+    # SSOT: stage1_perspective_aste (A/B/C triplets or S0 single)
+    if r_s0 is not None:
+        triplets_s0 = getattr(r_s0.model, "triplets", []) or []
+        stage1_perspective_aste = {
+            "S0": {
+                "agent_name": "S0",
+                "n_triplets": len(triplets_s0),
+                "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in triplets_s0],
+            },
+        }
+    else:
+        stage1_perspective_aste = {
+            "P_NEG": {
+                "agent_name": "P-NEG",
+                "n_triplets": len(getattr(r_neg.model, "triplets", []) or []),
+                "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_neg.model, "triplets", []) or [])],
+            },
+            "P_IMP": {
+                "agent_name": "P-IMP",
+                "n_triplets": len(getattr(r_imp.model, "triplets", []) or []),
+                "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_imp.model, "triplets", []) or [])],
+            },
+            "P_LIT": {
+                "agent_name": "P-LIT",
+                "n_triplets": len(getattr(r_lit.model, "triplets", []) or []),
+                "triplets": [t.model_dump() if hasattr(t, "model_dump") else t for t in (getattr(r_lit.model, "triplets", []) or [])],
+            },
+        }
 
     final_result = FinalResult(
         label=label,
@@ -794,10 +843,14 @@ def run_conflict_review_v1(
         "invalid_target_count": invalid_target_count,
     }
     analysis_flags = AnalysisFlags(
-        stage2_executed=True,
+        stage2_executed=enable_review,
         review_actions=actions_a + actions_b + actions_c,
         arb_actions=arb_actions_list,
         conflict_flags=conflict_flags,
+        skip_review_flag=not enable_review,
+        skip_arbiter_flag=not enable_review,
+        memory_enabled=enable_memory,
+        conflict_flags_mode=conflict_flags_mode,
     )
     return FinalOutputSchema(
         meta=meta,
