@@ -316,6 +316,53 @@ def precision_recall_f1_tuple(
     return (prec, rec, f1)
 
 
+def precision_recall_f1_tuple_with_counts(
+    gold_tuples: Set[EvalTuple],
+    pred_tuples: Set[EvalTuple],
+    match_empty_aspect_by_polarity_only: bool = True,
+    match_by_aspect_ref: bool = True,
+) -> Tuple[float, float, float, int, int, int]:
+    """
+    Same as precision_recall_f1_tuple but also returns (tp, fp, fn) for micro-F1 aggregation.
+    Returns (prec, rec, f1, tp, fp, fn).
+    """
+    if not gold_tuples:
+        return (0.0, 0.0, 0.0, 0, 0, 0)
+    pred_tuples = pred_tuples or set()
+    if match_by_aspect_ref:
+        gold_pairs, _ = tuples_to_ref_pairs(gold_tuples)
+        pred_pairs, _ = tuples_to_ref_pairs(pred_tuples)
+    else:
+        gold_pairs = tuples_to_pairs(gold_tuples)
+        pred_pairs = tuples_to_pairs(pred_tuples)
+
+    if not match_empty_aspect_by_polarity_only:
+        tp = len(pred_pairs & gold_pairs)
+        fp = len(pred_pairs - gold_pairs)
+        fn = len(gold_pairs - pred_pairs)
+    else:
+        exact_gold = {(t, p) for (t, p) in gold_pairs if t != ""}
+        polarity_only_gold = [p for (t, p) in gold_pairs if t == ""]
+        tp_exact = len(pred_pairs & exact_gold)
+        matched_pred = pred_pairs & exact_gold
+        remaining_pred = pred_pairs - matched_pred
+        tp_polarity = 0
+        for p in polarity_only_gold:
+            for pair in list(remaining_pred):
+                if pair[1] == p:
+                    remaining_pred = remaining_pred - {pair}
+                    tp_polarity += 1
+                    break
+        tp = tp_exact + tp_polarity
+        fp = len(pred_pairs) - tp
+        fn = len(gold_pairs) - tp
+
+    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
+    return (prec, rec, f1, tp, fp, fn)
+
+
 # Valid polarity set for implicit / invalid-rate SSOT (positive, negative, neutral only).
 VALID_POLARITIES = frozenset({"positive", "negative", "neutral"})
 
@@ -394,6 +441,23 @@ def precision_recall_f1_from_pairs(
     rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
     return (prec, rec, f1)
+
+
+def precision_recall_f1_from_pairs_with_counts(
+    gold_pairs: Set[EvalPair],
+    pred_pairs: Set[EvalPair],
+) -> Tuple[float, float, float, int, int, int]:
+    """F1 from pair sets with (tp, fp, fn) for micro-F1 aggregation. Returns (prec, rec, f1, tp, fp, fn)."""
+    if not gold_pairs:
+        return (0.0, 0.0, 0.0, 0, 0, 0)
+    pred_pairs = pred_pairs or set()
+    tp = len(pred_pairs & gold_pairs)
+    fp = len(pred_pairs - gold_pairs)
+    fn = len(gold_pairs - pred_pairs)
+    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
+    return (prec, rec, f1, tp, fp, fn)
 
 
 def pair_sets_match(gold_pairs: Set[EvalPair], pred_pairs: Set[EvalPair]) -> bool:

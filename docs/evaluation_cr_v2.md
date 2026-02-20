@@ -9,6 +9,13 @@
 | **EvalTuple** | (aspect_ref, aspect_term, polarity) |
 | **Triplet** | ASTETripletItem (raw agent output) |
 
+### Macro vs Micro F1
+
+| 집계 | 정의 | 메트릭 키 |
+|------|------|-----------|
+| **Macro F1** | 샘플별 F1의 산술평균 (sample-wise mean) | tuple_f1_s2_refpol, tuple_f1_s2_otepol, tuple_f1_s2_attrpol |
+| **Micro F1** | 전체 (TP, FP, FN) 합산 후 F1 = 2PR/(P+R), P=TP/(TP+FP), R=TP/(TP+FN) | tuple_f1_s2_refpol_micro, tuple_f1_s2_otepol_micro, tuple_f1_s2_attrpol_micro |
+
 ### 선언문
 
 > In CR v2, the primary evaluation unit is the entity–attribute pair **(aspect_ref, polarity)**, aligning with the original annotation scheme.

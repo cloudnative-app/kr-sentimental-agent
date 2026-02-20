@@ -57,6 +57,16 @@ python scripts/build_cr_v2_paper_table.py --agg-m0 results/cr_v2_n601_m0_v1_aggr
 
 ---
 
+## 4b. Final Paper Table (S0 | M0 | M1, 5.1–5.4 + Appendix)
+
+```powershell
+python scripts/final_paper_table.py --agg-s0 results/cr_v2_n601_s0_v1_aggregated/aggregated_mean_std.csv --agg-m0 results/cr_v2_n601_m0_v1_aggregated/aggregated_mean_std.csv --agg-m1 results/cr_v2_n601_m1_v1_aggregated/aggregated_mean_std.csv --run-dirs-s0 results/cr_v2_n601_s0_v1__seed42_proposed results/cr_v2_n601_s0_v1__seed123_proposed results/cr_v2_n601_s0_v1__seed456_proposed --run-dirs-m0 results/cr_v2_n601_m0_v1__seed42_proposed results/cr_v2_n601_m0_v1__seed123_proposed results/cr_v2_n601_m0_v1__seed456_proposed --run-dirs-m1 results/cr_v2_n601_m1_v1__seed42_proposed results/cr_v2_n601_m1_v1__seed123_proposed results/cr_v2_n601_m1_v1__seed456_proposed --triptych-s0 results/cr_v2_n601_s0_v1_aggregated/derived_subset/triptych.csv --triptych-m0 results/cr_v2_n601_m0_v1_aggregated/derived_subset/triptych.csv --out reports/cr_v2_n601_v1_final_paper_table.md
+```
+
+자세한 명령어: `docs/run_cr_v2_n601_final_paper_table_commands.md`
+
+---
+
 ## 5. Paper Metrics Export (선택)
 
 ```powershell
@@ -72,4 +82,5 @@ python scripts/export_paper_metrics_aggregated.py --agg-path results/cr_v2_n601_
 | M0 aggregated | results/cr_v2_n601_m0_v1_aggregated/aggregated_mean_std.csv |
 | M1 aggregated | results/cr_v2_n601_m1_v1_aggregated/aggregated_mean_std.csv |
 | CR v2 Paper Table | reports/cr_v2_n601_v1_paper_table.md |
+| **Final Paper Table (S0\|M0\|M1)** | reports/cr_v2_n601_v1_final_paper_table.md |
 | M0 vs M1 비교 | results/cr_v2_n601_v1_comparison_paper/ |

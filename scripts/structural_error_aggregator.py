@@ -122,8 +122,10 @@ from metrics.eval_tuple import (
     normalize_ref_for_eval,
     pair_sets_match,
     precision_recall_f1_from_pairs,
+    precision_recall_f1_from_pairs_with_counts,
     precision_recall_f1_implicit_only,
     precision_recall_f1_tuple,
+    precision_recall_f1_tuple_with_counts,
     pred_valid_polarities_from_tuples,
     tuple_from_sent,
     tuples_from_list,
@@ -712,6 +714,9 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     n_still_with_change = 0  # S1 wrong, S2 wrong, but S2 changed (for CDA denominator)
     n_fix_otepol = n_break_otepol = n_still_otepol = n_keep_otepol = 0
     n_fix_attrpol = n_break_attrpol = n_still_attrpol = n_keep_attrpol = 0
+    tp_refpol = fp_refpol = fn_refpol = 0
+    tp_otepol = fp_otepol = fn_otepol = 0
+    tp_attrpol = fp_attrpol = fn_attrpol = 0
     n_implicit_gold_samples = 0
     n_implicit_invalid_samples = 0
     n_conflict_count = 0
@@ -807,8 +812,11 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         pred_ref_pairs_s2, _ = tuples_to_ref_pairs(s2 or set())
         gold_refs_covered_s2 += len(gold_ref_pairs & pred_ref_pairs_s2)
         s2_after_rep = select_representative_tuples(record)
-        _, _, f1_1 = precision_recall_f1_tuple(gold, s1)
-        _, _, f1_2 = precision_recall_f1_tuple(gold, s2)
+        _, _, f1_1, t1, p1, n1 = precision_recall_f1_tuple_with_counts(gold, s1, match_by_aspect_ref=True)
+        _, _, f1_2, t2, p2, n2 = precision_recall_f1_tuple_with_counts(gold, s2, match_by_aspect_ref=True)
+        tp_refpol += t2
+        fp_refpol += p2
+        fn_refpol += n2
         _, _, f1_2_ar = precision_recall_f1_tuple(gold, s2_after_rep)
         f1_s1_list.append(f1_1)
         f1_s2_list.append(f1_2)
@@ -864,8 +872,11 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         # OTE-pol (aspect_term, polarity)
         st1_ote = tuple_sets_match_with_empty_rule(gold, s1, match_by_aspect_ref=False)
         st2_ote = tuple_sets_match_with_empty_rule(gold, s2, match_by_aspect_ref=False)
-        _, _, f1_1_ote = precision_recall_f1_tuple(gold, s1, match_by_aspect_ref=False)
-        _, _, f1_2_ote = precision_recall_f1_tuple(gold, s2, match_by_aspect_ref=False)
+        _, _, f1_1_ote, _, _, _ = precision_recall_f1_tuple_with_counts(gold, s1, match_by_aspect_ref=False)
+        _, _, f1_2_ote, t2_ote, p2_ote, n2_ote = precision_recall_f1_tuple_with_counts(gold, s2, match_by_aspect_ref=False)
+        tp_otepol += t2_ote
+        fp_otepol += p2_ote
+        fn_otepol += n2_ote
         f1_s1_otepol_list.append(f1_1_ote)
         f1_s2_otepol_list.append(f1_2_ote)
         # OTE-pol explicit-only: gold_explicit vs pred_explicit (aspect_term != "")
@@ -894,7 +905,10 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         st1_attr = pair_sets_match(gold_attr, s1_attr)
         st2_attr = pair_sets_match(gold_attr, s2_attr)
         _, _, f1_1_attr = precision_recall_f1_from_pairs(gold_attr, s1_attr)
-        _, _, f1_2_attr = precision_recall_f1_from_pairs(gold_attr, s2_attr)
+        _, _, f1_2_attr, t2_attr, p2_attr, n2_attr = precision_recall_f1_from_pairs_with_counts(gold_attr, s2_attr)
+        tp_attrpol += t2_attr
+        fp_attrpol += p2_attr
+        fn_attrpol += n2_attr
         f1_s1_attrpol_list.append(f1_1_attr)
         f1_s2_attrpol_list.append(f1_2_attr)
         if not st1_attr and st2_attr:
@@ -942,6 +956,17 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
     out["tuple_f1_s1_refpol"] = out["tuple_f1_s1"]
     out["tuple_f1_s2_refpol"] = out["tuple_f1_s2"]
     out["delta_f1_refpol"] = out["delta_f1"]
+    # Micro F1 (pair-level): F1 = 2*P*R/(P+R), P=TP/(TP+FP), R=TP/(TP+FN)
+    def _micro_f1(tp: int, fp: int, fn: int) -> Optional[float]:
+        if tp + fp + fn == 0:
+            return None
+        p = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        r = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        return (2 * p * r / (p + r)) if (p + r) > 0 else 0.0
+    out["tuple_f1_s2_refpol_micro"] = _micro_f1(tp_refpol, fp_refpol, fn_refpol)
+    out["tuple_f1_s2_refpol_tp"] = tp_refpol
+    out["tuple_f1_s2_refpol_fp"] = fp_refpol
+    out["tuple_f1_s2_refpol_fn"] = fn_refpol
     out["fix_rate_refpol"] = out["fix_rate"]
     out["break_rate_refpol"] = out["break_rate"]
     out["break_rate_implicit_refpol"] = out["break_rate_implicit"]
@@ -958,6 +983,10 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         out["delta_f1_otepol"] = (out["tuple_f1_s2_otepol"] or 0.0) - (out["tuple_f1_s1_otepol"] or 0.0)
     if f1_s2_otepol_explicit_only_list:
         out["tuple_f1_s2_otepol_explicit_only"] = sum(f1_s2_otepol_explicit_only_list) / len(f1_s2_otepol_explicit_only_list)
+    out["tuple_f1_s2_otepol_micro"] = _micro_f1(tp_otepol, fp_otepol, fn_otepol)
+    out["tuple_f1_s2_otepol_tp"] = tp_otepol
+    out["tuple_f1_s2_otepol_fp"] = fp_otepol
+    out["tuple_f1_s2_otepol_fn"] = fn_otepol
     need_fix_ote = n_fix_otepol + n_still_otepol
     out["fix_rate_otepol"] = _rate(n_fix_otepol, need_fix_ote) if need_fix_ote else None
     keep_break_ote = n_break_otepol + n_keep_otepol
@@ -971,6 +1000,10 @@ def compute_stage2_correction_metrics(rows: List[Dict[str, Any]]) -> Dict[str, A
         out["tuple_f1_s2_attrpol"] = sum(f1_s2_attrpol_list) / len(f1_s2_attrpol_list)
     if f1_s1_attrpol_list and f1_s2_attrpol_list:
         out["delta_f1_attrpol"] = (out["tuple_f1_s2_attrpol"] or 0.0) - (out["tuple_f1_s1_attrpol"] or 0.0)
+    out["tuple_f1_s2_attrpol_micro"] = _micro_f1(tp_attrpol, fp_attrpol, fn_attrpol)
+    out["tuple_f1_s2_attrpol_tp"] = tp_attrpol
+    out["tuple_f1_s2_attrpol_fp"] = fp_attrpol
+    out["tuple_f1_s2_attrpol_fn"] = fn_attrpol
     need_fix_attr = n_fix_attrpol + n_still_attrpol
     out["fix_rate_attrpol"] = _rate(n_fix_attrpol, need_fix_attr) if need_fix_attr else None
     keep_break_attr = n_break_attrpol + n_keep_attrpol
@@ -1995,9 +2028,9 @@ def aggregate_single_run(
         "tuple_f1_s2_raw", "tuple_f1_s2_after_rep",
         "triplet_f1_s1", "triplet_f1_s2", "delta_f1",
         "fix_rate", "break_rate", "break_rate_implicit", "break_rate_negation", "break_rate_simple", "net_gain", "cda",
-        "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "break_rate_implicit_refpol", "break_rate_negation_refpol", "break_rate_simple_refpol", "net_gain_refpol",
-        "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
-        "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
+        "tuple_f1_s1_refpol", "tuple_f1_s2_refpol", "tuple_f1_s2_refpol_micro", "tuple_f1_s2_refpol_tp", "tuple_f1_s2_refpol_fp", "tuple_f1_s2_refpol_fn", "delta_f1_refpol", "fix_rate_refpol", "break_rate_refpol", "break_rate_implicit_refpol", "break_rate_negation_refpol", "break_rate_simple_refpol", "net_gain_refpol",
+        "tuple_f1_s1_otepol", "tuple_f1_s2_otepol", "tuple_f1_s2_otepol_micro", "tuple_f1_s2_otepol_tp", "tuple_f1_s2_otepol_fp", "tuple_f1_s2_otepol_fn", "tuple_f1_s2_otepol_explicit_only", "delta_f1_otepol", "fix_rate_otepol", "break_rate_otepol", "net_gain_otepol",
+        "tuple_f1_s1_attrpol", "tuple_f1_s2_attrpol", "tuple_f1_s2_attrpol_micro", "tuple_f1_s2_attrpol_tp", "tuple_f1_s2_attrpol_fp", "tuple_f1_s2_attrpol_fn", "delta_f1_attrpol", "fix_rate_attrpol", "break_rate_attrpol", "net_gain_attrpol",
         "N_gold", "N_gold_total", "N_gold_explicit", "N_gold_implicit",
         "N_gold_total_pairs", "N_gold_explicit_pairs", "N_gold_implicit_pairs", "gold_available",
         "N_pred_final_tuples", "N_pred_final_aspects", "N_pred_inputs_aspect_sentiments", "N_pred_used",
