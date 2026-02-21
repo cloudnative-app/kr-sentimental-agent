@@ -1,7 +1,7 @@
 # CR v2 n601 S0/M0/M1 Final Paper Table 생성 명령어
 
 데이터: `beta_n601/valid`, 시드: 42, 123, 456  
-산출: `reports/cr_v2_n601_v1_final_paper_table.md` (5.1 Surface ~ 5.4 Stochastic + Appendix)
+산출: `reports/cr_v2_n601_v1_final_paper_table.md` (5.1 Surface ~ 5.4 Stochastic + Appendix a1–a4, a4=감성분류 분포)
 
 ---
 
@@ -16,7 +16,8 @@
 
 ## 1. Triptych 생성 (Subset 분석용, 선택)
 
-Subset conditional 테이블(5.1.2, 5.2.2 등)을 채우려면 triptych가 필요합니다.
+Subset conditional 테이블(5.1.2, 5.2.2, 5.3.2)을 채우려면 triptych가 필요합니다.  
+**주의**: ATSA-F(otepol), fix/break 플래그, implicit_invalid 플래그를 포함하려면 `structural_error_aggregator` 최신 버전으로 triptych를 재생성해야 합니다.
 
 ```powershell
 # S0 (aggregated 또는 seed42)

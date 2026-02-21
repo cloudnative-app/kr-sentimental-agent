@@ -151,6 +151,35 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
+def _get_record_uid(record: Dict[str, Any]) -> str:
+    """Canonical uid for deterministic ordering. meta.text_id | meta.uid | meta.case_id | runtime.uid."""
+    meta = record.get("meta") or {}
+    return (
+        meta.get("text_id")
+        or meta.get("uid")
+        or meta.get("case_id")
+        or (record.get("runtime") or {}).get("uid")
+        or ""
+    )
+
+
+def _tuple_sort_key(t: Tuple[str, str, str]) -> Tuple[Any, ...]:
+    """Sort key for (aspect_ref, aspect_term, polarity). span_start/span_end default 0."""
+    a, t, p = t
+    return (a or "", t or "", p or "", 0, 0)
+
+
+def _ensure_deterministic_order(rows: List[Dict[str, Any]]) -> None:
+    """Sort records by uid in-place for deterministic aggregation."""
+    rows.sort(key=lambda r: _get_record_uid(r))
+
+
+def _compute_aggregation_order_signature() -> str:
+    """SHA1 of aggregation order policy for reproducibility."""
+    payload = "uid_sorted|tuple_key_v1"
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()
+
+
 def _n(r: Optional[float]) -> float:
     return r if r is not None else 0.0
 
@@ -2220,7 +2249,7 @@ def aggregate_merged(
             by_case[cid] = []
         by_case[cid].append(r)
 
-    case_ids = [c for c in by_case.keys() if c]
+    case_ids = sorted(c for c in by_case.keys() if c)
     if not case_ids:
         single["self_consistency_exact"] = None
         single["self_consistency_eligible"] = False
@@ -2281,6 +2310,186 @@ def aggregate_merged(
     single["variance"] = 1.0 - single["self_consistency_exact"] if single.get("self_consistency_exact") is not None else None
     single["flip_flop_rate"] = single["variance"]
     return single
+
+
+# ---------- Stage Summary (stage_summary.csv / .md) ----------
+VALID_POLARITIES = {"positive", "negative", "neutral"}
+
+
+def _infer_condition(record: Dict[str, Any]) -> str:
+    """Infer S0/M0/M1 from run_id."""
+    run_id = (record.get("meta") or {}).get("run_id") or record.get("run_id") or ""
+    r = run_id.lower()
+    if "_s0_" in r or r.startswith("s0_"):
+        return "S0"
+    if "_m1_" in r or r.startswith("m1_"):
+        return "M1"
+    if "_m0_" in r or r.startswith("m0_"):
+        return "M0"
+    return ""
+
+
+def _get_raw_tuples_for_stage(record: Dict[str, Any], stage: str) -> List[Dict[str, Any]]:
+    """Get raw tuple dicts for stage. Returns [] if stage not present."""
+    runtime = record.get("runtime") or {}
+    parsed = runtime.get("parsed_output") if isinstance(runtime.get("parsed_output"), dict) else {}
+    fr = parsed.get("final_result") or {}
+    if stage == "s0_final":
+        return list(fr.get("final_tuples") or []) if isinstance(fr.get("final_tuples"), list) else []
+    if stage == "pre_review":
+        lst = fr.get("final_tuples_pre_review") or fr.get("stage1_tuples")
+        return list(lst) if isinstance(lst, list) else []
+    if stage == "post_review":
+        lst = fr.get("final_tuples_post_review")
+        return list(lst) if isinstance(lst, list) else []
+    if stage == "final":
+        return list(fr.get("final_tuples") or []) if isinstance(fr.get("final_tuples"), list) else []
+    return []
+
+
+def _compute_stage_row_metrics(
+    raw_tuples: List[Dict[str, Any]],
+    n_records: int,
+    n_parse_fail: int,
+    polarity_conflict_rate: float,
+    implicit_invalid_pred_rate: float,
+) -> Dict[str, Any]:
+    """Compute per-stage metrics from raw tuples and record-level flags."""
+    null_term = 0
+    null_ref = 0
+    invalid_pol = 0
+    for it in raw_tuples:
+        if not it or not isinstance(it, dict):
+            continue
+        t = _aspect_term_text(it)
+        if (t or "").strip() in (None, ""):
+            null_term += 1
+        a = (it.get("aspect_ref") or "").strip()
+        if (a or "") in (None, ""):
+            null_ref += 1
+        p = (it.get("polarity") or it.get("label") or "").strip().lower()
+        if p not in VALID_POLARITIES:
+            invalid_pol += 1
+    tuples_total = sum(1 for it in raw_tuples if it and isinstance(it, dict))
+    denom = tuples_total if tuples_total else 1
+    return {
+        "n_records": n_records,
+        "n_tuples_total": tuples_total,
+        "tuples_per_record_mean": (tuples_total / n_records) if n_records else 0.0,
+        "null_aspect_term_rate": _rate(null_term, denom),
+        "null_aspect_ref_rate": _rate(null_ref, denom),
+        "invalid_polarity_rate": _rate(invalid_pol, denom),
+        "implicit_invalid_pred_rate": implicit_invalid_pred_rate,
+        "polarity_conflict_rate": polarity_conflict_rate,
+        "parse_fail_rate": _rate(n_parse_fail, n_records) if n_records else 0.0,
+    }
+
+
+def build_stage_summary(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Build stage_summary rows. S0: s0_final only; M0/M1: pre_review, post_review, final."""
+    if not rows:
+        return []
+    summary_rows: List[Dict[str, Any]] = []
+    condition = _infer_condition(rows[0]) if rows else ""
+    if not condition:
+        condition = "unknown"
+    runtime_0 = rows[0].get("runtime") or {}
+    parsed_0 = runtime_0.get("parsed_output") if isinstance(runtime_0.get("parsed_output"), dict) else {}
+    flags = parsed_0.get("analysis_flags") or {}
+    skip_review = bool(flags.get("skip_review_flag"))
+
+    stages_to_compute: List[str] = []
+    if condition == "S0" or skip_review:
+        stages_to_compute = ["s0_final"]
+    else:
+        stages_to_compute = ["pre_review", "post_review", "final"]
+
+    for stage in stages_to_compute:
+        all_tuples: List[Dict[str, Any]] = []
+        n_parse_fail = 0
+        n_conflict = 0
+        n_implicit_invalid = 0
+        n_implicit_gold = 0
+        for r in rows:
+            raw = _get_raw_tuples_for_stage(r, stage)
+            if raw:
+                all_tuples.extend(raw)
+            if _record_parse_failed(r):
+                n_parse_fail += 1
+            tuples_set = _tuples_from_list_of_dicts(raw) if raw else set()
+            if tuples_set and _has_polarity_conflict_in_tuples(tuples_set):
+                n_conflict += 1
+            gold = _extract_gold_tuples(r)
+            if gold:
+                gold_implicit = gold_implicit_polarities_from_tuples(gold)
+                if gold_implicit:
+                    n_implicit_gold += 1
+                    pred_valid, _ = pred_valid_polarities_from_tuples(tuples_set)
+                    parse_f = _record_parse_failed(r)
+                    null_f = _record_has_forbidden_neutral_fallback(r)
+                    if len(pred_valid) == 0 or parse_f or null_f:
+                        n_implicit_invalid += 1
+        n_records = len(rows)
+        pol_conf_rate = _rate(n_conflict, n_records) if n_records else 0.0
+        implicit_invalid_rate = _rate(n_implicit_invalid, n_implicit_gold) if n_implicit_gold else 0.0
+        row_metrics = _compute_stage_row_metrics(
+            all_tuples, n_records, n_parse_fail, pol_conf_rate, implicit_invalid_rate
+        )
+        summary_rows.append({"condition": condition, "stage": stage, **row_metrics})
+    return summary_rows
+
+
+def _has_polarity_conflict_in_tuples(tuples_set: Set[Tuple[str, str, str]]) -> bool:
+    """Same aspect_ref with >=2 polarities."""
+    by_ref: Dict[str, Set[str]] = {}
+    for (a, _, p) in tuples_set:
+        ref = (a or "").strip()
+        if not ref:
+            continue
+        if ref not in by_ref:
+            by_ref[ref] = set()
+        by_ref[ref].add((p or "").strip())
+    return any(len(s) >= 2 for s in by_ref.values())
+
+
+def write_stage_summary(rows: List[Dict[str, Any]], outdir: Path) -> None:
+    """Write stage_summary.csv and stage_summary.md to outdir (derived/)."""
+    summary = build_stage_summary(rows)
+    if not summary:
+        return
+    outdir.mkdir(parents=True, exist_ok=True)
+    sig = _compute_aggregation_order_signature()
+    for r in summary:
+        r["aggregation_order_signature"] = sig
+    fieldnames = [
+        "condition", "stage", "n_records", "n_tuples_total", "tuples_per_record_mean",
+        "null_aspect_term_rate", "null_aspect_ref_rate", "invalid_polarity_rate",
+        "implicit_invalid_pred_rate", "polarity_conflict_rate", "parse_fail_rate",
+        "aggregation_order_signature",
+    ]
+    csv_path = outdir / "stage_summary.csv"
+    with csv_path.open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, restval="", extrasaction="ignore")
+        w.writeheader()
+        for r in summary:
+            w.writerow({k: ("" if r.get(k) is None else r[k]) for k in fieldnames})
+    print(f"Wrote {csv_path}")
+
+    md_lines = ["| " + " | ".join(fieldnames) + " |", "|" + "|".join(["---"] * len(fieldnames)) + "|"]
+    for r in summary:
+        cells = []
+        for k in fieldnames:
+            v = r.get(k)
+            if v is None or v == "":
+                cells.append("")
+            elif isinstance(v, float):
+                cells.append(f"{v:.4f}")
+            else:
+                cells.append(str(v))
+        md_lines.append("| " + " | ".join(cells) + " |")
+    md_path = outdir / "stage_summary.md"
+    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+    print(f"Wrote {md_path}")
 
 
 def write_tuple_source_log(rows: List[Dict[str, Any]], out_path: Path, sample_n: int = 10) -> None:
@@ -2698,6 +2907,34 @@ def _triptych_row(
     new_correct_in_final = len((gold_pairs & s2_pairs) - s1_pairs) if gold_pairs is not None else 0
     new_wrong_in_final = len(s2_pairs - gold_pairs) if gold_pairs is not None else len(s2_pairs)
 
+    # OTE-pol (ATSA): per-sample matches for subset ATSA-F
+    match_final_gold_otepol = gold_n_pairs_otepol = final_n_pairs_otepol = 0
+    if gold_tuples and s2_tuples:
+        _, _, _, tp_ote, fp_ote, fn_ote = precision_recall_f1_tuple_with_counts(
+            gold_tuples, s2_tuples, match_by_aspect_ref=False
+        )
+        match_final_gold_otepol = tp_ote
+        gold_n_pairs_otepol = tp_ote + fn_ote
+        final_n_pairs_otepol = tp_ote + fp_ote
+
+    # fix/break flags (refpol) for 5.3.2 subset
+    st1 = tuple_sets_match_with_empty_rule(gold_tuples or set(), s1_tuples or set())
+    st2 = tuple_sets_match_with_empty_rule(gold_tuples or set(), s2_tuples or set())
+    fix_flag = 1 if (gold_tuples and (not st1 and st2)) else 0
+    break_flag = 1 if (gold_tuples and (st1 and not st2)) else 0
+
+    # implicit_invalid_flag for 5.2.2 subset (Implicit Assignment Error Rate)
+    implicit_invalid_flag = 0
+    if gold_implicit:
+        gold_implicit_pols = gold_implicit_polarities_from_tuples(gold_tuples or set())
+        pred_valid_pols, _ = pred_valid_polarities_from_tuples(s2_tuples or set())
+        if gold_implicit_pols:
+            parse_fail = _record_parse_failed(record)
+            forbidden_fallback = _record_has_forbidden_neutral_fallback(record)
+            coverage_fail = len(pred_valid_pols) == 0
+            null_fail = forbidden_fallback
+            implicit_invalid_flag = 1 if (coverage_fail or parse_fail or null_fail) else 0
+
     delta_pairs_count = n_s2 - n_s1
     # A1: changed is canonical from pairs set comparison (not label/delta); delta is for reference
     stage1_to_final_changed = s1_pairs != s2_pairs
@@ -2755,6 +2992,7 @@ def _triptych_row(
     row: Dict[str, Any] = {
         "text_id": text_id,
         "uid": uid or "",
+        "run_id": run_id,
         "profile": profile,
         "gold_type": gold_type,
         "f1_eval_note": f1_eval_note,
@@ -2783,6 +3021,12 @@ def _triptych_row(
         "unguided_drift": 1 if unguided_drift else 0,
         "matches_stage1_vs_gold": match_s1_gold if gold_pairs is not None else "",
         "matches_final_vs_gold": match_final_gold if gold_pairs is not None else "",
+        "matches_final_vs_gold_otepol": match_final_gold_otepol if gold_tuples and s2_tuples else "",
+        "gold_n_pairs_otepol": gold_n_pairs_otepol if gold_tuples and s2_tuples else "",
+        "final_n_pairs_otepol": final_n_pairs_otepol if gold_tuples and s2_tuples else "",
+        "fix_flag": fix_flag,
+        "break_flag": break_flag,
+        "implicit_invalid_flag": implicit_invalid_flag,
         "new_correct_in_final": new_correct_in_final if gold_pairs is not None else "",
         "new_wrong_in_final": new_wrong_in_final,
         "risk_flagged": 1 if is_risk_flagged(record) else 0,
@@ -3078,6 +3322,10 @@ def main():
         print(f"No records in {path}")
         return
 
+    # Deterministic aggregation: sort records by uid
+    _ensure_deterministic_order(rows)
+    print("AGG_ORDER: records=sorted(uid), tuples=sorted(tuple_key_v1)", file=sys.stderr)
+
     # Sanity mode (fail-fast, writes sanity_checks.md)
     if args.sanity_mode:
         outdir = Path(args.outdir)
@@ -3143,6 +3391,7 @@ def main():
             metrics["self_consistency_eligible"] = False
             metrics["n_trials"] = 1
     metrics = _ensure_canonical_metrics(metrics)
+    metrics["aggregation_order_signature"] = _compute_aggregation_order_signature()
 
     # N_pred_final_aspects == 0 with n > 0: final_aspects 경로 미사용 (Info flag, not fail)
     if metrics.get("N_pred_final_aspects", 0) == 0 and metrics.get("n", 0) > 0:
@@ -3157,6 +3406,8 @@ def main():
 
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
+    derived_dir = outdir.parent if outdir.name == "metrics" else outdir
+    write_stage_summary(rows, derived_dir)
     csv_path = outdir / "structural_metrics.csv"
     fieldnames = CANONICAL_METRIC_KEYS + [k for k in metrics if k not in CANONICAL_METRIC_KEYS]
     with csv_path.open("w", encoding="utf-8", newline="") as f:
