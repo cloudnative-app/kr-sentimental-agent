@@ -136,21 +136,26 @@ def compute_mean_std(per_seed_rows: List[Dict[str, Any]]) -> tuple[Dict[str, str
 
 
 def ensure_structural_metrics(run_dir: Path, profile: str = "paper_main") -> bool:
-    """Run structural_error_aggregator if structural_metrics.csv missing."""
+    """Run structural_error_aggregator if structural_metrics.csv missing. Also exports triptych."""
     metrics_dir = run_dir / "derived" / "metrics"
     csv_path = metrics_dir / "structural_metrics.csv"
-    if csv_path.exists():
+    triptych_dir = run_dir / "derived_subset"
+    triptych_path = triptych_dir / "triptych.csv"
+    if csv_path.exists() and triptych_path.exists():
         return True
     scorecards = run_dir / "scorecards.jsonl"
     if not scorecards.exists():
         return False
     metrics_dir.mkdir(parents=True, exist_ok=True)
+    triptych_dir.mkdir(parents=True, exist_ok=True)
     cmd = [
         sys.executable,
         str(PROJECT_ROOT / "scripts" / "structural_error_aggregator.py"),
         "--input", str(scorecards),
         "--outdir", str(metrics_dir),
         "--profile", profile,
+        "--export_triptych_table", str(triptych_path),
+        "--triptych_sample_n", "0",
     ]
     r = subprocess.run(cmd, cwd=str(PROJECT_ROOT), capture_output=True, text=True)
     return r.returncode == 0 and csv_path.exists()

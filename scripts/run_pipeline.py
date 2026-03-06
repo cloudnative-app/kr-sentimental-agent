@@ -512,6 +512,9 @@ def run_single_pipeline(config_path: Path, run_id: str, mode: str, profile: str,
         scorecards_path = run_dir / "scorecards.jsonl"
         metrics_outdir = derived_dir / "metrics"
         metrics_outdir.mkdir(parents=True, exist_ok=True)
+        triptych_outdir = run_dir / "derived_subset"
+        triptych_outdir.mkdir(parents=True, exist_ok=True)
+        triptych_path = triptych_outdir / "triptych.csv"
 
         if scorecards_path.exists():
             cmd = [
@@ -520,6 +523,8 @@ def run_single_pipeline(config_path: Path, run_id: str, mode: str, profile: str,
                 "--input", str(scorecards_path),
                 "--outdir", str(metrics_outdir),
                 "--profile", args.metrics_profile,
+                "--export_triptych_table", str(triptych_path),
+                "--triptych_sample_n", "0",
             ]
             if not run_command(cmd, "structural_error_aggregator", derived_dir, timeout_s=timeout_s):
                 steps_failed.append("structural_error_aggregator")
@@ -581,6 +586,7 @@ def run_single_pipeline(config_path: Path, run_id: str, mode: str, profile: str,
 
     if args.with_metrics:
         artifacts.append(("derived/metrics/structural_metrics.csv", derived_dir / "metrics" / "structural_metrics.csv"))
+        artifacts.append(("derived_subset/triptych.csv", run_dir / "derived_subset" / "triptych.csv"))
         artifacts.append(("reports/metric_report.html", reports_dir / "metric_report.html"))
 
     for name, path in artifacts:

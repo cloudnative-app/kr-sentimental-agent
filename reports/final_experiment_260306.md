@@ -17,9 +17,10 @@
 | 3-2 | M0+nt | MFRA (no trigger) | Ablation | final_260306_m0_nt |
 | 4* | Supervised | Fine-tuned external baseline | 외부 성능 참조 | https://github.com/teddysum/korean_ABSA_baseline | 
 ---
-*조건 4는 한국어 absa 베이스라인으로 별도 튜닝과 학습습 없이 해당 모델로 실행 필요. 튜플 단위는 (aspect_ref, polarity) 의 출력물을 산출하도록 조정 필요. 같은 정규화 규칙과 메트릭 계산 코드 필요. 평가 데이터는 @experiments/configs/datasets/test/nikluge-sa-2022-dev.jsonl 이용 . seed k=5, 
-*정규화 규칙과 메트릭 계산 코드는 @cr_branch_metrics_spec.md 
-
+*조건 4는 한국어 absa 베이스라인으로 별도 튜닝과 학습습 없이 해당 모델로 실행 필요. 튜플 단위는 (aspect_ref, polarity) 의 출력물을 산출하도록 조정 필요. 같은 정규화 규칙과 메트릭 계산 코드 필요. 평가 데이터는 @experiments/configs/datasets/test/nikluge-sa-2022-dev.jsonl 이용 . seed k=5.
+*메트릭계산과 정규화 관련 출력 규칙만 설정 필요: docs/external_finetuned_model_comparison_spec.md 참조 
+*메트릭 계산 코드는 @cr_branch_metrics_spec.md 
+*정규화 규칙은 @docs/normalization_rules_and_locations.md
 
 ## 0. 데이터셋 생성 (완료 시 생략)
 
@@ -122,6 +123,8 @@ python scripts/aggregate_seed_metrics.py --run_dirs results/final_260306_s0_bg__
 
 ## 5. Triptych (Subset 분석, 선택)
 
+**참고**: `run_pipeline --with_metrics` 실행 시 각 run에 `derived_subset/triptych.csv`가 자동 생성됨. 아래는 aggregated merged용 triptych (선택).
+
 subset conditional 테이블용 triptych 생성.
 
 ```powershell
@@ -134,6 +137,35 @@ python scripts/structural_error_aggregator.py --input results/final_260306_m0_ag
 # M1
 python scripts/structural_error_aggregator.py --input results/final_260306_m1_aggregated/merged_scorecards.jsonl --outdir results/final_260306_m1_aggregated/merged_metrics --profile paper_main --export_triptych_table results/final_260306_m1_aggregated/derived_subset/triptych.csv --triptych_sample_n 0
 ```
+
+---
+
+## 5-1. 타당성 검증용 A/B/C 테이블 (최소 로그 스키마)
+
+변별 타당성·구성 타당도·순위비교 분석용. `run_pipeline --with_metrics`로 생성된 triptych·structural_metrics 기반.
+
+```powershell
+$SEEDS = "42,123,456,789,1024"
+
+# A: run_summary (조건×시드)
+python scripts/export_run_summary.py --base_run_id final_260306_s0 --seeds $SEEDS --mode proposed
+python scripts/export_run_summary.py --base_run_id final_260306_m0 --seeds $SEEDS --mode proposed
+python scripts/export_run_summary.py --base_run_id final_260306_m1 --seeds $SEEDS --mode proposed
+python scripts/export_run_summary.py --base_run_id final_260306_m0_nt --seeds $SEEDS --mode proposed
+
+# B: sample_metrics (조건×시드×sample_id)
+python scripts/export_sample_metrics.py --base_run_id final_260306_s0 --seeds $SEEDS --mode proposed
+python scripts/export_sample_metrics.py --base_run_id final_260306_m0 --seeds $SEEDS --mode proposed
+# ... (M1, M0+nt 동일)
+
+# C: transition_metrics (stage1→final)
+python scripts/export_transition_metrics.py --base_run_id final_260306_s0 --seeds $SEEDS --mode proposed
+python scripts/export_transition_metrics.py --base_run_id final_260306_m0 --seeds $SEEDS --mode proposed
+# ... (M1, M0+nt 동일)
+```
+
+**출력**: `analysis_exports/run_summary.csv`, `sample_metrics.csv`, `transition_metrics.csv`  
+**참조**: [minimum_log_schema_verification.md](docs/minimum_log_schema_verification.md)
 
 ---
 
@@ -210,11 +242,13 @@ python scripts/final_paper_table.py --agg-s0 ... --agg-m0 ... --agg-m1 ... --run
 |------|------|
 | **데이터셋** | experiments/configs/datasets/final_260306/ |
 | **시드별 결과** | results/final_260306_{s0,m0,m1,m0_nt}__seed{N}_proposed/ |
+| **시드별 triptych** | results/.../derived_subset/triptych.csv (`--with_metrics` 시 자동) |
 | **S0+Budget** | results/final_260306_s0_bg__seed{N}__budget_aggregated_proposed/ |
 | **Aggregated** | results/final_260306_{s0,m0,m1,m0_nt,s0_bg}_aggregated/ |
 | **aggregated_mean_std** | results/final_260306_*_aggregated/aggregated_mean_std.csv |
 | **integrated_report** | results/final_260306_*_aggregated/integrated_report.md |
 | **IRR (시드별)** | results/.../irr/irr_run_summary.json, irr_subset_summary.json |
+| **타당성 검증 (A/B/C)** | analysis_exports/run_summary.csv, sample_metrics.csv, transition_metrics.csv |
 | **Final Paper Table** | reports/final_experiment_260306_paper_table.md |
 | **CR v2 Table** | reports/final_experiment_260306_cr_v2_table.md |
 | **HTML 리포트** | reports/final_260306_*_proposed/index.html, metric_report.html |

@@ -105,6 +105,7 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 | **실행** | `run_pipeline` → `compute_irr --scorecards` (subset IRR용) → `aggregate_seed_metrics` → `build_cr_v2_paper_table` |
 | **Paper Table** | `scripts/build_cr_v2_paper_table.py` → `reports/cr_v2_paper_table.md` (Table 1 F1, Table 2 Schema/Error/IRR/subset IRR, Appendix) |
 | **명령어** | [run_cr_v2_n100_m0_m1_v3_commands.md](run_cr_v2_n100_m0_m1_v3_commands.md) |
+| **타당성 검증 로그** | `run_pipeline --with_metrics` 시 triptych.csv 자동 생성. `export_run_summary`, `export_sample_metrics`, `export_transition_metrics` → `analysis_exports/` (A/B/C 테이블). [minimum_log_schema_verification.md](minimum_log_schema_verification.md) |
 
 ---
 
@@ -129,6 +130,7 @@ python scripts/run_cr_m0_m1_m2_pipeline.py
 | 문서 | 설명 |
 |------|------|
 | [cr_branch_metrics_spec.md](cr_branch_metrics_spec.md) | CR 메트릭, 데이터 플로우, 산출물 경로 |
+| [minimum_log_schema_verification.md](minimum_log_schema_verification.md) | **최소 로그 스키마 (A/B/C)**: 타당성 검증용 run_summary, sample_metrics, transition_metrics |
 | [pipeline_stages_data_and_metrics_flow.md](pipeline_stages_data_and_metrics_flow.md) | 파이프라인 단계·데이터·메트릭 흐름 |
 | [pipeline_workflow_diagram.md](pipeline_workflow_diagram.md) | 파이프라인 워크플로우 다이어그램 |
 

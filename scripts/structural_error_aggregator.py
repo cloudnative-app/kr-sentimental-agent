@@ -2923,6 +2923,25 @@ def _triptych_row(
     fix_flag = 1 if (gold_tuples and (not st1 and st2)) else 0
     break_flag = 1 if (gold_tuples and (st1 and not st2)) else 0
 
+    # Per-sample schema_valid_flag: 1 if all pred tuples have valid aspect_ref, else 0
+    try:
+        from schemas.taxonomy import is_valid_ref
+    except ImportError:
+        def is_valid_ref(_: str) -> bool:
+            return False
+    stage1_schema_valid_flag = 1
+    for (_a, _t, _p) in (s1_tuples or set()):
+        ref = normalize_ref_for_eval(_a) if _a else ""
+        if ref and not is_valid_ref(ref):
+            stage1_schema_valid_flag = 0
+            break
+    final_schema_valid_flag = 1
+    for (_a, _t, _p) in (s2_tuples or set()):
+        ref = normalize_ref_for_eval(_a) if _a else ""
+        if ref and not is_valid_ref(ref):
+            final_schema_valid_flag = 0
+            break
+
     # implicit_invalid_flag for 5.2.2 subset (Implicit Assignment Error Rate)
     implicit_invalid_flag = 0
     if gold_implicit:
@@ -3026,6 +3045,8 @@ def _triptych_row(
         "final_n_pairs_otepol": final_n_pairs_otepol if gold_tuples and s2_tuples else "",
         "fix_flag": fix_flag,
         "break_flag": break_flag,
+        "stage1_schema_valid_flag": stage1_schema_valid_flag,
+        "final_schema_valid_flag": final_schema_valid_flag,
         "implicit_invalid_flag": implicit_invalid_flag,
         "new_correct_in_final": new_correct_in_final if gold_pairs is not None else "",
         "new_wrong_in_final": new_wrong_in_final,
