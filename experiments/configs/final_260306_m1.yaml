@@ -1,0 +1,60 @@
+# Final Experiment 260306 - M1: MFRA + episodic memory (Exploratory extension, RQ2).
+# Base: cr_v2_final_m1_con5; data: final_260306 (nikluge-sa-2022-dev.jsonl).
+# seeds=5, concurrency=5.
+run_purpose: paper
+run_id: final_260306_m1
+run_mode: proposed
+
+pipeline:
+  protocol_mode: conflict_review_v1
+  conflict_mode: primary_secondary
+  semantic_conflict_enabled: false
+  temperature: 0
+  enable_stage2: true
+  enable_validator: true
+  enable_debate: false
+  enable_debate_override: false
+  compute_conflict_flags: true
+  conflict_flags_mode: intra_output_only
+
+episodic_memory:
+  condition: M1
+  conditions_path: experiments/configs/conditions_memory_v1_2.yaml
+
+data:
+  dataset_root: experiments/configs/datasets
+  allowed_roots: ["experiments/configs/datasets"]
+  input_format: csv
+  train_file: final_260306/train.csv
+  valid_file: final_260306/valid.csv
+  text_column: text
+  label_column: null
+  target_column: null
+  max_length: 192
+
+eval:
+  gold_valid_jsonl: final_260306/valid.gold.jsonl
+
+backbone:
+  provider: openai
+  model: gpt-4.1-mini
+
+data_roles:
+  demo_pool: ["train"]
+  tuning_pool: []
+  report_set: ["valid"]
+  blind_set: []
+  report_sources: ["valid_file"]
+
+demo:
+  k: 0
+  seed: 42
+  enabled_for: []
+  force_for_proposed: false
+  hash_filter: false
+
+experiment:
+  repeat:
+    mode: seed
+    seeds: [42, 123, 456, 789, 1024]
+  concurrency: 5
