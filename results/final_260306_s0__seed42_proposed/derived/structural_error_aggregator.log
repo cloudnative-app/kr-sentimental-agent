@@ -1,0 +1,16 @@
+AGG_ORDER: records=sorted(uid), tuples=sorted(tuple_key_v1)
+[triptych rule check] Row with |positive in gold_pairs: text_id='nikluge-sa-2022-dev-00031' gold_pairs='본품#품질|positive' gold_n_pairs=1 matches_final_vs_gold=1. Included in N_gold: yes (row has gold, so counted in N_gold). Included in matches_final_vs_gold calc: yes (matches_final_vs_gold computed for this row; value=1).
+Wrote Triptych table: C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived_subset\triptych.csv (n=559, CSV)
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\stage_summary.csv
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\stage_summary.md
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\metrics\structural_metrics.csv
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\metrics\structural_metrics_table.md
+# Step: structural_error_aggregator
+# Command: C:\Users\javam\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe scripts/structural_error_aggregator.py --input C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\scorecards.jsonl --outdir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\metrics --profile paper_main --export_triptych_table C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived_subset\triptych.csv --triptych_sample_n 0
+# Started: 2026-03-08T21:52:44.861011
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+# Finished: 2026-03-08T21:52:45.489375
+# Exit code: 0

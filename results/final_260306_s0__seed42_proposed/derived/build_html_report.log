@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\scripts\build_html_report.py", line 435, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\scripts\build_html_report.py", line 430, in main
+    out_path = build_report(run_dir, out_dir, args.profile, rules_path, strict=args.strict)
+  File "C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\scripts\build_html_report.py", line 350, in build_report
+    required = rules["profiles"][profile].get("required_artifacts", [])
+               ~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'ops'
+# Step: build_html_report
+# Command: C:\Users\javam\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe scripts/build_html_report.py --run_dir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed --out_dir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\reports\final_260306_s0__seed42_proposed --profile paper
+# Started: 2026-03-08T21:52:44.690926
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+# Finished: 2026-03-08T21:52:44.859660
+# Exit code: 1

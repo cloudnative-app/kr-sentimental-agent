@@ -1,0 +1,127 @@
+{
+  "manifest_version": 2,
+  "run_id": "final_260306_s0__seed42_proposed",
+  "timestamp_utc": "2026-03-08T12:40:12.139453Z",
+  "git_commit": "6df3a940bcb3f9f41da2f785968ce744a64bb64b",
+  "config_path": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\results\\.run_pipeline_temp\\final_260306_s0_seed42.yaml",
+  "cfg_hash": "b94d3deb85a0ef150e2b3f58481864e251cd7fd11efe5f426b13dd94eafa71ec",
+  "cfg_canonical": "{\"backbone\": {\"model\": \"gpt-4.1-mini\", \"provider\": \"openai\"}, \"data\": {\"allowed_roots\": [\"experiments/configs/datasets\"], \"dataset_root\": \"experiments/configs/datasets\", \"input_format\": \"csv\", \"label_column\": null, \"max_length\": 192, \"target_column\": null, \"text_column\": \"text\", \"train_file\": \"final_260306/train.csv\", \"valid_file\": \"final_260306/valid.csv\"}, \"data_roles\": {\"blind_set\": [], \"demo_pool\": [\"train\"], \"report_set\": [\"valid\"], \"report_sources\": [\"valid_file\"], \"tuning_pool\": []}, \"demo\": {\"enabled_for\": [], \"force_for_proposed\": false, \"hash_filter\": false, \"k\": 0, \"seed\": 42}, \"episodic_memory\": {\"condition\": \"S0_single_pass\"}, \"eval\": {\"gold_valid_jsonl\": \"final_260306/valid.gold.jsonl\"}, \"experiment\": {\"concurrency\": 5, \"repeat\": {\"mode\": \"seed\", \"seeds\": [42, 123, 456, 789, 1024]}}, \"pipeline\": {\"compute_conflict_flags\": true, \"conflict_flags_mode\": \"intra_output_only\", \"conflict_mode\": \"primary_secondary\", \"enable_arbiter\": false, \"enable_debate\": false, \"enable_debate_override\": false, \"enable_memory\": false, \"enable_review\": false, \"enable_stage2\": false, \"enable_validator\": true, \"protocol_mode\": \"conflict_review_v1\", \"semantic_conflict_enabled\": false, \"stage1_mode\": \"single_integrated\", \"temperature\": 0}, \"run_id\": \"final_260306_s0__seed42\", \"run_mode\": \"proposed\", \"run_purpose\": \"paper\"}",
+  "purpose": "paper",
+  "backbone": {
+    "provider": "openai",
+    "model": "gpt-4.1-mini",
+    "temperature": 0,
+    "max_tokens": null,
+    "seed": null
+  },
+  "prompt_versions": {
+    "ate_stage1": "40e7c5fb679d5a8246ab64bbaeb0a85446c7d02bdd466ce4db37e6445e9db1ce",
+    "ate_stage2": "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "atsa_stage1": "987e9bbe344d8c1bc7026a555e361198aa22bd779ef359cc4bd4625a42ae75f6",
+    "atsa_stage2": "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "bl1": "c92dc655c021be2d6bac0b8af077de64ed8a504604a53afb2bfcbfa84fd0cd1b",
+    "bl2": "c40ba93927585df1ef0084cc274dbb514bf23f558ea64a5956a157e485aa3284",
+    "debate_judge": "5d7cf1c00e422f45d886505a0315f0c252a2f00370a4c99009abe83fb670ad46",
+    "debate_speaker": "1cf76914deffb5a2602ed950593c9c79e34c3aa8905dece1522cab580e5ed99a",
+    "moderator": "741c5c29855fa1fac2573ab5f7cf52d4b33e05ef80ac53db9da8adb5a7af1f0a",
+    "perspective_pimp_stage1": "2ba983a9907730c309094ee71260dc1cc0c223aad9db333ab6cc4ed3fa66de25",
+    "perspective_plit_stage1": "aedd3eaa8339e07d0c5bb6283c9a8c53a33eb68179849b1067df76292b849e3c",
+    "perspective_pneg_stage1": "a227d63382e5e7b7ccc21a196e02a0e512afacf5f00a549bcb6a7cd5e774102a",
+    "perspective_s0_single_integrated_stage1": "98d7856f84ab48613099e4c1ea0103032b3267a8a7ac3cc56b54f233c11f5ec9",
+    "review_arbiter_action": "c5cfc4a71883d9e54bff31ba184c657e9a12140857ecc9bbda4cb835ac93bdec",
+    "review_pimp_action": "75bdce9ebfffbe6060b9e1c224f3e929be5d28ef4119f456b9d571fc42218940",
+    "review_plit_action": "65e852518704277fcd5ab3bba0e994ecc058fdf16a63a6472e66069a3304a10c",
+    "review_pneg_action": "3c38a22a65ed80989307917f10cca585066fb8eb629322662c63456a44aebdca",
+    "review_recheck_action": "be3a01ff7e878648555bfea7147ce4d77e6d9874007e8214b1315fec94c67105",
+    "validator_stage1": "7cd74e36c329bc4b7119ac3fe4c89969ffc8454e1945b2d944a98cbe8e155ba1",
+    "validator_stage2": "5fc2e4a6f1ffb47ab27459715b2cdf5b2b2864d2a49afbe594ac7b521aa28768"
+  },
+  "patterns": {
+    "unknown": {
+      "path": "resources\\patterns\\en.json",
+      "sha256": "3558af551f9323620b8863a5e9dd5dbfd6af2644a528c7146a09a1015e999715"
+    }
+  },
+  "languages": [
+    "unknown"
+  ],
+  "allowlist": {
+    "path": null,
+    "sha256": null,
+    "version_id": null
+  },
+  "merging_rule": {
+    "path": null,
+    "sha256": null
+  },
+  "dataset": {
+    "input_format": "csv",
+    "paths": {
+      "train_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\train.csv",
+      "valid_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\valid.csv"
+    },
+    "split_counts": {
+      "train": 0,
+      "valid": 559,
+      "test": 0
+    },
+    "resolved_paths": {
+      "train_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\train.csv",
+      "valid_file": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\valid.csv"
+    },
+    "allowed_roots": [
+      "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets"
+    ],
+    "split_files": {
+      "train": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\train.csv",
+      "valid": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\valid.csv",
+      "test": null
+    },
+    "split_files_all_same": false,
+    "processing_splits": [
+      "valid"
+    ],
+    "processing_count": 559,
+    "splits_loaded": [
+      "valid"
+    ]
+  },
+  "mode": "proposed",
+  "blocked_path_error": null,
+  "integrity": {
+    "demo_overlap_removed": 0,
+    "demo_hash_filter_enabled": true,
+    "missing_label_count": 0,
+    "forbid_hashes_source": {
+      "report_sources": [
+        "valid_file"
+      ],
+      "blind_sources": null
+    }
+  },
+  "eval": {
+    "gold_valid_jsonl": "C:\\Users\\javam\\OneDrive\\dev\\kr-sentimental-agent-cr\\experiments\\configs\\datasets\\final_260306\\valid.gold.jsonl"
+  },
+  "data_roles": {
+    "demo_pool": [
+      "train"
+    ],
+    "tuning_pool": [],
+    "report_set": [
+      "valid"
+    ],
+    "blind_set": [],
+    "report_sources": [
+      "valid_file"
+    ],
+    "blind_sources": null
+  },
+  "episodic_memory": {
+    "condition": "S0_single_pass",
+    "store_path": "results\\final_260306_s0__seed42_proposed\\episodic_store.jsonl"
+  },
+  "pipeline": {
+    "conflict_mode": "primary_secondary"
+  },
+  "conflict_flags_ref_primary": false
+}

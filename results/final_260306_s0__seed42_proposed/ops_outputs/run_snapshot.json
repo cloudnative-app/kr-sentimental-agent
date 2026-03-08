@@ -1,0 +1,78 @@
+{
+  "run_id": "final_260306_s0__seed42_proposed",
+  "timestamp_utc": "2026-03-08T12:40:12.139453Z",
+  "cfg_hash": "b94d3deb85a0ef150e2b3f58481864e251cd7fd11efe5f426b13dd94eafa71ec",
+  "backbone_model_id": "gpt-4.1-mini",
+  "prompt_hashes": [
+    "40e7c5fb679d5a8246ab64bbaeb0a85446c7d02bdd466ce4db37e6445e9db1ce",
+    "c3814ebff277762c9eb0dc3ad019a8bcb3f0f8d6dd7c80c00f3203664cc0af17",
+    "987e9bbe344d8c1bc7026a555e361198aa22bd779ef359cc4bd4625a42ae75f6",
+    "3549d465e8122927c3163981989c3bf0dd7cdc008c75e0e8235723a628e5e5cd",
+    "c92dc655c021be2d6bac0b8af077de64ed8a504604a53afb2bfcbfa84fd0cd1b",
+    "c40ba93927585df1ef0084cc274dbb514bf23f558ea64a5956a157e485aa3284",
+    "5d7cf1c00e422f45d886505a0315f0c252a2f00370a4c99009abe83fb670ad46",
+    "1cf76914deffb5a2602ed950593c9c79e34c3aa8905dece1522cab580e5ed99a",
+    "741c5c29855fa1fac2573ab5f7cf52d4b33e05ef80ac53db9da8adb5a7af1f0a",
+    "2ba983a9907730c309094ee71260dc1cc0c223aad9db333ab6cc4ed3fa66de25",
+    "aedd3eaa8339e07d0c5bb6283c9a8c53a33eb68179849b1067df76292b849e3c",
+    "a227d63382e5e7b7ccc21a196e02a0e512afacf5f00a549bcb6a7cd5e774102a",
+    "98d7856f84ab48613099e4c1ea0103032b3267a8a7ac3cc56b54f233c11f5ec9",
+    "c5cfc4a71883d9e54bff31ba184c657e9a12140857ecc9bbda4cb835ac93bdec",
+    "75bdce9ebfffbe6060b9e1c224f3e929be5d28ef4119f456b9d571fc42218940",
+    "65e852518704277fcd5ab3bba0e994ecc058fdf16a63a6472e66069a3304a10c",
+    "3c38a22a65ed80989307917f10cca585066fb8eb629322662c63456a44aebdca",
+    "be3a01ff7e878648555bfea7147ce4d77e6d9874007e8214b1315fec94c67105",
+    "7cd74e36c329bc4b7119ac3fe4c89969ffc8454e1945b2d944a98cbe8e155ba1",
+    "5fc2e4a6f1ffb47ab27459715b2cdf5b2b2864d2a49afbe594ac7b521aa28768"
+  ],
+  "purpose": "paper",
+  "artifacts": {
+    "manifest": true,
+    "scorecards": true,
+    "traces": true,
+    "smoke_outputs": false,
+    "manifest_bytes": 6659,
+    "scorecards_bytes": 5573827,
+    "traces_bytes": 3878054,
+    "smoke_outputs_bytes": null
+  },
+  "volume": {
+    "total_rows": 559,
+    "rows_by_split": {
+      "valid": 559
+    },
+    "rows_by_case_type": {
+      "unknown": 559
+    }
+  },
+  "reliability": {
+    "generate_failed_rate": 0.0,
+    "parse_failed_rate": 0.0,
+    "fallback_used_rate": 0.0,
+    "empty_output_rate": 1.0,
+    "avg_aspect_count": 0
+  },
+  "usage": {
+    "tokens_in_total": 435773,
+    "tokens_out_total": 39060,
+    "cost_usd_total": 5.52953,
+    "latency_ms_mean": 1340.638640429338,
+    "latency_ms_p50": 1247,
+    "latency_ms_p95": 2052.400000000001,
+    "retries_mean": 0
+  },
+  "integrity": {
+    "split_overlap_pairs": {
+      "train_valid": 0.0,
+      "train_test": 0.0,
+      "valid_test": 0.0
+    },
+    "split_overlap_any_rate": 0.0,
+    "split_overlap_notes": null,
+    "split_hash_counts": {
+      "train": 0,
+      "valid": 559,
+      "test": 0
+    }
+  }
+}

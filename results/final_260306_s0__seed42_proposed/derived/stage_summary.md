@@ -1,0 +1,3 @@
+| condition | stage | n_records | n_tuples_total | tuples_per_record_mean | null_aspect_term_rate | null_aspect_ref_rate | invalid_polarity_rate | implicit_invalid_pred_rate | polarity_conflict_rate | parse_fail_rate | aggregation_order_signature |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| S0 | s0_final | 559 | 646 | 1.1556 | 0.0000 | 0.0000 | 0.0000 | 0.1935 | 0.0054 | 0.0000 | 563e73c0e9ef6cc399cf1e5e16154f3def4a278f |

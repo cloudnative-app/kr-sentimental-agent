@@ -1,0 +1,13 @@
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\metrics\transition_summary.json
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed\derived\metrics\transition_table.csv
+Metric report: run_dir=final_260306_s0__seed42_proposed, scorecards=559, rows_with_gold=559
+Wrote C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\reports\final_260306_s0__seed42_proposed\metric_report.html
+# Step: build_metric_report
+# Command: C:\Users\javam\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe scripts/build_metric_report.py --run_dir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed --out_dir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\reports\final_260306_s0__seed42_proposed --metrics_profile paper_main
+# Started: 2026-03-08T21:52:45.490178
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+# Finished: 2026-03-08T21:52:47.964268
+# Exit code: 0

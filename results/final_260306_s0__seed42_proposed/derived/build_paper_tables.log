@@ -1,0 +1,13 @@
+usage: build_paper_tables.py [-h] --base_run_id BASE_RUN_ID
+                             [--results_dir RESULTS_DIR] [--report {md}]
+                             [--out OUT] [--conditions CONDITIONS]
+build_paper_tables.py: error: the following arguments are required: --base_run_id
+# Step: build_paper_tables
+# Command: C:\Users\javam\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe scripts/build_paper_tables.py --run_dir C:\Users\javam\OneDrive\dev\kr-sentimental-agent-cr\results\final_260306_s0__seed42_proposed
+# Started: 2026-03-08T21:52:44.586839
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+# Finished: 2026-03-08T21:52:44.689944
+# Exit code: 2

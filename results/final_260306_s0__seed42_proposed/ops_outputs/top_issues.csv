@@ -1,0 +1,195 @@
+uid,split,case_type,runner_name,backbone_model_id,tokens_in,tokens_out,cost_usd,latency_ms,retries,flags,text_preview,raw_output_preview
+nikluge-sa-2022-dev-00064,valid,unknown,proposed,gpt-4.1-mini,795,233,0.01494,2919,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""지펠"",
+      ""aspect_ref"": ""브랜드#일반"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""양문 냉장고"",
+      ""aspect_ref"": """
+nikluge-sa-2022-dev-02212,valid,unknown,proposed,gpt-4.1-mini,765,9,0.00792,2918,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": []
+}"
+nikluge-sa-2022-dev-02131,valid,unknown,proposed,gpt-4.1-mini,801,240,0.01521,2807,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""핀란드산 자작나무 합판"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9,
+      ""rationale"": ""자작나무 합판의 사용은 품질을 높이는 긍정적인 요소로 해석됨."""
+nikluge-sa-2022-dev-00411,valid,unknown,proposed,gpt-4.1-mini,781,106,0.01099,2734,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""음악재생, 멈춤"",
+      ""aspect_ref"": ""본품#편의성"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""볼륨조절"",
+      ""aspect_ref"
+nikluge-sa-2022-dev-02697,valid,unknown,proposed,gpt-4.1-mini,799,245,0.01534,2690,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""자작나무 합판"",
+      ""aspect_ref"": ""본품#일반"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9,
+      ""rationale"": ""자작나무 합판이라는 소재에 대한 긍정적인 평가가 명시되어 있음.""
+   "
+nikluge-sa-2022-dev-01026,valid,unknown,proposed,gpt-4.1-mini,791,9,0.00818,2587,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": []
+}"
+nikluge-sa-2022-dev-02630,valid,unknown,proposed,gpt-4.1-mini,816,187,0.013770000000000001,2566,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""매트리스"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""복원력도 좋고"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"
+nikluge-sa-2022-dev-01950,valid,unknown,proposed,gpt-4.1-mini,781,237,0.01492,2555,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""촉촉하게"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""다이아몬드 파우더"",
+      ""aspect_ref"
+nikluge-sa-2022-dev-01062,valid,unknown,proposed,gpt-4.1-mini,788,80,0.010280000000000001,2524,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""디자인"",
+      ""aspect_ref"": ""본품#디자인"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9,
+      ""evidence"": ""물 이 혹시 튀거나 이물질로 부터 보호가 가능해서 안전하기까지!""
+    }
+ "
+nikluge-sa-2022-dev-00253,valid,unknown,proposed,gpt-4.1-mini,788,110,0.011179999999999999,2444,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""역주행세럼"",
+      ""aspect_ref"": ""제품 전체#편의성"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""콜라겐부스트링클필링세럼"",
+      ""as"
+nikluge-sa-2022-dev-00431,valid,unknown,proposed,gpt-4.1-mini,806,118,0.0116,2436,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""잡티 개선효과"",
+      ""aspect_ref"": ""제품 전체#품질"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""강력한"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_te"
+nikluge-sa-2022-dev-01965,valid,unknown,proposed,gpt-4.1-mini,827,231,0.0152,2417,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""3중 흡수층"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""소변을 빠르게 흡수해줘서"",
+      ""confidence"": 1.0
+    },
+    {
+      ""aspect_"
+nikluge-sa-2022-dev-00433,valid,unknown,proposed,gpt-4.1-mini,791,139,0.01208,2370,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""그라데이션 핑크 패키지"",
+      ""aspect_ref"": ""패키지·구성품#디자인"",
+      ""polarity"": ""positive"",
+      ""opinion_term"": ""예쁜"",
+      ""confidence"": 1.0
+    },
+    {
+      ""as"
+nikluge-sa-2022-dev-01787,valid,unknown,proposed,gpt-4.1-mini,783,156,0.01251,2369,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""수분공급 피부진정"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""피부장벽강화"",
+      ""aspect_r"
+nikluge-sa-2022-dev-00499,valid,unknown,proposed,gpt-4.1-mini,875,224,0.015470000000000001,2329,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""비비크림"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""피부 본연의 힘을 활성화시키는 6가지 펩타이드, 지모뿌리추출물, 식물성줄기세포가 함유되어 피부 리듬을 되찾아 주고 피지 조절"
+nikluge-sa-2022-dev-00508,valid,unknown,proposed,gpt-4.1-mini,833,148,0.01277,2326,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""편하게"",
+      ""aspect_ref"": ""본품#편의성"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""휴대하기 간편하여"",
+      ""aspect_ref"
+nikluge-sa-2022-dev-01019,valid,unknown,proposed,gpt-4.1-mini,788,137,0.01199,2307,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""모든커버"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""최고 등급의 원료만 사용했다고 하니"",
+      ""confidence"": 0.9
+    },
+    {
+      ""asp"
+nikluge-sa-2022-dev-00368,valid,unknown,proposed,gpt-4.1-mini,778,139,0.01195,2295,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""USB"",
+      ""aspect_ref"": ""본품#일반"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""폰케이스"",
+      ""aspect_ref"": ""본품"
+nikluge-sa-2022-dev-02113,valid,unknown,proposed,gpt-4.1-mini,790,192,0.013660000000000002,2282,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""정제수"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""confidence"": 0.9
+    },
+    {
+      ""aspect_term"": ""천연 펄프"",
+      ""aspect_ref"": ""본"
+nikluge-sa-2022-dev-01651,valid,unknown,proposed,gpt-4.1-mini,800,151,0.01253,2272,0,"{""parse_failed"": false, ""generate_failed"": false, ""fallback_used"": false}",,"{
+  ""triplets"": [
+    {
+      ""aspect_term"": ""청량감"",
+      ""aspect_ref"": ""본품#품질"",
+      ""polarity"": ""positive"",
+      ""evidence"": ""그 청량감이 너무 좋아"",
+      ""confidence"": 1.0
+    },
+    {
+      ""aspect_term"

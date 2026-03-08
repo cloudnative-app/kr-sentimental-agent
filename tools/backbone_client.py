@@ -106,7 +106,12 @@ class BackboneClient:
 
     def __init__(self, provider: str | None = None, model: str | None = None):
         self.provider = _resolve_provider(provider)
-        self.model = model or os.getenv("BACKBONE_MODEL", "gpt-3.5-turbo")
+        # Azure: OPENAI_AZURE_DEPLOYMENT이 설정되면 배포 이름으로 사용
+        azure_deploy = os.getenv("OPENAI_AZURE_DEPLOYMENT")
+        if azure_deploy and os.getenv("OPENAI_AZURE_ENDPOINT"):
+            self.model = azure_deploy
+        else:
+            self.model = model or os.getenv("BACKBONE_MODEL", "gpt-3.5-turbo")
 
     def generate(
         self,
@@ -288,10 +293,32 @@ class BackboneClient:
             return response_text, usage
 
         if self.provider == "openai":
-            from openai import OpenAI  # type: ignore
-
             _require_env(["OPENAI_API_KEY"], "openai")
-            client = OpenAI()  # api_key read from env; ensured above
+            api_key = os.getenv("OPENAI_API_KEY")
+            azure_endpoint = os.getenv("OPENAI_AZURE_ENDPOINT")
+            base_url = os.getenv("OPENAI_BASE_URL")
+
+            # Azure v1 API (/openai/v1) → 표준 OpenAI 클라이언트 + base_url
+            if azure_endpoint and "/openai/v1" in azure_endpoint:
+                from openai import OpenAI  # type: ignore
+
+                client = OpenAI(api_key=api_key, base_url=azure_endpoint.rstrip("/"))
+            elif azure_endpoint:
+                from openai import AzureOpenAI  # type: ignore
+
+                client = AzureOpenAI(
+                    api_key=api_key,
+                    api_version=os.getenv("OPENAI_AZURE_API_VERSION", "2024-02-15-preview"),
+                    azure_endpoint=azure_endpoint.rstrip("/"),
+                )
+            else:
+                from openai import OpenAI  # type: ignore
+
+                client_kwargs = {"api_key": api_key}
+                if base_url:
+                    client_kwargs["base_url"] = base_url.rstrip("/")
+                client = OpenAI(**client_kwargs)
+
             resp = client.chat.completions.create(
                 model=self.model,
                 messages=msgs,
